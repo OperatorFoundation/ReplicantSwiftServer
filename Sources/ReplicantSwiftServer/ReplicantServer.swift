@@ -6,11 +6,26 @@
 //
 
 import Foundation
+import ReplicantSwift
+import Replicant
 
 class ReplicantServer
 {
     var lock = DispatchGroup.init()
     let routingController = RoutingController()
+    let serverConnection: ReplicantServerConnection
+    
+    init?(withConfigAtPath path: String)
+    {
+        guard let serverConfig = ReplicantServerConfig.parseJSON(atPath: path)
+        else
+        {
+            print("\nUnable to initialize server, config file not found at: \(path)\n")
+            return nil
+        }
+        
+        let connectionFactory = ReplicantServerConnectionFactory(
+    }
     
     func processRequest()
     {
@@ -45,7 +60,14 @@ class ReplicantServer
             return
         }
         
-        let configTemplateString = CommandLine.arguments[2]
+        let configTemplatePath = CommandLine.arguments[2]
+        guard let configTemplate = ReplicantConfigTemplate.parseJSON(atPath: configTemplatePath)
+        else
+        {
+            consoleIO.writeMessage("Unable to find a valid client config templatge at path: \(configTemplatePath)", to: .error)
+            return
+        }
+        configTemplate.createConfig(withServerKey: <#T##SecKey#>)
         consoleIO.writeMessage("📝  Entering write mode.")
     }
     

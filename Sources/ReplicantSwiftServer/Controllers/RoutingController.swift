@@ -226,12 +226,20 @@ class RoutingController: NSObject
             return nil
         }
         
+        // Encode key as data
+        guard let bobPublicData = SecKeyCopyExternalRepresentation(bobPublic, &error) as Data?
+            else
+        {
+            print("\nUnable to generate public key external representation: \(error!.takeRetainedValue() as Error)\n")
+            return nil
+        }
+        
         guard let sampleSequence = SequenceModel(sequence: Data(string: "You say hello, and I say goodbye."), length: 256)
             else
         {
             return nil
         }
         
-        return ReplicantConfig(serverPublicKey: bobPublic, chunkSize: 4096, chunkTimeout: 60, addSequences: [sampleSequence], removeSequences: [sampleSequence])
+        return ReplicantConfig(serverPublicKey: bobPublicData, chunkSize: 4096, chunkTimeout: 60, addSequences: [sampleSequence], removeSequences: [sampleSequence])
     }
 }

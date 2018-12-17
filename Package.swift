@@ -7,7 +7,7 @@ let package = Package(
     name: "ReplicantSwiftServer",
     dependencies: [
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "0.1.0"),
-        .package(url: "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git", .exact("0.3.0")),
+        .package(url: "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git", from: "0.3.2"),
         .package(url: "https://github.com/Bouke/INI", from: "1.0.2")
     ],
     targets: [
