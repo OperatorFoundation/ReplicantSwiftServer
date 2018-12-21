@@ -21,19 +21,19 @@ class ReplicantListener: Listener
     var stateUpdateHandler: ((NWListener.State) -> Void)?
     
     var newConnectionHandler: ((Connection) -> Void)?
-    var config: ReplicantConfig
+    var config: ReplicantServerConfig
     var listener: Listener
     
-    required init(config: ReplicantConfig, on port: NWEndpoint.Port) throws
+    required init(replicantConfig: ReplicantServerConfig, serverConfig: ServerConfig) throws
     {
         self.parameters = .tcp
-        self.config = config
-        self.port = port
+        self.config = replicantConfig
+        self.port = serverConfig.port
         
         // Create the listener
         do
         {
-            listener = try NWListener(using: .tcp, on: port)
+            listener = try NWListener(using: .tcp, on: serverConfig.port)
         }
         catch (let error)
         {
@@ -54,10 +54,10 @@ class ReplicantListener: Listener
         self.newTransportConnectionHandler?(replicantConnection)
     }
     
-    func makeReplicant(connection: Connection) -> ReplicantConnection?
+    func makeReplicant(connection: Connection) -> Connection?
     {
-        
-        return ReplicantConnection(connection: connection, using: parameters, and: config)
+        let replicantConnectionFactory = ReplicantServerConnectionFactory(connection: connection, replicantConfig: config)
+        return replicantConnectionFactory.connect()
     }
     
     //MARK: Transport API Listener Protocol

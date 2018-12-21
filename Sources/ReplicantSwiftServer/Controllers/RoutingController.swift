@@ -14,33 +14,22 @@ import ReplicantSwift
 class RoutingController: NSObject
 {
     let wireGuardServerIPString = ""
-    let wireGuardServerPort: UInt16 = 51820
+    let wireGuardServerPort = NWEndpoint.Port(rawValue: 51820)
     var conduitCollection = ConduitCollection()
     var replicantEnabled = true
     
-    func startListening(onPort portString: String, replicantEnabled: Bool)
+    func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
-        guard let port = NWEndpoint.Port(rawValue: wireGuardServerPort)
-            else
-        {
-            print("Unable to start listening, unable to resolve port.")
-            return
-        }
+        ///FIXME: Default port?
+        let port = wireGuardServerPort
         
         self.replicantEnabled = replicantEnabled
         
         if replicantEnabled
         {
-            guard let config = sampleReplicantConfig()
-            else
-            {
-                print("\nUnable to start listening: failed to create a sample config.\n")
-                return
-            }
-            
             do
             {
-                let replicantListener = try ReplicantListener(config: config, on: port)
+                let replicantListener = try ReplicantListener(replicantConfig: replicantConfig, serverConfig: serverConfig)
                 replicantListener.stateUpdateHandler = debugListenerStateUpdateHandler
                 replicantListener.newTransportConnectionHandler =
                 {
@@ -48,7 +37,7 @@ class RoutingController: NSObject
                     
                     if let strongSelf = self
                     {
-                        strongSelf.listenerConnectionHandler(newConnection: plainConnection, port: port)
+                        strongSelf.listenerConnectionHandler(newConnection: plainConnection, port: serverConfig.port)
                     }
                 }
             }
@@ -188,58 +177,58 @@ class RoutingController: NSObject
     }
     
     ///TODO: This is meant for development purposes only
-    func sampleReplicantConfig() -> ReplicantConfig?
-    {
-        // Generate private key
-        let tag = "org.operatorfoundation.replicant.server".data(using: .utf8)!
-        
-        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
-                                                     kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-                                                     .privateKeyUsage,
-                                                     nil)!
-        
-        let privateKeyAttributes: [String: Any] = [
-            kSecAttrIsPermanent as String: true,
-            kSecAttrApplicationTag as String: tag
-            /*kSecAttrAccessControl as String: access*/
-        ]
-        
-        let attributes: [String: Any] = [
-            kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom,
-            kSecAttrKeySizeInBits as String: 256,
-            /*kSecAttrTokenID as String: kSecAttrTokenIDSecureEnclave,*/
-            kSecPrivateKeyAttrs as String: privateKeyAttributes
-        ]
-        
-        var error: Unmanaged<CFError>?
-        guard let bobPrivate = SecKeyCreateRandomKey(attributes as CFDictionary, &error)
-            else
-        {
-            print("\nUnable to generate the client private key: \(error!.takeRetainedValue() as Error)\n")
-            return nil
-        }
-        
-        guard let bobPublic = SecKeyCopyPublicKey(bobPrivate)
-            else
-        {
-            print("\nUnable to generate a public key from the provided private key.\n")
-            return nil
-        }
-        
-        // Encode key as data
-        guard let bobPublicData = SecKeyCopyExternalRepresentation(bobPublic, &error) as Data?
-            else
-        {
-            print("\nUnable to generate public key external representation: \(error!.takeRetainedValue() as Error)\n")
-            return nil
-        }
-        
-        guard let sampleSequence = SequenceModel(sequence: Data(string: "You say hello, and I say goodbye."), length: 256)
-            else
-        {
-            return nil
-        }
-        
-        return ReplicantConfig(serverPublicKey: bobPublicData, chunkSize: 4096, chunkTimeout: 60, addSequences: [sampleSequence], removeSequences: [sampleSequence])
-    }
+//    func sampleReplicantConfig() -> ReplicantConfig?
+//    {
+//        // Generate private key
+//        let tag = "org.operatorfoundation.replicant.server".data(using: .utf8)!
+//
+//        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
+//                                                     kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+//                                                     .privateKeyUsage,
+//                                                     nil)!
+//
+//        let privateKeyAttributes: [String: Any] = [
+//            kSecAttrIsPermanent as String: true,
+//            kSecAttrApplicationTag as String: tag
+//            /*kSecAttrAccessControl as String: access*/
+//        ]
+//
+//        let attributes: [String: Any] = [
+//            kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom,
+//            kSecAttrKeySizeInBits as String: 256,
+//            /*kSecAttrTokenID as String: kSecAttrTokenIDSecureEnclave,*/
+//            kSecPrivateKeyAttrs as String: privateKeyAttributes
+//        ]
+//
+//        var error: Unmanaged<CFError>?
+//        guard let bobPrivate = SecKeyCreateRandomKey(attributes as CFDictionary, &error)
+//            else
+//        {
+//            print("\nUnable to generate the client private key: \(error!.takeRetainedValue() as Error)\n")
+//            return nil
+//        }
+//
+//        guard let bobPublic = SecKeyCopyPublicKey(bobPrivate)
+//            else
+//        {
+//            print("\nUnable to generate a public key from the provided private key.\n")
+//            return nil
+//        }
+//
+//        // Encode key as data
+//        guard let bobPublicData = SecKeyCopyExternalRepresentation(bobPublic, &error) as Data?
+//            else
+//        {
+//            print("\nUnable to generate public key external representation: \(error!.takeRetainedValue() as Error)\n")
+//            return nil
+//        }
+//
+//        guard let sampleSequence = SequenceModel(sequence: Data(string: "You say hello, and I say goodbye."), length: 256)
+//            else
+//        {
+//            return nil
+//        }
+//
+//        return ReplicantConfig(serverPublicKey: bobPublicData, chunkSize: 4096, chunkTimeout: 60, addSequences: [sampleSequence], removeSequences: [sampleSequence])
+//    }
 }
