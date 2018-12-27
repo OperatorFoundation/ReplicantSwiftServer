@@ -3,9 +3,12 @@ import ReplicantSwift
 import Replicant
 import Network
 
+@testable import ReplicantSwiftServerCore
+
 import class Foundation.Bundle
 
-final class ReplicantSwiftServerTests: XCTestCase {
+final class ReplicantSwiftServerTests: XCTestCase
+{
     
     func testReplicantServerConfig()
     {
@@ -98,6 +101,99 @@ final class ReplicantSwiftServerTests: XCTestCase {
         let configCreated = fileManager.createFile(atPath: path, contents: jsonData)
         
         XCTAssert(configCreated)
+    }
+    
+    func testConnection()
+    {
+        let host = NWEndpoint.Host("127.0.0.1")
+        guard let port = NWEndpoint.Port(rawValue: 51820)
+            else
+        {
+            print("\nUnable to initialize port.\n")
+            XCTFail()
+            return
+        }
+        
+        guard let appDirectoryURL = getApplicationDirectory()
+        else
+        {
+            XCTFail()
+            return
+        }
+        
+        // Get config files created by above tests
+        let routingController = RoutingController()
+        let serverConfigFileName = "Server.config"
+        let serverConfigPath = appDirectoryURL.appendingPathComponent(serverConfigFileName).path
+        guard let serverConfig = ServerConfig.parseJSON(atPath: serverConfigPath)
+        else
+        {
+            XCTFail()
+            return
+        }
+
+        let replicantConfigFileName = "ReplicantServer.config"
+        let replicantConfigPath = appDirectoryURL.appendingPathComponent(replicantConfigFileName).path
+        guard let replicantServerConfig = ReplicantServerConfig.parseJSON(atPath: replicantConfigPath)
+        else
+        {
+            XCTFail()
+            return
+        }
+
+        // Launch a server
+        routingController.startListening(serverConfig: serverConfig, replicantConfig: replicantServerConfig, replicantEnabled: true)
+        
+        guard let removeSequence = SequenceModel(sequence: "Hello, hello!".data, length: 120)
+            else
+        {
+            print("\nUnable to generate an add sequence.\n")
+            XCTFail()
+            return
+        }
+        
+        guard let addSequence = SequenceModel(sequence: "Goodbye!".data, length: 200)
+            else
+        {
+            print("\nUnable to generate a remove sequence.\n")
+            XCTFail()
+            return
+        }
+        
+        guard let serverPublicKey = PolishServerModel()?.publicKey
+            else
+        {
+            print("Unable to fetch server public key")
+            return
+        }
+        
+        // Encode key as data
+        var error: Unmanaged<CFError>?
+        
+        guard let serverPublicKeyData = SecKeyCopyExternalRepresentation(serverPublicKey, &error) as Data?
+            else
+        {
+            print("\nUnable to generate public key external representation: \(error!.takeRetainedValue() as Error)\n")
+            XCTFail()
+            return
+        }
+        
+        // Make a Client Connection
+        guard let replicantClientConfig = ReplicantConfig(serverPublicKey: serverPublicKeyData, chunkSize: 800, chunkTimeout: 120, addSequences: [addSequence], removeSequences: [removeSequence])
+            else
+        {
+            print("\nUnable to create ReplicantClient config.\n")
+            XCTFail()
+            return
+        }
+        
+        let clientConnectionFactory = ReplicantConnectionFactory(host: host, port: port, config: replicantClientConfig)
+        guard let clientConnection = clientConnectionFactory.connect(using: .tcp)
+        else
+        {
+            XCTFail()
+            return
+        }
     }
     
     func getApplicationDirectory() -> URL?

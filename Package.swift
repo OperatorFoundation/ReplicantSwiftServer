@@ -5,19 +5,26 @@ import PackageDescription
 
 let package = Package(
     name: "ReplicantSwiftServer",
+    products: [
+        // Products define the executables and libraries produced by a package, and make them visible to other packages.
+        .library(name: "ReplicantSwiftServerCore", targets: ["ReplicantSwiftServerCore"]),
+        //.executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"])
+    ],
     dependencies: [
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "0.1.0"),
-        .package(url: "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git", from: "0.3.2"),
-        .package(url: "https://github.com/Bouke/INI", from: "1.0.2")
+        .package(url: "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git", from: "0.3.2")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
         .target(
-            name: "ReplicantSwiftServer",
+            name: "ReplicantSwiftServerCore",
             dependencies: ["Replicant", "Transport"]),
+        .target(
+            name: "ReplicantSwiftServer",
+            dependencies: ["ReplicantSwiftServerCore"]),
         .testTarget(
             name: "ReplicantSwiftServerTests",
-            dependencies: ["ReplicantSwiftServer", "INI"]),
+            dependencies: ["ReplicantSwiftServerCore"]),
     ]
 )

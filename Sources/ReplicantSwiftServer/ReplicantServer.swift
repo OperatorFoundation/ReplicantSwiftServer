@@ -8,6 +8,7 @@
 import Foundation
 import ReplicantSwift
 import Replicant
+import ReplicantSwiftServerCore
 
 class ReplicantServer
 {
