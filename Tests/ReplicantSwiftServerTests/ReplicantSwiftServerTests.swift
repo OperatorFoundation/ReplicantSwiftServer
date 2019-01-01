@@ -38,6 +38,7 @@ final class ReplicantSwiftServerTests: XCTestCase
         
         let publicKey = polishServer.publicKey
         
+        // Create a test ReplicantServerConfig
         guard let replicantConfig = ReplicantServerConfig(serverPublicKey: publicKey, chunkSize: 800, chunkTimeout: 120, addSequences: [addSequence], removeSequences: [removeSequence])
         else
         {
@@ -46,6 +47,7 @@ final class ReplicantSwiftServerTests: XCTestCase
             return
         }
         
+        // Convert config to JSON
         guard let jsonData = replicantConfig.createJSON()
             else
         {
@@ -53,6 +55,7 @@ final class ReplicantSwiftServerTests: XCTestCase
             return
         }
         
+        // Save JSON to the app directory
         guard let appDirectoryURL = getApplicationDirectory()
         else
         {
@@ -160,12 +163,16 @@ final class ReplicantSwiftServerTests: XCTestCase
             return
         }
         
-        guard let serverPublicKey = PolishServerModel()?.publicKey
+        ///FIXME: This doesn't work if there is a server private key in the keychain
+        guard let polishServer = PolishServerModel()
             else
         {
-            print("Unable to fetch server public key")
+            print("\nUnable to generate a key for the server\n")
+            XCTFail()
             return
         }
+        
+        let serverPublicKey = polishServer.publicKey
         
         // Encode key as data
         var error: Unmanaged<CFError>?
@@ -194,6 +201,7 @@ final class ReplicantSwiftServerTests: XCTestCase
             XCTFail()
             return
         }
+        
     }
     
     func getApplicationDirectory() -> URL?

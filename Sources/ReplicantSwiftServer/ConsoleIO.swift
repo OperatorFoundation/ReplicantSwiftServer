@@ -31,10 +31,8 @@ class ConsoleIO
         let executableName = (CommandLine.arguments[0] as NSString).lastPathComponent
         
         writeMessage("usage:")
-        writeMessage("\(executableName) run path_to_server.conf")
-        writeMessage("or")
-        writeMessage("\(executableName) write path_to_client.conf_template")
-        writeMessage("or")
+        writeMessage("\(executableName) run <path_to_replicant.conf> <path_to_server.conf>")
+        writeMessage("\(executableName) write <path_to_client.conf_template> <destination_path_for_client.conf>")
         writeMessage("\(executableName) -h to show usage information")
     }
 }
