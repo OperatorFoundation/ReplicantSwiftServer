@@ -96,8 +96,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/ReplicantSwift.git",
         "state": {
           "branch": null,
-          "revision": "0e4592f0a3e1bb6ef10cd59710805673b86f70ac",
-          "version": "0.1.6"
+          "revision": "d73c6452ed1a3e90e6fefcd448286a9623674b92",
+          "version": "0.2.2"
         }
       },
       {
@@ -105,8 +105,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git",
         "state": {
           "branch": null,
-          "revision": "d472504bf02440fcd15d74e500cbc0444712c10f",
-          "version": "0.3.10"
+          "revision": "5c903510eff931d392ed01d7a770cef218f2ed13",
+          "version": "0.3.11"
         }
       },
       {

@@ -123,6 +123,7 @@ class ReplicantServer
         
         ///FIXME: User should control whether transport is enabled
         routingController.startListening(serverConfig: serverConfig, replicantConfig: replicantServerConfig, replicantEnabled: true)
+        
         lock.wait()
     }
 }

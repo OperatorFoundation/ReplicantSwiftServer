@@ -13,8 +13,10 @@ import ReplicantSwift
 
 public class RoutingController: NSObject
 {
-    let wireGuardServerIPString = ""
+    let consoleIO = ConsoleIO()
+    let wireGuardServerIPString = "0.0.0.0"
     let wireGuardServerPort = NWEndpoint.Port(rawValue: 51820)
+    let listenerQueue = DispatchQueue(label: "Listener")
     var conduitCollection = ConduitCollection()
     var replicantEnabled = true
     
@@ -33,13 +35,23 @@ public class RoutingController: NSObject
                 replicantListener.stateUpdateHandler = debugListenerStateUpdateHandler
                 replicantListener.newTransportConnectionHandler =
                 {
-                    [weak self] (plainConnection) in
+                    plainConnection in
                     
-                    if let strongSelf = self
-                    {
-                        strongSelf.listenerConnectionHandler(newConnection: plainConnection, port: serverConfig.port)
-                    }
+                    self.consoleIO.writeMessage("ConsoleIO Message: startListening called.")
+                    print("Printing the port: \(String(describing: port))")
+                    
+                    self.listenerConnectionHandler(newConnection: plainConnection, port: serverConfig.port)
+//
+//                    if let strongSelf = self
+//                    {
+//                        strongSelf.consoleIO.writeMessage("ConsoleIO Message: startListening called.")
+//                        print("Printing the port: \(String(describing: port))")
+//
+//                        strongSelf.listenerConnectionHandler(newConnection: plainConnection, port: serverConfig.port)
+//                    }
                 }
+                
+                replicantListener.start(queue: listenerQueue)
             }
             catch
             {

@@ -10,6 +10,45 @@ import class Foundation.Bundle
 final class ReplicantSwiftServerTests: XCTestCase
 {
     
+    func testCreateReplicantConfigTemplate()
+    {
+        let chunkSize: UInt16 = 1440
+        let chunkTimeout: Int = 1000
+        
+//        guard let addSequence = SequenceModel(sequence: "Hello, hello!".data, length: 120)
+//            else
+//        {
+//            print("\nUnable to generate an add sequence.\n")
+//            XCTFail()
+//            return
+//        }
+//
+//        guard let removeSequence = SequenceModel(sequence: "Goodbye!".data, length: 200)
+//            else
+//        {
+//            print("\nUnable to generate a remove sequence.\n")
+//            XCTFail()
+//            return
+//        }
+        
+        let configTemplate = ReplicantConfigTemplate(chunkSize: chunkSize, chunkTimeout: chunkTimeout, addSequences: nil, removeSequences: nil)
+        guard let directory = getApplicationDirectory()
+        else
+        {
+            return
+        }
+        guard let jsonData = configTemplate?.createJSON()
+            else
+        {
+            return
+        }
+        
+        let filePath = directory.appendingPathComponent("ReplicantConfigTemplate.conf").path
+        
+        FileManager.default.createFile(atPath: filePath, contents: jsonData, attributes: nil)
+        print("\nSaved a Replicant config template to: \(directory)\n")
+    }
+    
     func testReplicantServerConfig()
     {
         guard let polishServer = PolishServerModel()
@@ -232,6 +271,7 @@ final class ReplicantSwiftServerTests: XCTestCase
         do
         {
             try fileManager.createDirectory(at: directoryPath, withIntermediateDirectories: true, attributes: nil)
+            print("\nCreated a directory at: \(directoryPath)\n")
         }
         catch (let error)
         {
