@@ -12,14 +12,12 @@ public class ConduitCollection: NSObject
 {
     private var conduits: [Int : Conduit] = [ : ]
     private var lastConnectionID = 0
-    private var lastPort: UInt = 49000
     
-    func addConduit(wireGuardConnection: Connection, transportConnection: Connection) -> Int
+    func addConduit(address: String, transportConnection: Connection) -> Int
     {
         lastConnectionID += 1
-        lastPort += 1
         
-        let newConduit = Conduit(wireGuardConnection: wireGuardConnection, transportConnection: transportConnection, withID: lastConnectionID, andPort: lastPort)
+        let newConduit = Conduit(address: address, transportConnection: transportConnection, idNumber: lastConnectionID)
         
         conduits[lastConnectionID] = newConduit
         

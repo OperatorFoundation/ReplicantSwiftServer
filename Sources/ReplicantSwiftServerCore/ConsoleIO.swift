@@ -7,15 +7,20 @@
 
 import Foundation
 
-class ConsoleIO
+public class ConsoleIO
 {
-    enum OutputType
+    public enum OutputType
     {
         case error
         case standard
     }
+
+    public init()
+    {
+        
+    }
     
-    func writeMessage(_ message: String, to: OutputType = .standard)
+    public func writeMessage(_ message: String, to: OutputType = .standard)
     {
         switch to
         {
@@ -26,7 +31,7 @@ class ConsoleIO
         }
     }
     
-    func printUsage()
+    public func printUsage()
     {
         let executableName = (CommandLine.arguments[0] as NSString).lastPathComponent
         

@@ -8,19 +8,9 @@
 import Foundation
 import Transport
 
-public class Conduit: NSObject
+public struct Conduit
 {
-    var idNumber: Int
-    var wireGuardConnection: Connection
+    var address: String
     var transportConnection: Connection
-    var outgoingPort: UInt
-    
-    init(wireGuardConnection: Connection, transportConnection: Connection, withID idNumber: Int, andPort port: UInt)
-    {
-        self.wireGuardConnection = wireGuardConnection
-        self.transportConnection = transportConnection
-        self.idNumber = idNumber
-        self.outgoingPort = port
-    }
-    
+    var idNumber: Int
 }

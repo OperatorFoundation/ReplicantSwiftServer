@@ -10,6 +10,7 @@ import Network
 import Transport
 import Replicant
 import ReplicantSwift
+import Flower
 
 public class RoutingController: NSObject
 {
@@ -19,6 +20,9 @@ public class RoutingController: NSObject
     let listenerQueue = DispatchQueue(label: "Listener")
     var conduitCollection = ConduitCollection()
     var replicantEnabled = true
+    let tun = TunDevice(address: "10.0.0.1")
+    var pool = AddressPool()
+    let packetSize: Int = 2000 // FIXME - set this to a thoughtful value
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
@@ -95,64 +99,95 @@ public class RoutingController: NSObject
 
     func listenerConnectionHandler(newConnection: Connection, port: NWEndpoint.Port)
     {
-        guard let ipv4Address = IPv4Address(wireGuardServerIPString)
-            else
+        // FIXME - support IPv6
+        guard let address = pool.allocate() else
         {
-            print("\nUnable to resolve ipv4 address for WireGuard server.\n")
             return
         }
         
-        let host = NWEndpoint.Host.ipv4(ipv4Address)
-        let connectionFactory = NetworkConnectionFactory(host: host, port: port)
-        let maybeConnection = connectionFactory.connect(using: .udp)
-        
-        guard var wgConnection = maybeConnection
-            else
+        guard let v4 = IPv4Address(address) else
         {
-            print("Unable to create connection to the WireGuard server.")
             return
         }
         
-        wgConnection.stateUpdateHandler = debugConnectionStateUpdateHandler
-        
-        let transferID = conduitCollection.addConduit(wireGuardConnection: wgConnection, transportConnection: newConnection)
-        
-        let transferQueue1 = DispatchQueue(label: "Transfer Queue 1")
-        
-        transferQueue1.async
+        let transferID = conduitCollection.addConduit(address: address, transportConnection: newConnection)
+
+        // FIXME - support IPv6
+        newConnection.writeMessage(message: Message.IPAssignV4(v4))
         {
-            self.transfer(from: newConnection, to: wgConnection, transferID: transferID)
-        }
-        
-        let transferQueue2 = DispatchQueue(label: "Transfer Queue 2")
-        
-        transferQueue2.async
-        {
-            self.transfer(from: wgConnection, to: newConnection, transferID: transferID)
+            (maybeError) in
+            
+            guard maybeError == nil else
+            {
+                print("Error sending IP assignment")
+                return
+            }
+            
+            let transferQueue1 = DispatchQueue(label: "Transfer Queue 1")
+            
+            transferQueue1.async
+                {
+                    self.transfer(from: newConnection, toAddress: address, transferID: transferID)
+            }
+            
+            let transferQueue2 = DispatchQueue(label: "Transfer Queue 2")
+            
+            transferQueue2.async
+                {
+                    self.transfer(fromAddress: address, to: newConnection, transferID: transferID)
+            }
         }
     }
     
-    func transfer(from receiveConnection: Connection, to sendConnection: Connection, transferID: Int)
+    func transfer(from receiveConnection: Connection, toAddress sendAddress: String, transferID: Int)
     {
-        receiveConnection.receive
+        receiveConnection.readMessages
         {
-            (maybeReceiveData, maybeReceiveContext, receivedComplete, maybeReceiveError) in
+            (message) in
             
-            if let receiveError = maybeReceiveError
+            guard let realtun = self.tun else
             {
-                print("Received an error on receiveConnection.recieve: \(receiveError)")
+                print("No TUN device")
                 self.stopTransfer(for: transferID)
                 return
             }
             
-            if let receiveData = maybeReceiveData
-            {
-                sendConnection.send(content: receiveData,
-                                    contentContext: .defaultMessage,
-                                    isComplete: receivedComplete,
-                                    completion: NWConnection.SendCompletion.contentProcessed(
-                                        
-                { (maybeSendError) in
+            switch message{
+                case .IPDataV4(let payload):
+                    realtun.writeV4(payload)
+                case .IPDataV6(let payload):
+                    realtun.writeV6(payload)
+                default:
+                    print("Unsupported message type")
+                    self.stopTransfer(for: transferID)
+                    return
+            }
+        }
+    }
+
+    func transfer(fromAddress receiveAddress: String, to sendConnection: Connection, transferID: Int)
+    {
+        guard let realtun = self.tun else
+        {
+            print("No TUN device")
+            self.stopTransfer(for: transferID)
+            return
+        }
+        
+        guard let (packet, protocolNumber) = realtun.read(packetSize: packetSize) else
+        {
+            print("No packet from TUN")
+            self.stopTransfer(for: transferID)
+            return
+        }
+        
+        switch protocolNumber
+        {
+            case 4:
+                let message = Message.IPDataV4(packet)
+                
+                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+                    (maybeSendError) in
                     
                     if let sendError = maybeSendError
                     {
@@ -162,14 +197,32 @@ public class RoutingController: NSObject
                     }
                     else
                     {
-                        self.transfer(from: receiveConnection, to: sendConnection, transferID: transferID)
+                        self.transfer(fromAddress: receiveAddress, to: sendConnection, transferID: transferID)
                     }
                 }))
-            }
+            case 6:
+                let message = Message.IPDataV6(packet)
+                
+                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+                    (maybeSendError) in
+                    
+                    if let sendError = maybeSendError
+                    {
+                        print("\nReceived a send error: \(sendError)\n")
+                        self.stopTransfer(for: transferID)
+                        return
+                    }
+                    else
+                    {
+                        self.transfer(fromAddress: receiveAddress, to: sendConnection, transferID: transferID)
+                    }
+                }))
+            default:
+                print("Unsupported protocol number")
+                self.stopTransfer(for: transferID)
+                return
         }
-        
     }
-    
     
     func stopTransfer(for clientID: Int)
     {
@@ -180,9 +233,13 @@ public class RoutingController: NSObject
             return
         }
         
-        // Call Cancel on both connections
-        conduit.wireGuardConnection.cancel()
-        conduit.transportConnection.cancel()
+        // FIXME - Figure out how to support both IPv4 and IPv6 tunnels
+        conduit.transportConnection.writeMessage(message: Message.IPCloseV4()) {
+            (maybeError) in
+            
+            self.pool.deallocate(address: conduit.address)
+            conduit.transportConnection.cancel()
+        }
         
         // Remove connections from ClientConnectionController dict.
         conduitCollection.removeConduit(with: clientID)

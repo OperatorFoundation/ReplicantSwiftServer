@@ -120,7 +120,7 @@ final class ReplicantSwiftServerTests: XCTestCase
             return
         }
         
-        let serverConfig = ServerConfig(withPort: port)
+        let serverConfig = ServerConfig(withPort: port, andHost: NWEndpoint.Host("0.0.0.0"))
         
         guard let jsonData = serverConfig.createJSON()
         else
