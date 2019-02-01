@@ -147,6 +147,9 @@ final class ReplicantSwiftServerTests: XCTestCase
     
     func testConnection()
     {
+        let connected = expectation(description: "Connection callback called")
+        let sent = expectation(description: "TCP data sent")
+        
         let host = NWEndpoint.Host("127.0.0.1")
         guard let port = NWEndpoint.Port(rawValue: 51820)
             else
@@ -234,13 +237,35 @@ final class ReplicantSwiftServerTests: XCTestCase
         }
         
         let clientConnectionFactory = ReplicantConnectionFactory(host: host, port: port, config: replicantClientConfig)
-        guard let clientConnection = clientConnectionFactory.connect(using: .tcp)
+        guard var clientConnection = clientConnectionFactory.connect(using: .tcp)
         else
         {
             XCTFail()
             return
         }
         
+        clientConnection.stateUpdateHandler =
+        {
+            state in
+
+            switch state
+            {
+                case NWConnection.State.ready:
+                    connected.fulfill()
+                default:
+                    return
+            }
+        }
+        
+        clientConnection.start(queue: .global())
+        
+        clientConnection.send(content: Data(repeating: 0x0A, count: 2000), contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+            (maybeError) in
+            
+            sent.fulfill()
+        }))
+        
+        wait(for: [connected, sent], timeout: 10)
     }
     
     func getApplicationDirectory() -> URL?
