@@ -8,9 +8,11 @@
 import Foundation
 import TunObjC
 import Datable
+import Darwin.C
 
 struct TunDevice
 {
+    static let protocolNumberSize = 4
     var name: String! = nil
     var tun: Int32!
     
@@ -49,9 +51,9 @@ struct TunDevice
         }
         
         let result = TunObjC.connectControl(fd)
-        guard result > 0 else
+        guard result == 0 else
         {
-            print("Failed to connect to TUN control socket")
+            print("Failed to connect to TUN control socket: \(result)")
             close(fd)
             return nil
         }
@@ -89,13 +91,13 @@ struct TunDevice
     
     func writeV4(_ packet: Data)
     {
-        var protocolNumber: UInt32 = 4
+        var protocolNumber = AF_INET
         DatableConfig.endianess = .big
         var protocolNumberBuffer = protocolNumber.data
         var buffer = Data(packet)
         var iovecList =
         [
-            iovec(iov_base: &protocolNumberBuffer, iov_len: 4),
+            iovec(iov_base: &protocolNumberBuffer, iov_len: TunDevice.protocolNumberSize),
             iovec(iov_base: &buffer, iov_len: packet.count)
         ]
         
@@ -109,13 +111,13 @@ struct TunDevice
 
     func writeV6(_ packet: Data)
     {
-        var protocolNumber: UInt32 = 6
+        var protocolNumber = AF_INET6
         DatableConfig.endianess = .big
         var protocolNumberBuffer = protocolNumber.data
         var buffer = Data(packet)
         var iovecList =
             [
-                iovec(iov_base: &protocolNumberBuffer, iov_len: 4),
+                iovec(iov_base: &protocolNumberBuffer, iov_len: TunDevice.protocolNumberSize),
                 iovec(iov_base: &buffer, iov_len: packet.count)
         ]
         
@@ -130,17 +132,17 @@ struct TunDevice
     func read(packetSize: Int) -> (Data, UInt32)?
     {
         var buffer = Data(count: packetSize)
-        var protocolNumberBuffer = Data(count: 4)
+        var protocolNumberBuffer = Data(count: TunDevice.protocolNumberSize)
         
         var iovecList =
         [
-            iovec(iov_base: &protocolNumberBuffer, iov_len: 4),
+            iovec(iov_base: &protocolNumberBuffer, iov_len: TunDevice.protocolNumberSize),
             iovec(iov_base: &buffer, iov_len: buffer.count)
         ]
         
         while true
         {
-            let readCount = readv(tun, &iovecList, Int32(4+buffer.count))
+            let readCount = readv(tun, &iovecList, Int32(TunDevice.protocolNumberSize+buffer.count))
 
             if errno == EAGAIN
             {
@@ -154,7 +156,7 @@ struct TunDevice
                 return nil
             }
             
-            guard readCount > 4 else
+            guard readCount > TunDevice.protocolNumberSize else
             {
                 print("Short read")
                 return nil
