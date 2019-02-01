@@ -15,8 +15,8 @@ import Flower
 public class RoutingController: NSObject
 {
     let consoleIO = ConsoleIO()
-    let wireGuardServerIPString = "0.0.0.0"
-    let wireGuardServerPort = NWEndpoint.Port(rawValue: 51820)
+    let serverIPString = "0.0.0.0"
+    let serverPort = NWEndpoint.Port(rawValue: 51820)
     let listenerQueue = DispatchQueue(label: "Listener")
     var conduitCollection = ConduitCollection()
     var replicantEnabled = true
@@ -27,7 +27,7 @@ public class RoutingController: NSObject
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
         ///FIXME: Default port?
-        let port = wireGuardServerPort
+        let port = serverPort
         
         self.replicantEnabled = replicantEnabled
         
@@ -68,13 +68,12 @@ public class RoutingController: NSObject
     {
         switch newState
         {
-        case .ready:
-            print("\nListening...\n")
-        case .failed(let error):
-            print("\nListener failed with error: \(error)\n")
-        default:
-            print("\nReceived unexpected state: \(newState)\n")
-            break
+            case .ready:
+                print("\nListening...\n")
+            case .failed(let error):
+                print("\nListener failed with error: \(error)\n")
+            default:
+                print("\nReceived unexpected state: \(newState)\n")
         }
     }
     
@@ -82,18 +81,18 @@ public class RoutingController: NSObject
     {
         switch newState
         {
-        case .cancelled:
-            print("\nWireGuard server connection canceled.")
-        case .failed(let networkError):
-            print("\nWireGuard server connection failed with error:  \(networkError)")
-        case .preparing:
-            print("\nPreparing connection to Wireguard server.")
-        case .setup:
-            print("\nWireGuard connection in setup phase.")
-        case .waiting(let waitError):
-            print("\n⏳\nWireguard connection waiting with error: \(waitError)")
-        case .ready:
-            print("\nWireGuard Connection is Ready")
+            case .cancelled:
+                print("Server connection canceled.\n")
+            case .failed(let networkError):
+                print("Server connection failed with error:  \(networkError)\n")
+            case .preparing:
+                print("Preparing connection to server.\n")
+            case .setup:
+                print("Connection in setup phase.\n")
+            case .waiting(let waitError):
+                print("⏳ Connection waiting with error: \(waitError)\n")
+            case .ready:
+                print("Connection is Ready\n")
         }
     }
 

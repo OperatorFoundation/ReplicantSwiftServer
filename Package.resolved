@@ -135,15 +135,6 @@
           "revision": "50f77398e9914d9d53260eeea5f3c14aa39e2b4a",
           "version": "0.1.1"
         }
-      },
-      {
-        "package": "WireGuard",
-        "repositoryURL": "https://github.com/OperatorFoundation/WireGuard.git",
-        "state": {
-          "branch": null,
-          "revision": "974e6b1a041978f1b997d10cd876992e9f632ce2",
-          "version": "0.0.5"
-        }
       }
     ]
   },
