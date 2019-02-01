@@ -13,7 +13,6 @@ import ReplicantSwiftServerCore
 class ReplicantServer
 {
     let routingController = RoutingController()
-    var lock = DispatchGroup.init()
     
     /// Figure out what the user wants to do.
     func processRequest()
@@ -22,16 +21,14 @@ class ReplicantServer
         let argument = CommandLine.arguments[1]
         let (option, value) = getOption(argument)
         
-        consoleIO.writeMessage("Argument count: \(argCount) Option: \(option) value: \(value)")
-        
         switch option
         {
-        case .runServer:
-            runMode()
-        case .writeClientConfig:
-            writeMode()
-        default:
-            consoleIO.printUsage()
+            case .runServer:
+                runMode()
+            case .writeClientConfig:
+                writeMode()
+            default:
+                consoleIO.printUsage()
         }
     }
 
@@ -88,16 +85,15 @@ class ReplicantServer
     {
         consoleIO.writeMessage("🏃🏽‍♀️  Entering run mode.")
         
-        guard CommandLine.argc == 4
-        else
+        // FIXME - This should be handled in processRequest and usage should be printed.
+        guard CommandLine.argc == 4 else
         {
             return
         }
         
         // Fetch and parse Replicant Config at path
         let replicantConfigPath = CommandLine.arguments[2]
-        guard let replicantServerConfig = ReplicantServerConfig.parseJSON(atPath: replicantConfigPath)
-            else
+        guard let replicantServerConfig = ReplicantServerConfig.parseJSON(atPath: replicantConfigPath) else
         {
             print("\nUnable to initialize server, config file not found at: \(replicantConfigPath)\n")
             return
@@ -105,26 +101,26 @@ class ReplicantServer
         
         // Fetch and parse server config at path.
         let serverConfigPath = CommandLine.arguments[3]
-        guard let serverConfig = ServerConfig.parseJSON(atPath:serverConfigPath)
-        else
+        guard let serverConfig = ServerConfig.parseJSON(atPath:serverConfigPath) else
         {
             consoleIO.writeMessage("Unable to parse server config file at path: \(serverConfigPath)", to: .error)
             return
         }
         
-        guard let replicantServerModel = ReplicantServerModel(withConfig: replicantServerConfig)
-            else
+        guard let replicantServerModel = ReplicantServerModel(withConfig: replicantServerConfig) else
         {
             print("Unable to create server model using config: \(serverConfig)")
             return
         }
         
-        lock.enter()
-        
         ///FIXME: User should control whether transport is enabled
         routingController.startListening(serverConfig: serverConfig, replicantConfig: replicantServerConfig, replicantEnabled: true)
-        
-        lock.wait()
+
+        // FIXME - what's the right way to do this?
+        while true
+        {
+            sleep(100000)
+        }
     }
 }
 enum OptionType: String
