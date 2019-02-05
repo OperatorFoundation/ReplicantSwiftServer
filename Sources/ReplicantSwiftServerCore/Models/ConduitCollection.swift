@@ -10,28 +10,23 @@ import Transport
 
 public class ConduitCollection: NSObject
 {
-    private var conduits: [Int : Conduit] = [ : ]
-    private var lastConnectionID = 0
+    private var conduits: [String : Conduit] = [ : ]
     
-    func addConduit(address: String, transportConnection: Connection) -> Int
+    func addConduit(address: String, transportConnection: Connection)
     {
-        lastConnectionID += 1
+        let newConduit = Conduit(address: address, transportConnection: transportConnection)
         
-        let newConduit = Conduit(address: address, transportConnection: transportConnection, idNumber: lastConnectionID)
-        
-        conduits[lastConnectionID] = newConduit
-        
-        return lastConnectionID
+        conduits[address] = newConduit
     }
     
-    func removeConduit(with clientID: Int)
+    func removeConduit(with address: String)
     {
-        conduits.removeValue(forKey: clientID)
+        conduits.removeValue(forKey: address)
     }
     
-    func getConduit(with clientID: Int) -> Conduit?
+    func getConduit(with address: String) -> Conduit?
     {
-        if let conduit = conduits[clientID]
+        if let conduit = conduits[address]
         {
             return conduit
         }

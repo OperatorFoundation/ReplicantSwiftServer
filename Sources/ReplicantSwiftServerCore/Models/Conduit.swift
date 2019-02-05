@@ -12,5 +12,4 @@ public struct Conduit
 {
     var address: String
     var transportConnection: Connection
-    var idNumber: Int
 }
