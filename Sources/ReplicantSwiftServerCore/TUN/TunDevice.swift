@@ -153,6 +153,8 @@ struct TunDevice
             {
                 let errorString = String(cString: strerror(errno))
                 print("Got an error while reading from utun: \(errorString)")
+                print("readv(\(tun), , \(Int32(TunDevice.protocolNumberSize+buffer.count)))")
+                print("\(TunDevice.protocolNumberSize) + \(buffer.count) = \(Int32(TunDevice.protocolNumberSize+buffer.count))")
                 return nil
             }
             
