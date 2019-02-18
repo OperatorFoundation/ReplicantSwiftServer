@@ -15,8 +15,6 @@ import Flower
 public class RoutingController: NSObject
 {
     let consoleIO = ConsoleIO()
-    let serverIPString = "0.0.0.0"
-    let serverPort = NWEndpoint.Port(rawValue: 51820)
     let listenerQueue = DispatchQueue(label: "Listener")
     var conduitCollection = ConduitCollection()
     var replicantEnabled = true
@@ -26,9 +24,9 @@ public class RoutingController: NSObject
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
-        ///FIXME: Default port?
-        let port = serverPort
-        
+        let port = serverConfig.port
+        print("Printing the port: \(String(describing: port))")
+
         self.replicantEnabled = replicantEnabled
         
         if replicantEnabled
@@ -41,8 +39,7 @@ public class RoutingController: NSObject
                 {
                     plainConnection in
                     
-                    self.consoleIO.writeMessage("ConsoleIO Message: startListening called.")
-                    print("Printing the port: \(String(describing: port))")
+                    self.consoleIO.writeMessage("New Connection!")
                     
                     self.listenerConnectionHandler(newConnection: plainConnection, port: serverConfig.port)
 //
