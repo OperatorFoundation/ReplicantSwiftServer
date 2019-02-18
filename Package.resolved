@@ -24,8 +24,8 @@
         "repositoryURL": "https://github.com/krzyzanowskim/CryptoSwift.git",
         "state": {
           "branch": null,
-          "revision": "c5ee516c9616ec7dc2a000007ddb8bf5d9543c74",
-          "version": "0.13.1"
+          "revision": "8b3435bd3236819318cde87c8d9315fb89906df3",
+          "version": "0.14.0"
         }
       },
       {
@@ -96,8 +96,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/ReplicantSwift.git",
         "state": {
           "branch": null,
-          "revision": "d73c6452ed1a3e90e6fefcd448286a9623674b92",
-          "version": "0.2.2"
+          "revision": "4d0362aff36e6326efc80923ab56b8081b24706f",
+          "version": "0.2.3"
         }
       },
       {
@@ -105,8 +105,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git",
         "state": {
           "branch": null,
-          "revision": "10fa152afb4b8cc607752af7a9af25a34e9d43ab",
-          "version": "0.3.14"
+          "revision": "3ce2100f4087c353355289508e7a42ea4971a201",
+          "version": "0.3.15"
         }
       },
       {
@@ -134,6 +134,15 @@
           "branch": null,
           "revision": "50f77398e9914d9d53260eeea5f3c14aa39e2b4a",
           "version": "0.1.1"
+        }
+      },
+      {
+        "package": "WireGuard",
+        "repositoryURL": "https://github.com/OperatorFoundation/WireGuard.git",
+        "state": {
+          "branch": null,
+          "revision": "974e6b1a041978f1b997d10cd876992e9f632ce2",
+          "version": "0.0.5"
         }
       }
     ]
