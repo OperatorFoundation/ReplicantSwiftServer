@@ -12,5 +12,6 @@
 /// Get the identifier for the UTUN interface.
 + (int)connectControl: (int) socket;
 + (int)nameOption;
++ (BOOL)setAddress: (NSString *) name withAddress: (NSString *) address;
 
 @end

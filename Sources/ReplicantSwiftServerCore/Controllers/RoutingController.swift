@@ -76,6 +76,8 @@ public class RoutingController: NSObject
                 print("\nListening...\n")
             case .failed(let error):
                 print("\nListener failed with error: \(error)\n")
+            case .waiting(let error):
+                print("\nListener waiting with error: \(error)\n")
             default:
                 print("\nReceived unexpected state: \(newState)\n")
         }

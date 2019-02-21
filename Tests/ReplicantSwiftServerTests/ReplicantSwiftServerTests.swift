@@ -31,7 +31,7 @@ final class ReplicantSwiftServerTests: XCTestCase
 //            return
 //        }
         
-        let configTemplate = ReplicantConfigTemplate(chunkSize: chunkSize, chunkTimeout: chunkTimeout, addSequences: nil, removeSequences: nil)
+        let configTemplate = ReplicantConfigTemplate(chunkSize: chunkSize, chunkTimeout: chunkTimeout, toneBurst: nil)
         guard let directory = getApplicationDirectory()
         else
         {
@@ -77,8 +77,10 @@ final class ReplicantSwiftServerTests: XCTestCase
         
         let publicKey = polishServer.publicKey
         
+        let toneBurst = WhalesongClient(addSequences: [addSequence], removeSequences: [removeSequence])
+        
         // Create a test ReplicantServerConfig
-        guard let replicantConfig = ReplicantServerConfig(chunkSize: 800, chunkTimeout: 120, addSequences: [addSequence], removeSequences: [removeSequence])
+        guard let replicantConfig = ReplicantServerConfig(chunkSize: 800, chunkTimeout: 120, toneBurst: toneBurst)
         else
         {
             print("\nUnable to create ReplicantServer config.\n")

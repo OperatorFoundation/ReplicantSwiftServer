@@ -23,12 +23,16 @@ struct TunDevice
             return nil
         }
         
+        print("Created TUN interface \(fd)")
+        
         tun = fd
         
         guard let ifname = getInterfaceName(fd: fd) else
         {
             return nil
         }
+        
+        print("TUN interface name \(ifname)")
         
         name = ifname
         
@@ -81,7 +85,7 @@ struct TunDevice
     
     func setAddress(name: String, address: String) -> Bool
     {
-        return true
+        return TUN.setAddress(name, withAddress: address)
     }
     
     func startTunnel(fd: Int32)
@@ -155,6 +159,13 @@ struct TunDevice
                 print("Got an error while reading from utun: \(errorString)")
                 print("readv(\(tun), , \(Int32(TunDevice.protocolNumberSize+buffer.count)))")
                 print("\(TunDevice.protocolNumberSize) + \(buffer.count) = \(Int32(TunDevice.protocolNumberSize+buffer.count))")
+                print("\(errno) ?= \(EINVAL)")
+                
+//                print("Trying read to debug readv failure...")
+//                let rc = Darwin.read(tun, &protocolNumberBuffer, 4)
+//                print("Done!")
+//                print("read -> \(rc); \(errno)")
+                
                 return nil
             }
             
