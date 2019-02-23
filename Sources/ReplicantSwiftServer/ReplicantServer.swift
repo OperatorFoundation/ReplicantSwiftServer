@@ -9,6 +9,7 @@ import Foundation
 import ReplicantSwift
 import Replicant
 import ReplicantSwiftServerCore
+import Datable
 
 class ReplicantServer
 {
@@ -84,6 +85,25 @@ class ReplicantServer
     func runMode()
     {
         consoleIO.writeMessage("🏃🏽‍♀️  Entering run mode.")
+        
+        // Get the server public key
+        guard let serverPublicKey = PolishServerModel()?.publicKey
+            else
+        {
+            consoleIO.writeMessage("Unable to fetch server public key", to: .error)
+            return
+        }
+        
+        var error: Unmanaged<CFError>?
+        if let keyData = SecKeyCopyExternalRepresentation(serverPublicKey, &error) as Data?
+        {
+            
+            let keyString = keyData.base64EncodedString()
+            consoleIO.writeMessage("🚪  This server's public key is: \(keyString)  🗝")
+        }
+        
+        //let keyString = keyData.string
+        //
         
         // FIXME - This should be handled in processRequest and usage should be printed.
         guard CommandLine.argc == 4 else
