@@ -31,13 +31,14 @@ final class ReplicantSwiftServerTests: XCTestCase
 //            return
 //        }
         
-        let configTemplate: ReplicantConfigTemplate = ReplicantConfigTemplate(chunkSize: chunkSize, chunkTimeout: chunkTimeout, toneBurst: nil)
-        guard let directory = getApplicationDirectory()
+        
+        guard let directory = getApplicationDirectory(), let configTemplate: ReplicantConfigTemplate = ReplicantConfigTemplate(chunkSize: chunkSize, chunkTimeout: chunkTimeout, toneBurst: nil)
         else
         {
             return
         }
-        guard let jsonData = configTemplate?.createJSON()
+        
+        guard let jsonData = configTemplate.createJSON()
             else
         {
             return
@@ -158,6 +159,7 @@ final class ReplicantSwiftServerTests: XCTestCase
     {
         let chunkSize: UInt16 = 2000
         let chunkTimeout: Int = 1000
+        let unencryptedChunkSize = chunkSize - UInt16(aesOverheadSize + 2)
         let testIPString = "192.168.1.72"
         let testPort: UInt16 = 1234
         guard let serverPublicKey = Data(base64Encoded: "BL7+Vd087+p/roRp6jSzIWzG3qXhk2S4aefLcYjwRtxGanWUoeoIWmMkAHfiF11vA9d6rhiSjPDL0WFGiSr/Et+wwG7gOrLf8yovmtgSJlooqa7lcMtipTxegPAYtd5yZg==")
@@ -179,37 +181,7 @@ final class ReplicantSwiftServerTests: XCTestCase
             XCTFail()
             return
         }
-        
-        guard let appDirectoryURL = getApplicationDirectory()
-        else
-        {
-            XCTFail()
-            return
-        }
-        
-        // Get config files created by above tests
-        let routingController = RoutingController()
-        let serverConfigFileName = "Server.config"
-        let serverConfigPath = appDirectoryURL.appendingPathComponent(serverConfigFileName).path
-        guard let serverConfig = ServerConfig.parseJSON(atPath: serverConfigPath)
-        else
-        {
-            XCTFail()
-            return
-        }
 
-        let replicantConfigFileName = "ReplicantServer.config"
-        let replicantConfigPath = appDirectoryURL.appendingPathComponent(replicantConfigFileName).path
-        guard let replicantServerConfig = ReplicantServerConfig.parseJSON(atPath: replicantConfigPath)
-        else
-        {
-            XCTFail()
-            return
-        }
-
-        // Launch a server
-        routingController.startListening(serverConfig: serverConfig, replicantConfig: replicantServerConfig, replicantEnabled: true)
-        
         guard let removeSequence = SequenceModel(sequence: "Hello, hello!".data, length: 120)
             else
         {
@@ -225,32 +197,18 @@ final class ReplicantSwiftServerTests: XCTestCase
             XCTFail()
             return
         }
-        
-        ///FIXME: This doesn't work if there is a server private key in the keychain
-        guard let polishServer = PolishServerModel()
-            else
-        {
-            print("\nUnable to generate a key for the server\n")
-            XCTFail()
-            return
-        }
+  
+//        guard let whalesong = WhalesongClient(addSequences: [addSequence], removeSequences: [removeSequence]) else
+//        {
+//            print("Failed to initialize ToneBurst.")
+//            XCTFail()
+//            return
+//        }
+
+        //let toneburst = ToneBurstClientConfig.whalesong(client: whalesong)
         
         // Make a Client Connection
-        guard let replicantClientConfig = ReplicantConfig(serverPublicKey: serverPublicKey, chunkSize: chunkSize, chunkTimeout: chunkTimeout, addSequences: [addSequence], removeSequences: [removeSequence])
-
-
-        
-        guard let whalesong = WhalesongClient(addSequences: [addSequence], removeSequences: [removeSequence]) else
-        {
-            print("Failed to initialize ToneBurst.")
-            XCTFail()
-            return
-        }
-
-        let toneburst = ToneBurstClientConfig.whalesong(client: whalesong)
-        
-        // Make a Client Connection
-        guard let replicantClientConfig = ReplicantConfig(serverPublicKey: serverPublicKeyData, chunkSize: 800, chunkTimeout: 120, toneBurst: toneburst)
+        guard let replicantClientConfig = ReplicantConfig(serverPublicKey: serverPublicKey, chunkSize: chunkSize, chunkTimeout: chunkTimeout, toneBurst: nil)
             else
         {
             print("\nUnable to create ReplicantClient config.\n")
@@ -274,18 +232,25 @@ final class ReplicantSwiftServerTests: XCTestCase
             {
                 case NWConnection.State.ready:
                     connected.fulfill()
+                    clientConnection.send(content: Data(repeating: 0x0A, count: Int(unencryptedChunkSize)), contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
+                        {
+                            (maybeError) in
+                            
+                            if let error = maybeError
+                            {
+                                print("\nreceived an error on client connection send: \(error)\n")
+                                XCTFail()
+                                return
+                            }
+                            
+                            sent.fulfill()
+                    }))
                 default:
                     return
             }
         }
         
         clientConnection.start(queue: .global())
-        
-        clientConnection.send(content: Data(repeating: 0x0A, count: 2000), contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-            (maybeError) in
-            
-            sent.fulfill()
-        }))
         
         wait(for: [connected, sent], timeout: 10)
     }
