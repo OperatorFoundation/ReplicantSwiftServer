@@ -31,7 +31,7 @@ final class ReplicantSwiftServerTests: XCTestCase
 //            return
 //        }
         
-        let configTemplate = ReplicantConfigTemplate(chunkSize: chunkSize, chunkTimeout: chunkTimeout, toneBurst: nil)
+        let configTemplate: ReplicantConfigTemplate = ReplicantConfigTemplate(chunkSize: chunkSize, chunkTimeout: chunkTimeout, toneBurst: nil)
         guard let directory = getApplicationDirectory()
         else
         {
@@ -149,11 +149,23 @@ final class ReplicantSwiftServerTests: XCTestCase
     
     func testConnection()
     {
+        let chunkSize: UInt16 = 2000
+        let chunkTimeout: Int = 1000
+        let testIPString = "192.168.1.72"
+        let testPort: UInt16 = 1234
+        guard let serverPublicKey = Data(base64Encoded: "BL7+Vd087+p/roRp6jSzIWzG3qXhk2S4aefLcYjwRtxGanWUoeoIWmMkAHfiF11vA9d6rhiSjPDL0WFGiSr/Et+wwG7gOrLf8yovmtgSJlooqa7lcMtipTxegPAYtd5yZg==")
+        else
+        {
+            print("Unable to get base64 encoded key from the provided string.")
+            XCTFail()
+            return
+        }
+        
         let connected = expectation(description: "Connection callback called")
         let sent = expectation(description: "TCP data sent")
         
-        let host = NWEndpoint.Host("127.0.0.1")
-        guard let port = NWEndpoint.Port(rawValue: 51820)
+        let host = NWEndpoint.Host(testIPString)
+        guard let port = NWEndpoint.Port(rawValue: testPort)
             else
         {
             print("\nUnable to initialize port.\n")
@@ -216,21 +228,21 @@ final class ReplicantSwiftServerTests: XCTestCase
             return
         }
         
-        let serverPublicKey = polishServer.publicKey
-        
-        // Encode key as data
-        var error: Unmanaged<CFError>?
-        
-        guard let serverPublicKeyData = SecKeyCopyExternalRepresentation(serverPublicKey, &error) as Data?
-            else
-        {
-            print("\nUnable to generate public key external representation: \(error!.takeRetainedValue() as Error)\n")
-            XCTFail()
-            return
-        }
+//        let serverPublicKey = polishServer.publicKey
+//
+//        // Encode key as data
+//        var error: Unmanaged<CFError>?
+//
+//        guard let serverPublicKeyData = SecKeyCopyExternalRepresentation(serverPublicKey, &error) as Data?
+//            else
+//        {
+//            print("\nUnable to generate public key external representation: \(error!.takeRetainedValue() as Error)\n")
+//            XCTFail()
+//            return
+//        }
         
         // Make a Client Connection
-        guard let replicantClientConfig = ReplicantConfig(serverPublicKey: serverPublicKeyData, chunkSize: 800, chunkTimeout: 120, addSequences: [addSequence], removeSequences: [removeSequence])
+        guard let replicantClientConfig = ReplicantConfig(serverPublicKey: serverPublicKey, chunkSize: chunkSize, chunkTimeout: chunkTimeout, addSequences: [addSequence], removeSequences: [removeSequence])
             else
         {
             print("\nUnable to create ReplicantClient config.\n")
