@@ -77,7 +77,14 @@ final class ReplicantSwiftServerTests: XCTestCase
         
         let publicKey = polishServer.publicKey
         
-        let toneBurst = WhalesongClient(addSequences: [addSequence], removeSequences: [removeSequence])
+        guard let whalesong = WhalesongServer(addSequences: [addSequence], removeSequences: [removeSequence]) else
+        {
+            print("\nUnable to initialize ToneBurst.\n")
+            XCTFail()
+            return
+        }
+        
+        let toneBurst: ToneBurstServerConfig = ToneBurstServerConfig.whalesong(server: whalesong)
         
         // Create a test ReplicantServerConfig
         guard let replicantConfig = ReplicantServerConfig(chunkSize: 800, chunkTimeout: 120, toneBurst: toneBurst)
@@ -153,7 +160,7 @@ final class ReplicantSwiftServerTests: XCTestCase
         let sent = expectation(description: "TCP data sent")
         
         let host = NWEndpoint.Host("127.0.0.1")
-        guard let port = NWEndpoint.Port(rawValue: 51820)
+        guard let port = NWEndpoint.Port(rawValue: 1234)
             else
         {
             print("\nUnable to initialize port.\n")
@@ -228,9 +235,19 @@ final class ReplicantSwiftServerTests: XCTestCase
             XCTFail()
             return
         }
+
+        
+        guard let whalesong = WhalesongClient(addSequences: [addSequence], removeSequences: [removeSequence]) else
+        {
+            print("Failed to initialize ToneBurst.")
+            XCTFail()
+            return
+        }
+
+        let toneburst = ToneBurstClientConfig.whalesong(client: whalesong)
         
         // Make a Client Connection
-        guard let replicantClientConfig = ReplicantConfig(serverPublicKey: serverPublicKeyData, chunkSize: 800, chunkTimeout: 120, addSequences: [addSequence], removeSequences: [removeSequence])
+        guard let replicantClientConfig = ReplicantConfig(serverPublicKey: serverPublicKeyData, chunkSize: 800, chunkTimeout: 120, toneBurst: toneburst)
             else
         {
             print("\nUnable to create ReplicantClient config.\n")
