@@ -11,6 +11,7 @@ import Transport
 import Replicant
 import ReplicantSwift
 import Flower
+import SwiftQueue
 
 public class RoutingController: NSObject
 {
@@ -21,6 +22,8 @@ public class RoutingController: NSObject
     let tun = TunDevice(address: "10.0.0.1")
     var pool = AddressPool()
     let packetSize: Int = 2000 // FIXME - set this to a thoughtful value
+    
+    public let logQueue = Queue<String>()
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
@@ -33,7 +36,7 @@ public class RoutingController: NSObject
         {
             do
             {
-                let replicantListener = try ReplicantListener(replicantConfig: replicantConfig, serverConfig: serverConfig)
+                let replicantListener = try ReplicantListener(replicantConfig: replicantConfig, serverConfig: serverConfig, logQueue: logQueue)
                 replicantListener.stateUpdateHandler = debugListenerStateUpdateHandler
                 replicantListener.newTransportConnectionHandler =
                 {

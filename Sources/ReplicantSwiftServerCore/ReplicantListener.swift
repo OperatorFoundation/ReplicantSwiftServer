@@ -10,6 +10,7 @@ import Network
 import Transport
 import Replicant
 import ReplicantSwift
+import SwiftQueue
 
 class ReplicantListener: Listener
 {
@@ -23,12 +24,14 @@ class ReplicantListener: Listener
     var newConnectionHandler: ((Connection) -> Void)?
     var config: ReplicantServerConfig
     var listener: Listener
+    var logQueue: Queue<String>
     
-    required init(replicantConfig: ReplicantServerConfig, serverConfig: ServerConfig) throws
+    required init(replicantConfig: ReplicantServerConfig, serverConfig: ServerConfig, logQueue: Queue<String>) throws
     {
         self.parameters = .tcp
         self.config = replicantConfig
         self.port = serverConfig.port
+        self.logQueue = logQueue
         
         // Create the listener
         do
@@ -72,7 +75,7 @@ class ReplicantListener: Listener
     
     func makeReplicant(connection: Connection) -> Connection?
     {
-        let replicantConnectionFactory = ReplicantServerConnectionFactory(connection: connection, replicantConfig: config)
+        let replicantConnectionFactory = ReplicantServerConnectionFactory(connection: connection, replicantConfig: config, logQueue: logQueue)
         let newConnection = replicantConnectionFactory.connect()
         
         if newConnection == nil
@@ -107,8 +110,7 @@ class ReplicantListener: Listener
             stateUpdateHandler(NWListener.State.cancelled)
         }
     }
-    
-    
+  
 }
 
 enum ListenerError: Error

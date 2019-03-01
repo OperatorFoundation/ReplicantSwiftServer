@@ -60,7 +60,7 @@ class ReplicantServer
         }
         
         // Get the server public key
-        guard let serverPublicKey = PolishServerModel()?.publicKey
+        guard let serverPublicKey = PolishServerModel(logQueue: routingController.logQueue)?.publicKey
         else
         {
             consoleIO.writeMessage("Unable to fetch server public key", to: .error)
@@ -87,7 +87,7 @@ class ReplicantServer
         consoleIO.writeMessage("🏃🏽‍♀️  Entering run mode.")
         
         // Get the server public key
-        guard let serverPublicKey = PolishServerModel()?.publicKey
+        guard let serverPublicKey = PolishServerModel(logQueue: routingController.logQueue)?.publicKey
             else
         {
             consoleIO.writeMessage("Unable to fetch server public key", to: .error)
@@ -124,7 +124,7 @@ class ReplicantServer
             return
         }
         
-        guard let replicantServerModel = ReplicantServerModel(withConfig: replicantServerConfig) else
+        guard let replicantServerModel = ReplicantServerModel(withConfig: replicantServerConfig, logQueue: routingController.logQueue) else
         {
             print("Unable to create server model using config: \(serverConfig)")
             return
