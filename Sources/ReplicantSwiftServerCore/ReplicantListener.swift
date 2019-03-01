@@ -44,26 +44,54 @@ class ReplicantListener: Listener
     
     func replicantListenerNewConnectionHandler(newConnection: Connection)
     {
-        guard let replicantConnection = makeReplicant(connection: newConnection)
+        print("\nReplicant Listener new connection handler called.")
+        guard var replicantConnection = makeReplicant(connection: newConnection)
         else
         {
             print("Unable to convert new connection to a Replicant connection.")
             return
         }
         
-        self.newTransportConnectionHandler?(replicantConnection)
+        replicantConnection.stateUpdateHandler =
+        {
+            newState in
+            
+            print("Received a state update on our replicant connection: \(newState)")
+            
+            switch newState
+            {
+            case .ready:
+                self.newTransportConnectionHandler?(replicantConnection)
+            default:
+                print("Received a state update other than ready on our replicant connection: \(newState)")
+            }
+        }
+        
+        newConnection.start(queue: queue!)
     }
     
     func makeReplicant(connection: Connection) -> Connection?
     {
         let replicantConnectionFactory = ReplicantServerConnectionFactory(connection: connection, replicantConfig: config)
-        return replicantConnectionFactory.connect()
+        let newConnection = replicantConnectionFactory.connect()
+        
+        if newConnection == nil
+        {
+            print("\nReplicant connection factory returned a nil connection object.")
+        }
+        else
+        {
+            print("\nConnection object created with Replicant connection factory.")
+        }
+        
+        return newConnection
     }
     
     //MARK: Transport API Listener Protocol
     
     func start(queue: DispatchQueue)
     {
+        print("\nReplicant Listener start called.")
         // Start the listener
         listener.stateUpdateHandler = stateUpdateHandler
         listener.newTransportConnectionHandler = replicantListenerNewConnectionHandler

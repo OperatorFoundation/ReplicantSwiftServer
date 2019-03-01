@@ -101,10 +101,7 @@ class ReplicantServer
             let keyString = keyData.base64EncodedString()
             consoleIO.writeMessage("🚪  This server's public key is: \(keyString)  🗝")
         }
-        
-        //let keyString = keyData.string
-        //
-        
+
         // FIXME - This should be handled in processRequest and usage should be printed.
         guard CommandLine.argc == 4 else
         {

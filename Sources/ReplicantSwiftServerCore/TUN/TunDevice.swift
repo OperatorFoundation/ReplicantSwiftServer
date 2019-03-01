@@ -135,6 +135,8 @@ struct TunDevice
     
     func read(packetSize: Int) -> (Data, UInt32)?
     {
+        print("\n📚  Read called on TUN device. 📚")
+        print("Requested packet size is \(packetSize)\n")
         var buffer = Data(count: packetSize)
         var protocolNumberBuffer = Data(count: TunDevice.protocolNumberSize)
         

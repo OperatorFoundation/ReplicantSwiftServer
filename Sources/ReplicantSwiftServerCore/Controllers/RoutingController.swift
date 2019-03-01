@@ -39,17 +39,10 @@ public class RoutingController: NSObject
                 {
                     plainConnection in
                     
+                    print("\n New transport connection.")
                     self.consoleIO.writeMessage("New Connection!")
                     
                     self.listenerConnectionHandler(newConnection: plainConnection, port: serverConfig.port)
-//
-//                    if let strongSelf = self
-//                    {
-//                        strongSelf.consoleIO.writeMessage("ConsoleIO Message: startListening called.")
-//                        print("Printing the port: \(String(describing: port))")
-//
-//                        strongSelf.listenerConnectionHandler(newConnection: plainConnection, port: serverConfig.port)
-//                    }
                 }
                 
                 replicantListener.start(queue: listenerQueue)
@@ -104,14 +97,18 @@ public class RoutingController: NSObject
 
     func listenerConnectionHandler(newConnection: Connection, port: NWEndpoint.Port)
     {
+        print("/nRouting controller listener connection handler called.")
+
         // FIXME - support IPv6
         guard let address = pool.allocate() else
         {
+            print("Error getting connection address in connection handler.")
             return
         }
         
         guard let v4 = IPv4Address(address) else
         {
+            print("Unable to get IPV4 address in connectiuon handler.")
             return
         }
         
@@ -122,6 +119,7 @@ public class RoutingController: NSObject
         {
             (maybeError) in
             
+            print("\nListener connection handler sent a message.")
             guard maybeError == nil else
             {
                 print("Error sending IP assignment")
@@ -131,10 +129,12 @@ public class RoutingController: NSObject
             let transferQueue1 = DispatchQueue(label: "Transfer Queue 1")
             
             transferQueue1.async
-                {
-                    self.transfer(from: newConnection, toAddress: address)
+            {
+                self.transfer(from: newConnection, toAddress: address)
             }
         }
+        
+        newConnection.start(queue: listenerQueue)
     }
     
     func transfer(from receiveConnection: Connection, toAddress sendAddress: String)
@@ -149,8 +149,10 @@ public class RoutingController: NSObject
                 return
             }
             
-            switch message{
+            switch message
+            {
                 case .IPDataV4(let payload):
+                    print("\nReading an ipv4 message")
                     guard let packet = IPv4Packet(data: payload) else
                     {
                         return
@@ -168,9 +170,10 @@ public class RoutingController: NSObject
                     
                     realtun.writeV4(payload)
                 case .IPDataV6(let payload):
+                    print("\nReading an IPV6 message.")
                     realtun.writeV6(payload)
                 default:
-                    print("Unsupported message type")
+                    print("\nUnsupported message type")
                     return
             }
         }

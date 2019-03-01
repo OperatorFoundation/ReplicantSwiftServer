@@ -182,21 +182,21 @@ final class ReplicantSwiftServerTests: XCTestCase
             return
         }
 
-        guard let removeSequence = SequenceModel(sequence: "Hello, hello!".data, length: 120)
-            else
-        {
-            print("\nUnable to generate an add sequence.\n")
-            XCTFail()
-            return
-        }
-        
-        guard let addSequence = SequenceModel(sequence: "Goodbye!".data, length: 200)
-            else
-        {
-            print("\nUnable to generate a remove sequence.\n")
-            XCTFail()
-            return
-        }
+//        guard let removeSequence = SequenceModel(sequence: "Hello, hello!".data, length: 120)
+//            else
+//        {
+//            print("\nUnable to generate an add sequence.\n")
+//            XCTFail()
+//            return
+//        }
+//
+//        guard let addSequence = SequenceModel(sequence: "Goodbye!".data, length: 200)
+//            else
+//        {
+//            print("\nUnable to generate a remove sequence.\n")
+//            XCTFail()
+//            return
+//        }
   
 //        guard let whalesong = WhalesongClient(addSequences: [addSequence], removeSequences: [removeSequence]) else
 //        {
@@ -246,6 +246,7 @@ final class ReplicantSwiftServerTests: XCTestCase
                             sent.fulfill()
                     }))
                 default:
+                    print("\nReceived a state other than ready: \(state)\n")
                     return
             }
         }
