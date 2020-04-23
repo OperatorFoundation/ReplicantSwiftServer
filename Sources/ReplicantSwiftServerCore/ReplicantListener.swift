@@ -95,6 +95,7 @@ class ReplicantListener: Listener
     func start(queue: DispatchQueue)
     {
         print("\nReplicant Listener start called.")
+        
         // Start the listener
         listener.stateUpdateHandler = stateUpdateHandler
         listener.newTransportConnectionHandler = replicantListenerNewConnectionHandler

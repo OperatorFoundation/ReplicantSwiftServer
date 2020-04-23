@@ -111,7 +111,7 @@ public class RoutingController: NSObject
         
         guard let v4 = IPv4Address(address) else
         {
-            print("Unable to get IPV4 address in connectiuon handler.")
+            print("Unable to get IPV4 address in connection handler.")
             return
         }
         

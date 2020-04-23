@@ -6,6 +6,7 @@ import Network
 @testable import ReplicantSwiftServerCore
 
 import class Foundation.Bundle
+import SwiftQueue
 
 final class ReplicantSwiftServerTests: XCTestCase
 {
@@ -52,7 +53,8 @@ final class ReplicantSwiftServerTests: XCTestCase
     
     func testReplicantServerConfig()
     {
-        guard let polishServer = PolishServerModel()
+        let logQueue = Queue<String>()
+        guard let polishServer = SilverServerModel(logQueue: logQueue)
         else
         {
             print("\nUnable to generate a key for the server\n")
@@ -153,6 +155,11 @@ final class ReplicantSwiftServerTests: XCTestCase
         let configCreated = fileManager.createFile(atPath: path, contents: jsonData)
         
         XCTAssert(configCreated)
+    }
+    
+    func testEncryptDecrypt()
+    {
+        
     }
     
     func testConnection()

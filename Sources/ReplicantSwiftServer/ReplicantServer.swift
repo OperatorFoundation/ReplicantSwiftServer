@@ -18,7 +18,6 @@ class ReplicantServer
     /// Figure out what the user wants to do.
     func processRequest()
     {
-        let argCount = CommandLine.argc
         let argument = CommandLine.arguments[1]
         let (option, value) = getOption(argument)
         
@@ -60,7 +59,7 @@ class ReplicantServer
         }
         
         // Get the server public key
-        guard let serverPublicKey = PolishServerModel(logQueue: routingController.logQueue)?.publicKey
+        guard let serverPublicKey = SilverServerModel(logQueue: routingController.logQueue)?.publicKey
         else
         {
             consoleIO.writeMessage("Unable to fetch server public key", to: .error)
@@ -69,7 +68,7 @@ class ReplicantServer
         
         // Attempt to create the new client config at the given path
         let newConfigPath = CommandLine.arguments[3]
-        let configCreated = configTemplate.createConfig(atPath: newConfigPath, withServerKey: serverPublicKey)
+        let configCreated = configTemplate.createConfig(atPath: newConfigPath, serverPublicKey: serverPublicKey)
         
         guard configCreated
         else
@@ -87,20 +86,16 @@ class ReplicantServer
         consoleIO.writeMessage("🏃🏽‍♀️  Entering run mode.")
         
         // Get the server public key
-        guard let serverPublicKey = PolishServerModel(logQueue: routingController.logQueue)?.publicKey
-            else
+        guard let polishServerModel = SilverServerModel(logQueue: routingController.logQueue)
+        else
         {
-            consoleIO.writeMessage("Unable to fetch server public key", to: .error)
+            consoleIO.writeMessage("Unable to initialize a Polish server model")
             return
         }
         
-        var error: Unmanaged<CFError>?
-        if let keyData = SecKeyCopyExternalRepresentation(serverPublicKey, &error) as Data?
-        {
-            
-            let keyString = keyData.base64EncodedString()
-            consoleIO.writeMessage("🚪  This server's public key is: \(keyString)  🗝")
-        }
+        let serverPublicKey = polishServerModel.publicKey
+        let keyString = serverPublicKey.x963Representation.base64EncodedString
+        consoleIO.writeMessage("🚪  This server's public key is: \(String(describing: keyString))  🗝")
 
         // FIXME - This should be handled in processRequest and usage should be printed.
         guard CommandLine.argc == 4 else
@@ -132,7 +127,7 @@ class ReplicantServer
         
         ///FIXME: User should control whether transport is enabled
         routingController.startListening(serverConfig: serverConfig, replicantConfig: replicantServerConfig, replicantEnabled: true)
-
+        
         // FIXME - what's the right way to do this?
         while true
         {
