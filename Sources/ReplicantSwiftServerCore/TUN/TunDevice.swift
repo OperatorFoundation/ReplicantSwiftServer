@@ -57,7 +57,7 @@ struct TunDevice
         let result = TunObjC.connectControl(fd)
         guard result == 0 else
         {
-            print("Failed to connect to TUN control socket: \(result)")
+            print("Failed to connect to TUN control socket. Connect result: \(result)")
             close(fd)
             return nil
         }

@@ -20,6 +20,7 @@ int connectControl(int socket)
         return 0;
     }
     
+    // uses CTLIOCGINFO ioctl to translate from a kernel control name to a control id.
     unsigned int controlIdentifier = kernelControlInfo.ctl_id;
     
     if(controlIdentifier <= 0)
