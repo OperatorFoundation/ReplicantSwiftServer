@@ -11,13 +11,59 @@ import SwiftQueue
 final class ReplicantSwiftServerTests: XCTestCase
 {
     
-    func testCreateReplicantConfigTemplate()
-    {
-        let chunkSize: UInt16 = 1440
-        let chunkTimeout: Int = 1000
-        
-//        guard let addSequence = SequenceModel(sequence: "Hello, hello!".data, length: 120)
+//    func testCreateReplicantConfigTemplate()
+//    {
+//        let chunkSize: UInt16 = 1440
+//        let chunkTimeout: Int = 1000
+//
+////        guard let addSequence = SequenceModel(sequence: "Hello, hello!".data, length: 120)
+////            else
+////        {
+////            print("\nUnable to generate an add sequence.\n")
+////            XCTFail()
+////            return
+////        }
+////
+////        guard let removeSequence = SequenceModel(sequence: "Goodbye!".data, length: 200)
+////            else
+////        {
+////            print("\nUnable to generate a remove sequence.\n")
+////            XCTFail()
+////            return
+////        }
+//
+//
+//        guard let directory = getApplicationDirectory(), let configTemplate: ReplicantConfigTemplate = ReplicantConfigTemplate(polish: nil, toneBurst: nil)
+//        else
+//        {
+//            return
+//        }
+//
+//        guard let jsonData = configTemplate.createJSON()
 //            else
+//        {
+//            return
+//        }
+//
+//        let filePath = directory.appendingPathComponent("ReplicantConfigTemplate.conf").path
+//
+//        FileManager.default.createFile(atPath: filePath, contents: jsonData, attributes: nil)
+//        print("\nSaved a Replicant config template to: \(directory)\n")
+//    }
+    
+//    func testReplicantServerConfig()
+//    {
+//        let logQueue = Queue<String>()
+//        guard let polishServer = SilverServerModel(logQueue: logQueue)
+//        else
+//        {
+//            print("\nUnable to generate a key for the server\n")
+//            XCTFail()
+//            return
+//        }
+//
+//        guard let addSequence = SequenceModel(sequence: "Hello, hello!".data, length: 120)
+//        else
 //        {
 //            print("\nUnable to generate an add sequence.\n")
 //            XCTFail()
@@ -25,102 +71,56 @@ final class ReplicantSwiftServerTests: XCTestCase
 //        }
 //
 //        guard let removeSequence = SequenceModel(sequence: "Goodbye!".data, length: 200)
-//            else
+//        else
 //        {
 //            print("\nUnable to generate a remove sequence.\n")
 //            XCTFail()
 //            return
 //        }
-        
-        
-        guard let directory = getApplicationDirectory(), let configTemplate: ReplicantConfigTemplate = ReplicantConfigTemplate(chunkSize: chunkSize, chunkTimeout: chunkTimeout, toneBurst: nil)
-        else
-        {
-            return
-        }
-        
-        guard let jsonData = configTemplate.createJSON()
-            else
-        {
-            return
-        }
-        
-        let filePath = directory.appendingPathComponent("ReplicantConfigTemplate.conf").path
-        
-        FileManager.default.createFile(atPath: filePath, contents: jsonData, attributes: nil)
-        print("\nSaved a Replicant config template to: \(directory)\n")
-    }
-    
-    func testReplicantServerConfig()
-    {
-        let logQueue = Queue<String>()
-        guard let polishServer = SilverServerModel(logQueue: logQueue)
-        else
-        {
-            print("\nUnable to generate a key for the server\n")
-            XCTFail()
-            return
-        }
-        
-        guard let addSequence = SequenceModel(sequence: "Hello, hello!".data, length: 120)
-        else
-        {
-            print("\nUnable to generate an add sequence.\n")
-            XCTFail()
-            return
-        }
-    
-        guard let removeSequence = SequenceModel(sequence: "Goodbye!".data, length: 200)
-        else
-        {
-            print("\nUnable to generate a remove sequence.\n")
-            XCTFail()
-            return
-        }
-        
-        let publicKey = polishServer.publicKey
-        
-        guard let whalesong = WhalesongServer(addSequences: [addSequence], removeSequences: [removeSequence]) else
-        {
-            print("\nUnable to initialize ToneBurst.\n")
-            XCTFail()
-            return
-        }
-        
-        let toneBurst: ToneBurstServerConfig = ToneBurstServerConfig.whalesong(server: whalesong)
-        
-        // Create a test ReplicantServerConfig
-        guard let replicantConfig = ReplicantServerConfig(chunkSize: 800, chunkTimeout: 120, toneBurst: toneBurst)
-        else
-        {
-            print("\nUnable to create ReplicantServer config.\n")
-            XCTFail()
-            return
-        }
-        
-        // Convert config to JSON
-        guard let jsonData = replicantConfig.createJSON()
-            else
-        {
-            XCTFail()
-            return
-        }
-        
-        // Save JSON to the app directory
-        guard let appDirectoryURL = getApplicationDirectory()
-        else
-        {
-            XCTFail()
-            return
-        }
-        
-        let fileManager = FileManager.default
-        let fileName = "ReplicantServer.config"
-        let path = appDirectoryURL.appendingPathComponent(fileName).path
-        let configCreated = fileManager.createFile(atPath: path, contents: jsonData)
-        
-        XCTAssert(configCreated)
-    }
+//
+//        let publicKey = polishServer.publicKey
+//
+//        guard let whalesong = WhalesongServer(addSequences: [addSequence], removeSequences: [removeSequence]) else
+//        {
+//            print("\nUnable to initialize ToneBurst.\n")
+//            XCTFail()
+//            return
+//        }
+//
+//        let toneBurst: ToneBurstServerConfig = ToneBurstServerConfig.whalesong(server: whalesong)
+//
+//        // Create a test ReplicantServerConfig
+//        guard let replicantConfig = ReplicantServerConfig(chunkSize: 800, chunkTimeout: 120, toneBurst: toneBurst)
+//        else
+//        {
+//            print("\nUnable to create ReplicantServer config.\n")
+//            XCTFail()
+//            return
+//        }
+//
+//        // Convert config to JSON
+//        guard let jsonData = replicantConfig.createJSON()
+//            else
+//        {
+//            XCTFail()
+//            return
+//        }
+//
+//        // Save JSON to the app directory
+//        guard let appDirectoryURL = getApplicationDirectory()
+//        else
+//        {
+//            XCTFail()
+//            return
+//        }
+//
+//        let fileManager = FileManager.default
+//        let fileName = "ReplicantServer.config"
+//        let path = appDirectoryURL.appendingPathComponent(fileName).path
+//        let configCreated = fileManager.createFile(atPath: path, contents: jsonData)
+//
+//        XCTAssert(configCreated)
+//    }
     
     func testServerConfig()
     {
@@ -166,7 +166,7 @@ final class ReplicantSwiftServerTests: XCTestCase
     {
         let chunkSize: UInt16 = 2000
         let chunkTimeout: Int = 1000
-        let unencryptedChunkSize = chunkSize - UInt16(aesOverheadSize + 2)
+        let unencryptedChunkSize = chunkSize - UInt16(2)
         let testIPString = "192.168.1.72"
         let testPort: UInt16 = 1234
         guard let serverPublicKey = Data(base64Encoded: "BL7+Vd087+p/roRp6jSzIWzG3qXhk2S4aefLcYjwRtxGanWUoeoIWmMkAHfiF11vA9d6rhiSjPDL0WFGiSr/Et+wwG7gOrLf8yovmtgSJlooqa7lcMtipTxegPAYtd5yZg==")
@@ -215,7 +215,7 @@ final class ReplicantSwiftServerTests: XCTestCase
         //let toneburst = ToneBurstClientConfig.whalesong(client: whalesong)
         
         // Make a Client Connection
-        guard let replicantClientConfig = ReplicantConfig(serverPublicKey: serverPublicKey, chunkSize: chunkSize, chunkTimeout: chunkTimeout, toneBurst: nil)
+        guard let replicantClientConfig = ReplicantConfig(polish: nil, toneBurst: nil)
             else
         {
             print("\nUnable to create ReplicantClient config.\n")

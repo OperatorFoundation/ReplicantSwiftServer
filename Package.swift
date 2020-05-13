@@ -16,8 +16,8 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "0.1.0"),
-        .package(url: "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git", from: "0.4.1"),
-        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.0.6")
+        .package(url: "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git", from: "0.5.6"),
+        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.0.12")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.

@@ -40,12 +40,10 @@ public class RoutingController: NSObject
                 replicantListener.stateUpdateHandler = debugListenerStateUpdateHandler
                 replicantListener.newTransportConnectionHandler =
                 {
-                    plainConnection in
+                    (replicantConnection) in
                     
-                    print("\n New transport connection.")
-                    self.consoleIO.writeMessage("New Connection!")
-                    
-                    self.listenerConnectionHandler(newConnection: plainConnection, port: serverConfig.port)
+                    self.consoleIO.writeMessage("New Replicant Connection!")
+                    self.process(newReplicantConnection: replicantConnection, port: serverConfig.port)
                 }
                 
                 replicantListener.start(queue: listenerQueue)
@@ -98,9 +96,9 @@ public class RoutingController: NSObject
         }
     }
 
-    func listenerConnectionHandler(newConnection: Connection, port: NWEndpoint.Port)
+    func process(newReplicantConnection: Connection, port: NWEndpoint.Port)
     {
-        print("/nRouting controller listener connection handler called.")
+        print("Routing controller listener connection handler called.")
 
         // FIXME - support IPv6
         guard let address = pool.allocate() else
@@ -115,10 +113,10 @@ public class RoutingController: NSObject
             return
         }
         
-        conduitCollection.addConduit(address: address, transportConnection: newConnection)
+        conduitCollection.addConduit(address: address, transportConnection: newReplicantConnection)
 
         // FIXME - support IPv6
-        newConnection.writeMessage(message: Message.IPAssignV4(v4))
+        newReplicantConnection.writeMessage(message: Message.IPAssignV4(v4))
         {
             (maybeError) in
             
@@ -133,11 +131,9 @@ public class RoutingController: NSObject
             
             transferQueue1.async
             {
-                self.transfer(from: newConnection, toAddress: address)
+                self.transfer(from: newReplicantConnection, toAddress: address)
             }
         }
-        
-        newConnection.start(queue: listenerQueue)
     }
     
     func transfer(from receiveConnection: Connection, toAddress sendAddress: String)
@@ -145,6 +141,8 @@ public class RoutingController: NSObject
         receiveConnection.readMessages
         {
             (message) in
+            
+            print("Received a message: \(message)")
             
             guard let realtun = self.tun else
             {

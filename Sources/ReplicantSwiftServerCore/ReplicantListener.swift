@@ -7,6 +7,7 @@
 
 import Foundation
 import Network
+import CryptoKit
 import Transport
 import Replicant
 import ReplicantSwift
@@ -59,18 +60,22 @@ class ReplicantListener: Listener
         {
             newState in
             
-            print("Received a state update on our replicant connection: \(newState)")
+            print("Received a state update on our Replicant connection: \(newState)")
             
             switch newState
             {
             case .ready:
-                self.newTransportConnectionHandler?(replicantConnection)
+                print("Replicant connection state update handler is in the READY state.")
+                if let connectionHandler = self.newTransportConnectionHandler
+                {
+                    connectionHandler(replicantConnection)
+                }
             default:
-                print("Received a state update other than ready on our replicant connection: \(newState)")
+                return
             }
         }
         
-        newConnection.start(queue: queue!)
+        replicantConnection.start(queue: queue!)
     }
     
     func makeReplicant(connection: Connection) -> Connection?
@@ -94,11 +99,32 @@ class ReplicantListener: Listener
     
     func start(queue: DispatchQueue)
     {
-        print("\nReplicant Listener start called.")
-        
         // Start the listener
-        listener.stateUpdateHandler = stateUpdateHandler
-        listener.newTransportConnectionHandler = replicantListenerNewConnectionHandler
+        listener.stateUpdateHandler =
+        {
+            (state) in
+            
+            print("Network listener stateUpdateHandler has reached \(state) state.")
+            
+            // Call the Replicant stateUpdateHandler and pass along the network listener's state
+            if let handler = self.stateUpdateHandler
+            {
+                handler(state)
+            }
+            
+        }
+        
+        listener.newTransportConnectionHandler =
+        {
+            (newNetworkConnection) in
+            
+            print("We have a new network connection.")
+            
+            // Try to turn our network connection into a ReplicantServerConnection
+            self.replicantListenerNewConnectionHandler(newConnection: newNetworkConnection)
+            
+        }
+        
         listener.start(queue: queue)
     }
     
