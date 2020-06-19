@@ -165,17 +165,17 @@ final class ReplicantSwiftServerTests: XCTestCase
     func testConnection()
     {
         let chunkSize: UInt16 = 2000
-        let chunkTimeout: Int = 1000
+       // let chunkTimeout: Int = 1000
         let unencryptedChunkSize = chunkSize - UInt16(2)
         let testIPString = "192.168.1.72"
         let testPort: UInt16 = 1234
-        guard let serverPublicKey = Data(base64Encoded: "BL7+Vd087+p/roRp6jSzIWzG3qXhk2S4aefLcYjwRtxGanWUoeoIWmMkAHfiF11vA9d6rhiSjPDL0WFGiSr/Et+wwG7gOrLf8yovmtgSJlooqa7lcMtipTxegPAYtd5yZg==")
-        else
-        {
-            print("Unable to get base64 encoded key from the provided string.")
-            XCTFail()
-            return
-        }
+//        guard let serverPublicKey = Data(base64Encoded: "BL7+Vd087+p/roRp6jSzIWzG3qXhk2S4aefLcYjwRtxGanWUoeoIWmMkAHfiF11vA9d6rhiSjPDL0WFGiSr/Et+wwG7gOrLf8yovmtgSJlooqa7lcMtipTxegPAYtd5yZg==")
+//        else
+//        {
+//            print("Unable to get base64 encoded key from the provided string.")
+//            XCTFail()
+//            return
+//        }
         
         let connected = expectation(description: "Connection callback called")
         let sent = expectation(description: "TCP data sent")
@@ -301,35 +301,6 @@ final class ReplicantSwiftServerTests: XCTestCase
         
         return directoryPath
     }
-    
-    
-    func testExample() throws
-    {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct
-        // results.
-
-        // Some of the APIs that we use below are available in macOS 10.13 and above.
-        guard #available(macOS 10.13, *) else {
-            return
-        }
-
-        let fooBinary = productsDirectory.appendingPathComponent("ReplicantSwiftServer")
-
-        let process = Process()
-        process.executableURL = fooBinary
-
-        let pipe = Pipe()
-        process.standardOutput = pipe
-
-        try process.run()
-        process.waitUntilExit()
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        let output = String(data: data, encoding: .utf8)
-
-        //XCTAssertEqual(output, "Hello, world!\n")
-    }
 
     /// Returns path to the built products directory.
     var productsDirectory: URL {
@@ -342,8 +313,4 @@ final class ReplicantSwiftServerTests: XCTestCase
         return Bundle.main.bundleURL
       #endif
     }
-
-    static var allTests = [
-        ("testExample", testExample),
-    ]
 }

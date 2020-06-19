@@ -29,15 +29,6 @@
         }
       },
       {
-        "package": "Datable",
-        "repositoryURL": "https://github.com/OperatorFoundation/Datable",
-        "state": {
-          "branch": null,
-          "revision": "eccbedd3c89007691034b951a1fc0780e54701ea",
-          "version": "1.1.1"
-        }
-      },
-      {
         "package": "Elligator",
         "repositoryURL": "https://github.com/OperatorFoundation/Elligator.git",
         "state": {
@@ -51,8 +42,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Flower.git",
         "state": {
           "branch": null,
-          "revision": "aa47d6c7b50892c22e7120746bac4de5bbba6a34",
-          "version": "0.0.10"
+          "revision": "4a8e9be6c1e43d59dabb7a92c71c6d4c75744e83",
+          "version": "0.0.13"
         }
       },
       {
@@ -78,8 +69,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/ProteanSwift.git",
         "state": {
           "branch": null,
-          "revision": "acd4fecbd594f1ab999a36479352e3ae26df1092",
-          "version": "1.1.1"
+          "revision": "61c32249b1fa53eb374d35195ab8182022f225c7",
+          "version": "1.1.12"
         }
       },
       {
@@ -87,8 +78,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/ReplicantSwift.git",
         "state": {
           "branch": null,
-          "revision": "00c5004a469df121a7f1776a5f46e5114c8df90a",
-          "version": "0.4.4"
+          "revision": "c05ff08621af9fd8723bce4cb631d120cbae1b06",
+          "version": "0.5.6"
         }
       },
       {
@@ -96,8 +87,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git",
         "state": {
           "branch": null,
-          "revision": "d3eb70ed47049500460cbfb9509294c46808fb80",
-          "version": "0.5.2"
+          "revision": "5169296a07a2ba85e1e861a012ba0f7386406bb1",
+          "version": "0.5.9"
         }
       },
       {
@@ -123,8 +114,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Transport.git",
         "state": {
           "branch": null,
-          "revision": "371eb6c7b98f6ead24d389875768e61fa0a585ec",
-          "version": "0.2.1"
+          "revision": "9f94a6715efd9f4221618cb06d160d99c8e154ab",
+          "version": "0.2.2"
         }
       }
     ]

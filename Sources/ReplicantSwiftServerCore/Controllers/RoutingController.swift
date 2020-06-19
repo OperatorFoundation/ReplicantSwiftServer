@@ -69,7 +69,7 @@ public class RoutingController: NSObject
             case .ready:
                 print("\nListening...\n")
             case .failed(let error):
-                print("\nListener failed with error: \(error)\n")
+                print("\nListener failed with error: \(error.localizedDescription)\n")
             case .waiting(let error):
                 print("\nListener waiting with error: \(error)\n")
             default:
@@ -93,6 +93,8 @@ public class RoutingController: NSObject
                 print("⏳ Connection waiting with error: \(waitError)\n")
             case .ready:
                 print("Connection is Ready\n")
+            default:
+                print("Unexpected state: \(newState)")
         }
     }
 
@@ -116,11 +118,12 @@ public class RoutingController: NSObject
         conduitCollection.addConduit(address: address, transportConnection: newReplicantConnection)
 
         // FIXME - support IPv6
-        newReplicantConnection.writeMessage(message: Message.IPAssignV4(v4))
+        let ipv4AssignMessage = Message.IPAssignV4(v4)
+        newReplicantConnection.writeMessage(message: ipv4AssignMessage)
         {
             (maybeError) in
             
-            print("\nListener connection handler sent a message.")
+            print("\n🌷 Listener connection handler sent a message.\(ipv4AssignMessage) 🌷")
             guard maybeError == nil else
             {
                 print("Error sending IP assignment")
@@ -142,7 +145,7 @@ public class RoutingController: NSObject
         {
             (message) in
             
-            print("Received a message: \(message)")
+            print("🌷 Received a message: \(message.description) 🌷")
             
             guard let realtun = self.tun else
             {
@@ -211,7 +214,9 @@ public class RoutingController: NSObject
                 
                 let sendConnection = conduit.transportConnection
                 
+                print("🌷 Transfer from TUN payload: \(payload) 🌷")
                 let message = Message.IPDataV4(payload)
+                print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
                 
                 sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
                     (maybeSendError) in

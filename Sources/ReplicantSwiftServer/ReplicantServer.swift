@@ -26,7 +26,7 @@ class ReplicantServer
         else
         {
             let argument = CommandLine.arguments[1]
-            let (option, value) = getOption(argument)
+            let (option, _) = getOption(argument)
             
             switch option
             {

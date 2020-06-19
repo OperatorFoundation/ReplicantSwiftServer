@@ -104,7 +104,7 @@ class ReplicantListener: Listener
         {
             (state) in
             
-            print("Network listener stateUpdateHandler has reached \(state) state.")
+            print("Network listener stateUpdateHandler state: \(state)")
             
             // Call the Replicant stateUpdateHandler and pass along the network listener's state
             if let handler = self.stateUpdateHandler

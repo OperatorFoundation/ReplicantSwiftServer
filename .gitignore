@@ -5,3 +5,6 @@
 *.xcscheme
 *.xcuserstate
 *.xcbkptlist
+.swiftpm/xcode/xcuserdata/mafalda.xcuserdatad/xcschemes/xcschememanagement.plist
+*.xcuserstate
+.swiftpm/xcode/package.xcworkspace/xcuserdata/mafalda.xcuserdatad/IDEFindNavigatorScopes.plist
