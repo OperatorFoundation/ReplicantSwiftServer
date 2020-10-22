@@ -5,29 +5,26 @@ import PackageDescription
 
 let package = Package(
     name: "ReplicantSwiftServer",
-    platforms: [
-       .macOS(.v10_15)
-    ],
+
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
-        .library(name: "TunObjC", targets: ["TunObjC"]),
         .library(name: "ReplicantSwiftServerCore", targets: ["ReplicantSwiftServerCore"]),
         .executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"])
     ],
     dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "0.2.2"),
-        .package(url: "https://github.com/OperatorFoundation/Shapeshifter-Swift-Transports.git", from: "0.5.9"),
-       .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.0.12")
+        .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.2.1"),
+        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.2.2"),
+        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.1"),
+        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.5"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwiftClient.git", from: "0.2.2"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
         // Targets can depend on other targets in this package, and on products in packages which this package depends on.
-        .target(
-            name: "TunObjC",
-            dependencies: []),
+
         .target(
             name: "ReplicantSwiftServerCore",
-            dependencies: ["Replicant", "Transport", "Flower", "TunObjC"]),
+            dependencies: [.product(name: "Replicant", package: "ReplicantSwiftClient"), "Transport", "Flower", "Tun", "Flow"]),
         .target(
             name: "ReplicantSwiftServer",
             dependencies: ["ReplicantSwiftServerCore"]),
