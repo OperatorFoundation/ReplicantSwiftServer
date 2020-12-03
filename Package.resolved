@@ -56,30 +56,12 @@
         }
       },
       {
-        "package": "NetworkLinux",
-        "repositoryURL": "https://github.com/OperatorFoundation/NetworkLinux.git",
-        "state": {
-          "branch": null,
-          "revision": "cd6e552b4ce421a79cffce265c7496e8d7933f37",
-          "version": "0.2.4"
-        }
-      },
-      {
         "package": "ReplicantSwift",
         "repositoryURL": "https://github.com/OperatorFoundation/ReplicantSwift.git",
         "state": {
           "branch": null,
-          "revision": "8903b8daad17d466c49bf43aedde6fa46d2b6c91",
-          "version": "0.6.0"
-        }
-      },
-      {
-        "package": "ReplicantSwiftClient",
-        "repositoryURL": "https://github.com/OperatorFoundation/ReplicantSwiftClient.git",
-        "state": {
-          "branch": null,
-          "revision": "818198286fe2faf80e32ddd50239ae4b4138339d",
-          "version": "0.2.2"
+          "revision": "24083fa655883a9a5d22d73a7f4f891efc271a92",
+          "version": "0.7.1"
         }
       },
       {
@@ -116,6 +98,15 @@
           "branch": null,
           "revision": "e8507d78b32dbd33ea5ea975bbbc82b7613870a1",
           "version": "0.19.9"
+        }
+      },
+      {
+        "package": "swift-crypto",
+        "repositoryURL": "https://github.com/apple/swift-crypto.git",
+        "state": {
+          "branch": null,
+          "revision": "9680b7251cd2be22caaed8f1468bd9e8915a62fb",
+          "version": "1.1.2"
         }
       },
       {
@@ -159,8 +150,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Transport.git",
         "state": {
           "branch": null,
-          "revision": "70ef2ada9c87a13728d910ceec84ebd32b4c06e0",
-          "version": "2.2.1"
+          "revision": "589b4027f565680245e868d4feabeffc66e352c1",
+          "version": "2.2.3"
         }
       },
       {

@@ -1,11 +1,13 @@
-// swift-tools-version:5.1
+// swift-tools-version:5.3
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
 
 let package = Package(
     name: "ReplicantSwiftServer",
-
+    platforms: [
+        .macOS(.v10_15)
+    ],
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(name: "ReplicantSwiftServerCore", targets: ["ReplicantSwiftServerCore"]),
@@ -16,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.2.2"),
         .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.5"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwiftClient.git", from: "0.2.2"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.2.2"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -24,12 +26,13 @@ let package = Package(
 
         .target(
             name: "ReplicantSwiftServerCore",
-            dependencies: [.product(name: "Replicant", package: "ReplicantSwiftClient"), "Transport", "Flower", "Tun", "Flow"]),
+            dependencies: ["ReplicantSwift", "Transport", "Flower", "Tun", "Flow"]),
         .target(
             name: "ReplicantSwiftServer",
             dependencies: ["ReplicantSwiftServerCore"]),
         .testTarget(
             name: "ReplicantSwiftServerTests",
             dependencies: ["ReplicantSwiftServerCore"]),
-    ]
+    ],
+    swiftLanguageVersions: [.v5]
 )
