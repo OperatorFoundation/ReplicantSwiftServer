@@ -29,12 +29,12 @@
         }
       },
       {
-        "package": "Shapeshifter-Swift-Transports",
+        "package": "Flow",
         "repositoryURL": "https://github.com/OperatorFoundation/Flow.git",
         "state": {
           "branch": null,
-          "revision": "d5f1b216ae9dc8048f099a12e0503a711919278e",
-          "version": "0.2.2"
+          "revision": "1be59f9f055d735a214105a4a32d58d162e99b62",
+          "version": "0.2.3"
         }
       },
       {

@@ -15,7 +15,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.2.1"),
-        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.2.2"),
+        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.2.3"),
         .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.5"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.2.2"),
