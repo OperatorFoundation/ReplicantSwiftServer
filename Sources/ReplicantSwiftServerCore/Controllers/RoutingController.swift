@@ -6,12 +6,17 @@
 //
 
 import Foundation
-import Network
 import Transport
 import Replicant
 import ReplicantSwift
 import Flower
-import SwiftQueue
+//import SwiftQueue
+
+#if os(Linux)
+import NetworkLinux
+#else
+import Network
+#endif
 
 public class RoutingController: NSObject
 {
