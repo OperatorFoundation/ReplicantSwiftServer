@@ -6,7 +6,12 @@
 //
 
 import Foundation
+
+#if os(Linux)
+import NetworkLinux
+#else
 import Network
+#endif
 
 // https://en.wikipedia.org/wiki/IPv4#Packet_structure
 struct IPv4Packet
