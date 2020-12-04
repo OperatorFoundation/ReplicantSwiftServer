@@ -6,11 +6,16 @@
 //
 
 import Foundation
-import Network
 import CryptoKit
 import Transport
 import ReplicantSwift
 //import SwiftQueue
+
+#if os(Linux)
+import NetworkLinux
+#else
+import Network
+#endif
 
 class ReplicantListener: Listener
 {
