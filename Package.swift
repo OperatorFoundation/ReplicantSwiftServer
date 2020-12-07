@@ -11,7 +11,6 @@ let package = Package(
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(name: "ReplicantSwiftServerCore", targets: ["ReplicantSwiftServerCore"]),
-        .library(name: "TunObjC", targets: ["TunObjC"]),
         .executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"])
     ],
     dependencies: [
@@ -27,7 +26,7 @@ let package = Package(
 
         .target(
             name: "ReplicantSwiftServerCore",
-            dependencies: ["ReplicantSwift", "TunObjC", "Transport", "Flower", "Tun", "Flow"]),
+            dependencies: ["ReplicantSwift", "Transport", "Flower", "Tun", "Flow"]),
         .target(
             name: "ReplicantSwiftServer",
             dependencies: ["ReplicantSwiftServerCore"]),

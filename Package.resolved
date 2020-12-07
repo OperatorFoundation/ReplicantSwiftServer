@@ -47,6 +47,24 @@
         }
       },
       {
+        "package": "Keychain",
+        "repositoryURL": "https://github.com/OperatorFoundation/Keychain.git",
+        "state": {
+          "branch": null,
+          "revision": "64c2e570f0cdb15beb879bdf1b3a9e01916f85d0",
+          "version": "0.1.2"
+        }
+      },
+      {
+        "package": "KeychainLinux",
+        "repositoryURL": "https://github.com/OperatorFoundation/KeychainLinux.git",
+        "state": {
+          "branch": null,
+          "revision": "9be9dbf0a3492444a770ef22da18d0ff544713f7",
+          "version": "0.1.1"
+        }
+      },
+      {
         "package": "Monolith",
         "repositoryURL": "https://github.com/OperatorFoundation/Monolith.git",
         "state": {
@@ -60,8 +78,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/ReplicantSwift.git",
         "state": {
           "branch": null,
-          "revision": "24083fa655883a9a5d22d73a7f4f891efc271a92",
-          "version": "0.7.1"
+          "revision": "bdf967e0796be555b0c3c99766dabd07204f947f",
+          "version": "0.8.0"
         }
       },
       {
@@ -69,8 +87,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Routing.git",
         "state": {
           "branch": null,
-          "revision": "6abf51c84610f602a5eebdc45376f978876191f0",
-          "version": "0.0.3"
+          "revision": "1724c6cc8bf54eae425033baf450179e76043deb",
+          "version": "0.0.4"
         }
       },
       {
