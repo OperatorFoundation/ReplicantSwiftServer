@@ -27,12 +27,19 @@
 
 import Foundation
 import Dispatch
-import Network
 import Logging
+
+
 import CryptoKit
 import Flower
 import Transport
 import ReplicantSwift
+
+#if os(Linux)
+import NetworkLinux
+#else
+import Network
+#endif
 
 open class ReplicantServerConnection: Connection
 {
