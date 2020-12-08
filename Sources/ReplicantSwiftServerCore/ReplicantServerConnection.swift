@@ -287,12 +287,15 @@ open class ReplicantServerConnection: Connection
                 // Start the timer
                 if self.sendBuffer.count > 0
                 {
-                    
+                    #if os(Linux)
+                    // TODO: Different timer for Linux as #selector requires objC
+                    #else
                     self.sendTimer = Timer(timeInterval: TimeInterval(polishServer.chunkTimeout),
                                            target: self,
                                            selector: #selector(self.chunkTimeout),
                                            userInfo: nil,
                                            repeats: true)
+                    #endif
                 }
                 
                 switch completion

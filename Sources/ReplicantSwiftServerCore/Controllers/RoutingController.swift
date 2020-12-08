@@ -25,16 +25,34 @@ public class RoutingController: NSObject
     let logger: Logger
     let consoleIO = ConsoleIO()
     let listenerQueue = DispatchQueue(label: "Listener")
-    let tun = TunDevice(address: "10.0.0.1")
+    let tun: TunDevice
     let packetSize: Int = 2000 // FIXME - set this to a thoughtful value
     
     var conduitCollection = ConduitCollection()
     var replicantEnabled = true
     var pool = AddressPool()
     
-    public init(logger: Logger)
+    public required init?(logger: Logger)
     {
         self.logger = logger
+        
+        var packetCount = 0
+        
+        let reader: (Data, UInt32) -> Void =
+        {
+            data, protocolNumber in
+            
+            packetCount += 1
+            print("packet count: \(packetCount)")
+            print("protocolNumber: \(protocolNumber)")
+            print("Number of bytes: \(data.count)")
+        }
+        
+        guard let tunDevice = TunDevice(address: "10.0.0.1", reader: reader)
+        else
+        {
+            return nil
+        }
     }
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
