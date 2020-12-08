@@ -6,9 +6,11 @@
 //
 
 import Foundation
+import Logging
+
 import Transport
 import ReplicantSwift
-//import SwiftQueue
+import SwiftQueue
 
 #if os(Linux)
 import NetworkLinux
@@ -24,18 +26,19 @@ class ReplicantListener: Listener
     var port: NWEndpoint.Port?
     var queue: DispatchQueue? = DispatchQueue(label: "Replicant Server Queue")
     var stateUpdateHandler: ((NWListener.State) -> Void)?
+    let logger: Logger
     
     var newConnectionHandler: ((Connection) -> Void)?
     var config: ReplicantServerConfig
     var listener: Listener
-    var logQueue: Queue<String>
     
-    required init(replicantConfig: ReplicantServerConfig, serverConfig: ServerConfig, logQueue: Queue<String>) throws
+    
+    required init(replicantConfig: ReplicantServerConfig, serverConfig: ServerConfig, logger: Logger) throws
     {
         self.parameters = .tcp
         self.config = replicantConfig
         self.port = serverConfig.port
-        self.logQueue = logQueue
+        self.logger = logger
         
         // Create the listener
         do
@@ -83,7 +86,11 @@ class ReplicantListener: Listener
     
     func makeReplicant(connection: Connection) -> Connection?
     {
-        let replicantConnectionFactory = ReplicantServerConnectionFactory(connection: connection, replicantConfig: config, logQueue: logQueue)
+        let replicantConnectionFactory = ReplicantServerConnectionFactory(
+            connection: connection,
+            replicantConfig: config,
+            logger: logger)
+        
         let newConnection = replicantConnectionFactory.connect()
         
         if newConnection == nil

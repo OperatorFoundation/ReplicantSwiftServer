@@ -6,10 +6,12 @@
 //
 
 import Foundation
+import Logging
+
+import InternetProtocols
 import Transport
 import ReplicantSwift
 import Flower
-//import SwiftQueue
 
 #if os(Linux)
 import NetworkLinux
@@ -19,15 +21,20 @@ import Network
 
 public class RoutingController: NSObject
 {
+    let logger: Logger
     let consoleIO = ConsoleIO()
     let listenerQueue = DispatchQueue(label: "Listener")
-    var conduitCollection = ConduitCollection()
-    var replicantEnabled = true
     let tun = TunDevice(address: "10.0.0.1")
-    var pool = AddressPool()
     let packetSize: Int = 2000 // FIXME - set this to a thoughtful value
     
-    public let logQueue = Queue<String>()
+    var conduitCollection = ConduitCollection()
+    var replicantEnabled = true
+    var pool = AddressPool()
+    
+    public override init(logger: Logger)
+    {
+        self.logger = logger
+    }
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
@@ -40,7 +47,7 @@ public class RoutingController: NSObject
         {
             do
             {
-                let replicantListener = try ReplicantListener(replicantConfig: replicantConfig, serverConfig: serverConfig, logQueue: logQueue)
+                let replicantListener = try ReplicantListener(replicantConfig: replicantConfig, serverConfig: serverConfig, logger: logger)
                 replicantListener.stateUpdateHandler = debugListenerStateUpdateHandler
                 replicantListener.newTransportConnectionHandler =
                 {
@@ -161,10 +168,8 @@ public class RoutingController: NSObject
             {
                 case .IPDataV4(let payload):
                     print("\nReading an ipv4 message")
-                    guard let packet = IPv4Packet(data: payload) else
-                    {
-                        return
-                    }
+                    let now = Date()
+                    let packet = Packet(rawBytes: payload, timestamp: now)
                     
                     guard let sourceAddress = IPv4Address(sendAddress) else
                     {

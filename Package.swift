@@ -14,11 +14,12 @@ let package = Package(
         .executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"])
     ],
     dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.2.1"),
+        .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.0"),
         .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.2.3"),
         .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.5"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.8.0"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.8.3"),
+        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.0")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -26,7 +27,7 @@ let package = Package(
 
         .target(
             name: "ReplicantSwiftServerCore",
-            dependencies: ["ReplicantSwift", "Transport", "Flower", "Tun", "Flow"]),
+            dependencies: ["ReplicantSwift", "Transport", "Flower", "Tun", "Flow", "InternetProtocols"]),
         .target(
             name: "ReplicantSwiftServer",
             dependencies: ["ReplicantSwiftServerCore"]),
