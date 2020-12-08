@@ -12,6 +12,7 @@ import InternetProtocols
 import Transport
 import ReplicantSwift
 import Flower
+import Tun
 
 #if os(Linux)
 import NetworkLinux
@@ -31,7 +32,7 @@ public class RoutingController: NSObject
     var replicantEnabled = true
     var pool = AddressPool()
     
-    public override init(logger: Logger)
+    public init(logger: Logger)
     {
         self.logger = logger
     }
@@ -209,11 +210,7 @@ public class RoutingController: NSObject
         switch Int32(protocolNumber)
         {
             case AF_INET:
-                guard let packet = IPv4Packet(data: payload) else
-                {
-                    return
-                }
-                
+                let packet = Packet(rawBytes: payload, timestamp: Date())
                 let destAddress = packet.destinationIPAddress.debugDescription
                 
                 guard let conduit = conduitCollection.getConduit(with: destAddress) else
@@ -241,11 +238,7 @@ public class RoutingController: NSObject
                     }
                 }))
             case AF_INET6:
-                guard let packet = IPv6Packet(data: payload) else
-                {
-                    return
-                }
-                
+                let packet = Packet(rawBytes: payload, timestamp: Date())
                 let destAddress = packet.destinationIPAddress.debugDescription
                 
                 guard let conduit = conduitCollection.getConduit(with: destAddress) else
