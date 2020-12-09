@@ -6,14 +6,27 @@
 //
 
 import Foundation
-import ReplicantSwift
-import Replicant
+import Logging
+
 import ReplicantSwiftServerCore
 import Datable
 
 class ReplicantServer
 {
-    let routingController = RoutingController()
+    let routingController: RoutingController
+    
+    init?()
+    {
+        // Setup the logger
+        LoggingSystem.bootstrap(StreamLogHandler.standardError)
+        serverLog.logLevel = .debug
+        
+        guard let rController = RoutingController(logger: serverLog)
+        else
+        {
+            return nil
+        }
+    }
     
     /// Figure out what the user wants to do.
     func processRequest()
