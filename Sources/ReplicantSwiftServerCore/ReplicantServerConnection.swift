@@ -234,9 +234,9 @@ open class ReplicantServerConnection: Connection
             {
                 case .contentProcessed(let handler):
                     #if os(Linux)
-                    handler(NWError.posix(POSIXErrorCode.EAUTH))
-                    #else
                     handler(NWError.posix(126))
+                    #else
+                    handler(NWError.posix(POSIXErrorCode.EAUTH))
                     #endif
                     
                     bufferLock.leave()
