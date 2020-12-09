@@ -194,10 +194,12 @@ public class RoutingController: NSObject
                         return
                     }
                     
-                    self.tun.writeBytes(payload)
+                    let bytesWritten = self.tun.writeBytes(payload)
+                    print("tun device wrote \(bytesWritten) bytes.")
                 case .IPDataV6(let payload):
                     print("\nReading an IPV6 message.")
-                    self.tun.writeBytes(payload)
+                    let bytesWritten = self.tun.writeBytes(payload)
+                    print("tun device wrote \(bytesWritten) bytes.")
                 default:
                     print("\nUnsupported message type")
                     return
@@ -207,7 +209,7 @@ public class RoutingController: NSObject
 
     func transferFromTUN()
     {
-        guard let (payload, protocolNumber) = self.tun.read(packetSize: packetSize) else
+        guard let payload = self.tun.read(packetSize: packetSize) else
         {
             print("No packet from TUN")
             return
