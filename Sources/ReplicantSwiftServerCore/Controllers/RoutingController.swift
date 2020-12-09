@@ -177,12 +177,6 @@ public class RoutingController: NSObject
             
             print("🌷 Received a message: \(message.description) 🌷")
             
-            guard let realtun = self.tun else
-            {
-                print("No TUN device")
-                return
-            }
-            
             switch message
             {
                 case .IPDataV4(let payload):
@@ -200,10 +194,10 @@ public class RoutingController: NSObject
                         return
                     }
                     
-                    realtun.writeV4(payload)
+                    self.tun.writeBytes(payload)
                 case .IPDataV6(let payload):
                     print("\nReading an IPV6 message.")
-                    realtun.writeV6(payload)
+                    self.tun.writeBytes(payload)
                 default:
                     print("\nUnsupported message type")
                     return
@@ -213,13 +207,7 @@ public class RoutingController: NSObject
 
     func transferFromTUN()
     {
-        guard let realtun = self.tun else
-        {
-            print("No TUN device")
-            return
-        }
-        
-        guard let (payload, protocolNumber) = realtun.read(packetSize: packetSize) else
+        guard let (payload, protocolNumber) = self.tun.read(packetSize: packetSize) else
         {
             print("No packet from TUN")
             return
