@@ -233,7 +233,12 @@ open class ReplicantServerConnection: Connection
             switch completion
             {
                 case .contentProcessed(let handler):
+                    #if os(Linux)
                     handler(NWError.posix(POSIXErrorCode.EAUTH))
+                    #else
+                    handler(NWError.posix(126))
+                    #endif
+                    
                     bufferLock.leave()
                     return
                 default:
