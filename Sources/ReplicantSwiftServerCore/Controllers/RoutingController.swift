@@ -40,7 +40,7 @@ public class RoutingController: NSObject
         
         let reader: (Data) -> Void =
         {
-            data
+            data in
             
             packetCount += 1
             print("packet count: \(packetCount)")
