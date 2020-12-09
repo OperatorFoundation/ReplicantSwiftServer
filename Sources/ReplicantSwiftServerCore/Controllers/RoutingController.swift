@@ -52,6 +52,8 @@ public class RoutingController: NSObject
         {
             return nil
         }
+        
+        self.tun = tunDevice
     }
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
