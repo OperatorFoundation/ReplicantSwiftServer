@@ -215,66 +215,95 @@ public class RoutingController: NSObject
             return
         }
         
-        switch Int32(protocolNumber)
+        let packet = Packet(rawBytes: payload, timestamp: Date())
+        let destAddress = packet.destinationIPAddress.debugDescription
+        
+        guard let conduit = conduitCollection.getConduit(with: destAddress) else
         {
-            case AF_INET:
-                let packet = Packet(rawBytes: payload, timestamp: Date())
-                let destAddress = packet.destinationIPAddress.debugDescription
-                
-                guard let conduit = conduitCollection.getConduit(with: destAddress) else
-                {
-                    return
-                }
-                
-                let sendConnection = conduit.transportConnection
-                
-                print("🌷 Transfer from TUN payload: \(payload) 🌷")
-                let message = Message.IPDataV4(payload)
-                print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
-                
-                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-                    (maybeSendError) in
-                    
-                    if let sendError = maybeSendError
-                    {
-                        print("\nReceived a send error: \(sendError)\n")
-                        return
-                    }
-                    else
-                    {
-                        self.transferFromTUN()
-                    }
-                }))
-            case AF_INET6:
-                let packet = Packet(rawBytes: payload, timestamp: Date())
-                let destAddress = packet.destinationIPAddress.debugDescription
-                
-                guard let conduit = conduitCollection.getConduit(with: destAddress) else
-                {
-                    return
-                }
-                
-                let sendConnection = conduit.transportConnection
-                
-                let message = Message.IPDataV6(payload)
-                
-                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-                    (maybeSendError) in
-                    
-                    if let sendError = maybeSendError
-                    {
-                        print("\nReceived a send error: \(sendError)\n")
-                        return
-                    }
-                    else
-                    {
-                        self.transferFromTUN()
-                    }
-                }))
-            default:
-                print("Unsupported protocol number")
-                return
+            return
         }
+        
+        let sendConnection = conduit.transportConnection
+        
+        // FIXME: May not be IPV4
+        print("🌷 Transfer from TUN payload: \(payload) 🌷")
+        let message = Message.IPDataV4(payload)
+        print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
+        
+        sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+            (maybeSendError) in
+            
+            if let sendError = maybeSendError
+            {
+                print("\nReceived a send error: \(sendError)\n")
+                return
+            }
+            else
+            {
+                self.transferFromTUN()
+            }
+        }))
+        
+//        switch Int32(protocolNumber)
+//        {
+//            case AF_INET:
+//                let packet = Packet(rawBytes: payload, timestamp: Date())
+//                let destAddress = packet.destinationIPAddress.debugDescription
+//
+//                guard let conduit = conduitCollection.getConduit(with: destAddress) else
+//                {
+//                    return
+//                }
+//
+//                let sendConnection = conduit.transportConnection
+//
+//                print("🌷 Transfer from TUN payload: \(payload) 🌷")
+//                let message = Message.IPDataV4(payload)
+//                print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
+//
+//                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+//                    (maybeSendError) in
+//
+//                    if let sendError = maybeSendError
+//                    {
+//                        print("\nReceived a send error: \(sendError)\n")
+//                        return
+//                    }
+//                    else
+//                    {
+//                        self.transferFromTUN()
+//                    }
+//                }))
+//            case AF_INET6:
+//                let packet = Packet(rawBytes: payload, timestamp: Date())
+//                let destAddress = packet.destinationIPAddress.debugDescription
+//
+//                guard let conduit = conduitCollection.getConduit(with: destAddress) else
+//                {
+//                    return
+//                }
+//
+//                let sendConnection = conduit.transportConnection
+//
+//                let message = Message.IPDataV6(payload)
+//
+//                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+//                    (maybeSendError) in
+//
+//                    if let sendError = maybeSendError
+//                    {
+//                        print("\nReceived a send error: \(sendError)\n")
+//                        return
+//                    }
+//                    else
+//                    {
+//                        self.transferFromTUN()
+//                    }
+//                }))
+//            default:
+//                print("Unsupported protocol number")
+//                return
+//        }
     }
     
     ///TODO: This is meant for development purposes only
