@@ -235,7 +235,7 @@ open class ReplicantServerConnection: Connection
                 case .contentProcessed(let handler):
                     #if os(Linux)
                     let errorCode: Int32 = 126
-                    handler(NWError.posix(POSIXErrorCode(rawValue: errorCode)))
+                    handler(NWError.posix(POSIXErrorCode(rawValue: errorCode)!))
                     #else
                     handler(NWError.posix(POSIXErrorCode.EAUTH))
                     #endif
