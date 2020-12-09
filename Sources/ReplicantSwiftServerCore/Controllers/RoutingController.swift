@@ -38,7 +38,7 @@ public class RoutingController: NSObject
         
         var packetCount = 0
         
-        let reader: (Data, UInt32) -> Void =
+        let reader: (Data) -> Void =
         {
             data, protocolNumber in
             
