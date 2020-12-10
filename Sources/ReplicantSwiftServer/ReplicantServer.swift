@@ -9,6 +9,7 @@ import Foundation
 import Logging
 
 import ReplicantSwiftServerCore
+import ReplicantSwift
 import Datable
 
 class ReplicantServer
@@ -21,7 +22,7 @@ class ReplicantServer
         LoggingSystem.bootstrap(StreamLogHandler.standardError)
         appLog.logLevel = .debug
         
-        guard let rController = RoutingController(logger: serverLog)
+        guard let rController = RoutingController(logger: appLog)
         else
         {
             return nil
