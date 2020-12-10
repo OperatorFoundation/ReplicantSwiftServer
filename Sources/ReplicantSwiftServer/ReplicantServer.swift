@@ -13,6 +13,12 @@ import ReplicantSwiftServerCore
 import ReplicantSwift
 import Transport
 
+#if os(Linux)
+import NetworkLinux
+#else
+import Network
+#endif
+
 class ReplicantServer
 {
     let routingController: RoutingController
@@ -158,7 +164,8 @@ class ReplicantServer
             return
         }
         
-        let serverConfig = ServerConfig(withPort: 1234, andHost: nil)
+        
+        let serverConfig = ServerConfig(withPort: NWEndpoint.Port(rawValue: 1234), andHost: nil)
 
         ///FIXME: User should control whether transport is enabled
         routingController.startListening(serverConfig: serverConfig, replicantConfig: serverReplicantConfig, replicantEnabled: true)
