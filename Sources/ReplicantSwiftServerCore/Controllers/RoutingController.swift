@@ -190,7 +190,9 @@ public class RoutingController: NSObject
                         return
                     }
                     
-                    guard packet.ipv4.sourceAddress == sourceAddress else
+                    guard let ipv4 = packet.ipv4
+                    
+                    guard ipv4.sourceAddress == sourceAddress else
                     {
                         return
                     }
@@ -218,12 +220,14 @@ public class RoutingController: NSObject
         
         let packet = Packet(rawBytes: payload, timestamp: Date())
         tun.
-        let destAddress = packet.ipv4.destinationAddress.debugDescription
         
-        guard let conduit = conduitCollection.getConduit(with: destAddress) else
-        {
-            return
-        }
+        guard let ipv4 = packet.ipv4
+        else { return }
+        
+        let destAddress = ipv4.destinationAddress.debugDescription
+        
+        guard let conduit = conduitCollection.getConduit(with: destAddress)
+        else { return }
         
         let sendConnection = conduit.transportConnection
         
