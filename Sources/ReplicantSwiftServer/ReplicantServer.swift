@@ -34,6 +34,8 @@ class ReplicantServer
         {
             return nil
         }
+        
+        routingController = rController
     }
     
     /// Figure out what the user wants to do.
