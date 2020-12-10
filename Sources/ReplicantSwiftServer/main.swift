@@ -1,7 +1,12 @@
-import Network
 import Transport
 import Foundation
 import ReplicantSwiftServerCore
+
+#if os(Linux)
+import NetworkLinux
+#else
+import Network
+#endif
 
 print("\nI'm here to listen for Replicants.")
 
