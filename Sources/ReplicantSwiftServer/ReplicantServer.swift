@@ -19,7 +19,7 @@ class ReplicantServer
     {
         // Setup the logger
         LoggingSystem.bootstrap(StreamLogHandler.standardError)
-        serverLog.logLevel = .debug
+        appLog.logLevel = .debug
         
         guard let rController = RoutingController(logger: serverLog)
         else

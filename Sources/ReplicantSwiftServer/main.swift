@@ -17,7 +17,7 @@ let consoleIO = ConsoleIO()
 
 var appLog = Logger(label: "org.OperatorFoundation.ReplicantSwiftServer.Linux")
 
-if let replicantServer = ReplicantServer(logger: appLog)
+if let replicantServer = ReplicantServer()
 {
     replicantServer.processRequest()
 }
