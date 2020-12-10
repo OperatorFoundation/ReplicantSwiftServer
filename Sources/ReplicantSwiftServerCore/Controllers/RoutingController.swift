@@ -191,6 +191,7 @@ public class RoutingController: NSObject
                     }
                     
                     guard let ipv4 = packet.ipv4
+                    else { return }
                     
                     guard ipv4.sourceAddress == sourceAddress else
                     {
@@ -219,7 +220,6 @@ public class RoutingController: NSObject
         }
         
         let packet = Packet(rawBytes: payload, timestamp: Date())
-        tun.
         
         guard let ipv4 = packet.ipv4
         else { return }
