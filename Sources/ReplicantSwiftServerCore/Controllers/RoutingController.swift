@@ -193,7 +193,7 @@ public class RoutingController: NSObject
                     guard let ipv4 = packet.ipv4
                     else { return }
                     
-                    guard ipv4.sourceAddress.debugDescription == sourceAddress else
+                    guard ipv4.sourceAddress == sourceAddress.rawValue else
                     {
                         return
                     }
