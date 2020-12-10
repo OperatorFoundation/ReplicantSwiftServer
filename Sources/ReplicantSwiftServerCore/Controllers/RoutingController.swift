@@ -190,7 +190,7 @@ public class RoutingController: NSObject
                         return
                     }
                     
-                    guard packet.sourceIPAddress == sourceAddress else
+                    guard packet.ipv4.sourceAddress == sourceAddress else
                     {
                         return
                     }
@@ -217,7 +217,8 @@ public class RoutingController: NSObject
         }
         
         let packet = Packet(rawBytes: payload, timestamp: Date())
-        let destAddress = packet.destinationIPAddress.debugDescription
+        tun.
+        let destAddress = packet.ipv4.destinationAddress.debugDescription
         
         guard let conduit = conduitCollection.getConduit(with: destAddress) else
         {
