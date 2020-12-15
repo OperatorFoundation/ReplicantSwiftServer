@@ -38,7 +38,7 @@ public class RoutingController: NSObject
         
         var packetCount = 0
         
-        let reader: (Data) -> Void =
+        guard let tunDevice = TunDevice(address: "10.0.0.1")
         {
             data in
             
@@ -46,8 +46,6 @@ public class RoutingController: NSObject
             print("packet count: \(packetCount)")
             print("Number of bytes: \(data.count)")
         }
-        
-        guard let tunDevice = TunDevice(address: "10.0.0.1", reader: reader)
         else
         {
             return nil
@@ -59,7 +57,7 @@ public class RoutingController: NSObject
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
         let port = serverConfig.port
-        print("Printing the port: \(String(describing: port))")
+        print("\nListening on port \(port)")
 
         self.replicantEnabled = replicantEnabled
         
@@ -73,6 +71,7 @@ public class RoutingController: NSObject
                 {
                     (replicantConnection) in
                     
+                    print("\nNew Replicant connection rececived.")
                     self.consoleIO.writeMessage("New Replicant Connection!")
                     self.process(newReplicantConnection: replicantConnection, port: serverConfig.port)
                 }

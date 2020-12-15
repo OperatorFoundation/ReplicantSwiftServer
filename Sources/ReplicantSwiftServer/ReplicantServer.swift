@@ -115,7 +115,7 @@ class ReplicantServer
     /// ReplicantSwiftServer run <path_to_replicant_server_config> <path_to_server_config>
     func runMode()
     {
-        consoleIO.writeMessage("🏃🏽‍♀️  Entering run mode.")
+        consoleIO.writeMessage("\n🏃🏽‍♀️  Entering run mode.")
         
         // Get the server public key
 //        guard let polishServerModel = SilverServerModel(logQueue: routingController.logQueue)
@@ -165,7 +165,6 @@ class ReplicantServer
             print("failed to create Replicant Config")
             return
         }
-        
         
         let serverConfig = ServerConfig(withPort: NWEndpoint.Port(integerLiteral: 1234), andHost: nil)
 
