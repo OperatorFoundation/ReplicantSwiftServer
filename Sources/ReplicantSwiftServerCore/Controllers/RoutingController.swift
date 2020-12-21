@@ -14,11 +14,7 @@ import ReplicantSwift
 import Flower
 import Tun
 
-#if os(Linux)
 import NetworkLinux
-#else
-import Network
-#endif
 
 public class RoutingController: NSObject
 {
