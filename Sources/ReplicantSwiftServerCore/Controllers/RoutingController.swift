@@ -121,8 +121,6 @@ public class RoutingController: NSObject
                 print("⏳ Connection waiting with error: \(waitError)\n")
             case .ready:
                 print("Connection is Ready\n")
-            default:
-                print("Unexpected state: \(newState)")
         }
     }
 
