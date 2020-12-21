@@ -16,7 +16,7 @@ import Tun
 
 import NetworkLinux
 
-public class RoutingController: NSObject
+public class RoutingController
 {
     let logger: Logger
     let consoleIO = ConsoleIO()
