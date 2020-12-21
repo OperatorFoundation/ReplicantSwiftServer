@@ -37,8 +37,7 @@ public class RoutingController: NSObject
         self.logger = logger
         
         var packetCount = 0
-        
-        guard let tunDevice = TunDevice(address: "10.0.0.1")
+        let reader: (Data) -> Void =
         {
             data in
             
@@ -46,8 +45,11 @@ public class RoutingController: NSObject
             print("packet count: \(packetCount)")
             print("Number of bytes: \(data.count)")
         }
+        
+        guard let tunDevice = TunDevice(address: "10.0.0.1", reader: reader)
         else
         {
+            print("🚨 Failed to create tun device. 🚨")
             return nil
         }
         
