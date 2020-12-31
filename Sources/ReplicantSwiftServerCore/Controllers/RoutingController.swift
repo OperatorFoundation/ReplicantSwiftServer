@@ -13,6 +13,7 @@ import Transport
 import ReplicantSwift
 import Flower
 import Tun
+import Routing
 
 #if os(Linux)
 import NetworkLinux
@@ -54,6 +55,43 @@ public class RoutingController: NSObject
         }
         
         self.tun = tunDevice
+
+        //setup routing (nat, ip forwarding, and mtu)
+        // FIXME - server config should include an interface name to listen for connections on, for now it's static...
+        let internetInterface: String = "enp0s5"
+        print("⚠️ Setting internet interface to static value: \(internetInterface)! Update code to set value from config file. ⚠️")
+
+        guard let tunName = tun.maybeName else { return }
+        setMTU(interface: tunName, mtu: 1380)
+        //setAddressV6(interfaceName: tunName, addressString: tunAv6, subnetPrefix: 64)
+
+        setIPv4Forwarding(setTo: true)
+        //setIPv6Forwarding(setTo: true)
+
+        print("[S] Deleting all ipv4 NAT entries for \(internetInterface)")
+        var result4 = false
+        while !result4
+        {
+            result4 = deleteServerNAT(serverPublicInterface: internetInterface)
+        }
+
+//        print("[S] Deleting all ipv6 NAT entries for \(internetInterface)")
+//        var result6 = false
+//        while !result6
+//        {
+//            result6 = deleteServerNATv6(serverPublicInterface: internetInterface)
+//        }
+
+        configServerNAT(serverPublicInterface: internetInterface)
+        print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
+
+//        configServerNATv6(serverPublicInterface: internetInterface)
+//        print("[S] Current ipv6 NAT: \n\n\(getNATv6())\n\n")
+
+
+
+
+
     }
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)

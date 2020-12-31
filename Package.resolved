@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Bits.git",
         "state": {
           "branch": null,
-          "revision": "d6bdf981268cae74ac670b07b27602ac35fee77f",
-          "version": "1.0.5"
+          "revision": "e53451b5858a8a2d72f51d3ca22761643adf64d3",
+          "version": "1.0.6"
         }
       },
       {
@@ -60,8 +60,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/InternetProtocols.git",
         "state": {
           "branch": null,
-          "revision": "bf753f912b4403234148c9e352c8a01d108857c3",
-          "version": "1.1.0"
+          "revision": "8bd874cec7172fc441cf639108787725957e82c0",
+          "version": "1.1.1"
         }
       },
       {
@@ -114,8 +114,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Song.git",
         "state": {
           "branch": null,
-          "revision": "f43f984b91b2e993a8d50c8b581c4526aa0707ea",
-          "version": "0.1.1"
+          "revision": "11f0f95a24bd4c73df4507ba50929424488e2355",
+          "version": "0.1.3"
         }
       },
       {
@@ -141,8 +141,8 @@
         "repositoryURL": "https://github.com/apple/swift-crypto.git",
         "state": {
           "branch": null,
-          "revision": "9680b7251cd2be22caaed8f1468bd9e8915a62fb",
-          "version": "1.1.2"
+          "revision": "8f4bfa5bc1951440c15710e9e893721aa4b2765c",
+          "version": "1.1.3"
         }
       },
       {
@@ -186,8 +186,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Transport.git",
         "state": {
           "branch": null,
-          "revision": "1070dc19d3ceba8041b35e61ef322c72c3f3a5b9",
-          "version": "2.3.0"
+          "revision": "6cf442135c218560f317de6d17271849479d2186",
+          "version": "2.3.3"
         }
       },
       {
@@ -195,8 +195,8 @@
         "repositoryURL": "https://github.com/OperatorFoundation/Tun.git",
         "state": {
           "branch": null,
-          "revision": "ae2817e51365e0eb91ae221a9a2c9feb1375ef53",
-          "version": "0.0.5"
+          "revision": "c3d64380a6dbca17023d3070d582d9465e8018d0",
+          "version": "0.0.8"
         }
       }
     ]
