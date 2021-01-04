@@ -26,7 +26,7 @@ public class RoutingController: NSObject
     let logger: Logger
     let consoleIO = ConsoleIO()
     let listenerQueue = DispatchQueue(label: "Listener")
-    let tun: TunDevice
+    var tun: TunDevice?
     let packetSize: Int = 2000 // FIXME - set this to a thoughtful value
     
     var conduitCollection = ConduitCollection()
@@ -36,24 +36,68 @@ public class RoutingController: NSObject
     public required init?(logger: Logger)
     {
         self.logger = logger
-        
+    }
+    
+    public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
+    {
         var packetCount = 0
         let reader: (Data) -> Void =
-        {
-            data in
-            
-            packetCount += 1
-            print("packet count: \(packetCount)")
-            print("Number of bytes: \(data.count)")
-        }
-        
+                {
+                    data in
+
+                    packetCount += 1
+                    print("packet count: \(packetCount)")
+                    print("Number of bytes: \(data.count)")
+
+                    let packet = Packet(rawBytes: data, timestamp: Date())
+
+                    guard let ipv4 = packet.ipv4 else
+                    {
+                        print("no ipv4")
+                        return
+                    }
+
+                    let destAddress = ipv4.destinationAddress.debugDescription
+
+                    guard let conduit = self.conduitCollection.getConduit(with: destAddress)
+                            else { return }
+
+                    let sendConnection = conduit.transportConnection
+
+                    // FIXME: May not be IPV4
+                    print("🌷 Transfer from TUN payload: \(data) 🌷")
+                    let message = Message.IPDataV4(data)
+                    print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
+
+                    sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+                        (maybeSendError) in
+
+                        if let sendError = maybeSendError
+                        {
+                            print("\nReceived a send error: \(sendError)\n")
+                            return
+                        }
+
+                    }
+
+
+
+                    )
+
+                    )
+
+
+
+                }
+
         guard let tunDevice = TunDevice(address: "10.0.0.1", reader: reader)
-        else
+                else
         {
             print("🚨 Failed to create tun device. 🚨")
-            return nil
+            //return nil
+            return
         }
-        
+
         self.tun = tunDevice
 
         //setup routing (nat, ip forwarding, and mtu)
@@ -61,7 +105,7 @@ public class RoutingController: NSObject
         let internetInterface: String = "enp0s5"
         print("⚠️ Setting internet interface to static value: \(internetInterface)! Update code to set value from config file. ⚠️")
 
-        guard let tunName = tun.maybeName else { return }
+        guard let tunName = tunDevice.maybeName else { return }
         setMTU(interface: tunName, mtu: 1380)
         //setAddressV6(interfaceName: tunName, addressString: tunAv6, subnetPrefix: 64)
 
@@ -92,10 +136,6 @@ public class RoutingController: NSObject
 
 
 
-    }
-    
-    public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
-    {
         let port = serverConfig.port
         print("\nListening on port \(port)")
 
@@ -124,12 +164,12 @@ public class RoutingController: NSObject
             }
         }
         
-        let transferQueue2 = DispatchQueue(label: "Transfer Queue 2")
-        
-        transferQueue2.async
-        {
-            self.transferFromTUN()
-        }
+//        let transferQueue2 = DispatchQueue(label: "Transfer Queue 2")
+//
+//        transferQueue2.async
+//        {
+//            self.transferFromTUN()
+//        }
     }
     
     func debugListenerStateUpdateHandler(newState: NWListener.State)
@@ -236,13 +276,18 @@ public class RoutingController: NSObject
                     {
                         return
                     }
-                    
-                    let bytesWritten = self.tun.writeBytes(payload)
-                    print("tun device wrote \(bytesWritten) bytes.")
+
+                    if let ourTun = self.tun{
+
+                        let bytesWritten = ourTun.writeBytes(payload)
+                        print("tun device wrote \(bytesWritten) bytes.")
+                    }
                 case .IPDataV6(let payload):
                     print("\nReading an IPV6 message.")
-                    let bytesWritten = self.tun.writeBytes(payload)
-                    print("tun device wrote \(bytesWritten) bytes.")
+                    if let ourTun = self.tun {
+                        let bytesWritten = ourTun.writeBytes(payload)
+                        print("tun device wrote \(bytesWritten) bytes.")
+                    }
                 default:
                     print("\nUnsupported message type")
                     return
@@ -250,106 +295,112 @@ public class RoutingController: NSObject
         }
     }
 
-    func transferFromTUN()
-    {
-        guard let payload = self.tun.read(packetSize: packetSize) else
-        {
-            print("No packet from TUN")
-            return
-        }
-        
-        let packet = Packet(rawBytes: payload, timestamp: Date())
-        
-        guard let ipv4 = packet.ipv4
-        else { return }
-        
-        let destAddress = ipv4.destinationAddress.debugDescription
-        
-        guard let conduit = conduitCollection.getConduit(with: destAddress)
-        else { return }
-        
-        let sendConnection = conduit.transportConnection
-        
-        // FIXME: May not be IPV4
-        print("🌷 Transfer from TUN payload: \(payload) 🌷")
-        let message = Message.IPDataV4(payload)
-        print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
-        
-        sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-            (maybeSendError) in
-            
-            if let sendError = maybeSendError
-            {
-                print("\nReceived a send error: \(sendError)\n")
-                return
-            }
-            else
-            {
-                self.transferFromTUN()
-            }
-        }))
-        
-//        switch Int32(protocolNumber)
-//        {
-//            case AF_INET:
-//                let packet = Packet(rawBytes: payload, timestamp: Date())
-//                let destAddress = packet.destinationIPAddress.debugDescription
+//    func transferFromTUN(data: Data)
+//    {
+////        guard let payload = self.tun.read(packetSize: packetSize) else
+////        {
+////            print("No packet from TUN")
+////            return
+////        }
 //
-//                guard let conduit = conduitCollection.getConduit(with: destAddress) else
-//                {
-//                    return
-//                }
+//        let packet = Packet(rawBytes: data, timestamp: Date())
 //
-//                let sendConnection = conduit.transportConnection
+//        guard let ipv4 = packet.ipv4
+//        else { return }
 //
-//                print("🌷 Transfer from TUN payload: \(payload) 🌷")
-//                let message = Message.IPDataV4(payload)
-//                print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
+//        let destAddress = ipv4.destinationAddress.debugDescription
 //
-//                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-//                    (maybeSendError) in
+//        guard let conduit = conduitCollection.getConduit(with: destAddress)
+//        else { return }
 //
-//                    if let sendError = maybeSendError
-//                    {
-//                        print("\nReceived a send error: \(sendError)\n")
-//                        return
-//                    }
-//                    else
-//                    {
-//                        self.transferFromTUN()
-//                    }
-//                }))
-//            case AF_INET6:
-//                let packet = Packet(rawBytes: payload, timestamp: Date())
-//                let destAddress = packet.destinationIPAddress.debugDescription
+//        let sendConnection = conduit.transportConnection
 //
-//                guard let conduit = conduitCollection.getConduit(with: destAddress) else
-//                {
-//                    return
-//                }
+//        // FIXME: May not be IPV4
+//        print("🌷 Transfer from TUN payload: \(data) 🌷")
+//        let message = Message.IPDataV4(data)
+//        print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
 //
-//                let sendConnection = conduit.transportConnection
+//        sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+//            (maybeSendError) in
 //
-//                let message = Message.IPDataV6(payload)
-//
-//                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-//                    (maybeSendError) in
-//
-//                    if let sendError = maybeSendError
-//                    {
-//                        print("\nReceived a send error: \(sendError)\n")
-//                        return
-//                    }
-//                    else
-//                    {
-//                        self.transferFromTUN()
-//                    }
-//                }))
-//            default:
-//                print("Unsupported protocol number")
+//            if let sendError = maybeSendError
+//            {
+//                print("\nReceived a send error: \(sendError)\n")
 //                return
+//            }
+////            else
+////            {
+////                self.transferFromTUN()
+////            }
 //        }
-    }
+//
+//
+//
+//        )
+//
+//        )
+//
+////        switch Int32(protocolNumber)
+////        {
+////            case AF_INET:
+////                let packet = Packet(rawBytes: payload, timestamp: Date())
+////                let destAddress = packet.destinationIPAddress.debugDescription
+////
+////                guard let conduit = conduitCollection.getConduit(with: destAddress) else
+////                {
+////                    return
+////                }
+////
+////                let sendConnection = conduit.transportConnection
+////
+////                print("🌷 Transfer from TUN payload: \(payload) 🌷")
+////                let message = Message.IPDataV4(payload)
+////                print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
+////
+////                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+////                    (maybeSendError) in
+////
+////                    if let sendError = maybeSendError
+////                    {
+////                        print("\nReceived a send error: \(sendError)\n")
+////                        return
+////                    }
+////                    else
+////                    {
+////                        self.transferFromTUN()
+////                    }
+////                }))
+////            case AF_INET6:
+////                let packet = Packet(rawBytes: payload, timestamp: Date())
+////                let destAddress = packet.destinationIPAddress.debugDescription
+////
+////                guard let conduit = conduitCollection.getConduit(with: destAddress) else
+////                {
+////                    return
+////                }
+////
+////                let sendConnection = conduit.transportConnection
+////
+////                let message = Message.IPDataV6(payload)
+////
+////                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+////                    (maybeSendError) in
+////
+////                    if let sendError = maybeSendError
+////                    {
+////                        print("\nReceived a send error: \(sendError)\n")
+////                        return
+////                    }
+////                    else
+////                    {
+////                        self.transferFromTUN()
+////                    }
+////                }))
+////            default:
+////                print("Unsupported protocol number")
+////                return
+////        }
+//    }
     
     ///TODO: This is meant for development purposes only
 //    func sampleReplicantConfig() -> ReplicantConfig?
