@@ -37,57 +37,49 @@ public class RoutingController
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
         var packetCount = 0
-        let reader: (Data) -> Void =
+        let reader =
+        {
+            (data: Data) in
+
+            packetCount += 1
+            print("packet count: \(packetCount)")
+            print("Number of bytes: \(data.count)")
+
+            let packet = Packet(rawBytes: data, timestamp: Date())
+
+            guard let ipv4 = packet.ipv4 else
+            {
+                print("no ipv4")
+                return
+            }
+
+            let destAddress = ipv4.destinationAddress.debugDescription
+
+            guard let conduit = self.conduitCollection.getConduit(with: destAddress)
+            else { return }
+
+            let sendConnection = conduit.transportConnection
+
+            // FIXME: May not be IPV4
+            print("🌷 Transfer from TUN payload: \(data) 🌷")
+            let message = Message.IPDataV4(data)
+            print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
+
+            sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
                 {
-                    data in
+                    (maybeSendError) in
 
-                    packetCount += 1
-                    print("packet count: \(packetCount)")
-                    print("Number of bytes: \(data.count)")
-
-                    let packet = Packet(rawBytes: data, timestamp: Date())
-
-                    guard let ipv4 = packet.ipv4 else
+                    if let sendError = maybeSendError
                     {
-                        print("no ipv4")
+                        print("\nReceived a send error: \(sendError)\n")
                         return
                     }
-
-                    let destAddress = ipv4.destinationAddress.debugDescription
-
-                    guard let conduit = self.conduitCollection.getConduit(with: destAddress)
-                            else { return }
-
-                    let sendConnection = conduit.transportConnection
-
-                    // FIXME: May not be IPV4
-                    print("🌷 Transfer from TUN payload: \(data) 🌷")
-                    let message = Message.IPDataV4(data)
-                    print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
-
-                    sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-                        (maybeSendError) in
-
-                        if let sendError = maybeSendError
-                        {
-                            print("\nReceived a send error: \(sendError)\n")
-                            return
-                        }
-
-                    }
-
-
-
-                    )
-
-                    )
-
-
-
-                }
+                })
+            )
+        }
 
         guard let tunDevice = TunDevice(address: "10.0.0.1", reader: reader)
-                else
+        else
         {
             print("🚨 Failed to create tun device. 🚨")
             //return nil
@@ -115,22 +107,18 @@ public class RoutingController
             result4 = deleteServerNAT(serverPublicInterface: internetInterface)
         }
 
-//        print("[S] Deleting all ipv6 NAT entries for \(internetInterface)")
-//        var result6 = false
-//        while !result6
-//        {
-//            result6 = deleteServerNATv6(serverPublicInterface: internetInterface)
-//        }
+        //        print("[S] Deleting all ipv6 NAT entries for \(internetInterface)")
+        //        var result6 = false
+        //        while !result6
+        //        {
+        //            result6 = deleteServerNATv6(serverPublicInterface: internetInterface)
+        //        }
 
         configServerNAT(serverPublicInterface: internetInterface)
         print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
 
-//        configServerNATv6(serverPublicInterface: internetInterface)
-//        print("[S] Current ipv6 NAT: \n\n\(getNATv6())\n\n")
-
-
-
-
+        //        configServerNATv6(serverPublicInterface: internetInterface)
+        //        print("[S] Current ipv6 NAT: \n\n\(getNATv6())\n\n")
 
         let port = serverConfig.port
         print("\nListening on port \(port)")
@@ -146,7 +134,7 @@ public class RoutingController
                 replicantListener.newTransportConnectionHandler =
                 {
                     (replicantConnection) in
-                    
+
                     print("\nNew Replicant connection rececived.")
                     self.consoleIO.writeMessage("New Replicant Connection!")
                     self.process(newReplicantConnection: replicantConnection, port: serverConfig.port)
@@ -159,13 +147,35 @@ public class RoutingController
                 print("\nUnable to create ReplicantListener\n")
             }
         }
+        else
+        {
+            do
+            {
+                let listener = try NWListener(using: .tcp, on: serverConfig.port)
+                listener.stateUpdateHandler = debugListenerStateUpdateHandler
+                listener.newTransportConnectionHandler =
+                {
+                    (connection) in
+
+                    print("\nNew plain connection rececived.")
+                    self.consoleIO.writeMessage("New plain Connection!")
+                    self.process(newReplicantConnection: connection, port: serverConfig.port)
+                }
+
+                listener.start(queue: listenerQueue)
+            }
+            catch
+            {
+                print("\nUnable to create ReplicantListener\n")
+            }
+        }
         
-//        let transferQueue2 = DispatchQueue(label: "Transfer Queue 2")
-//
-//        transferQueue2.async
-//        {
-//            self.transferFromTUN()
-//        }
+        //        let transferQueue2 = DispatchQueue(label: "Transfer Queue 2")
+        //
+        //        transferQueue2.async
+        //        {
+        //            self.transferFromTUN()
+        //        }
     }
     
     func debugListenerStateUpdateHandler(newState: NWListener.State)
@@ -289,166 +299,166 @@ public class RoutingController
         }
     }
 
-//    func transferFromTUN(data: Data)
-//    {
-////        guard let payload = self.tun.read(packetSize: packetSize) else
-////        {
-////            print("No packet from TUN")
-////            return
-////        }
-//
-//        let packet = Packet(rawBytes: data, timestamp: Date())
-//
-//        guard let ipv4 = packet.ipv4
-//        else { return }
-//
-//        let destAddress = ipv4.destinationAddress.debugDescription
-//
-//        guard let conduit = conduitCollection.getConduit(with: destAddress)
-//        else { return }
-//
-//        let sendConnection = conduit.transportConnection
-//
-//        // FIXME: May not be IPV4
-//        print("🌷 Transfer from TUN payload: \(data) 🌷")
-//        let message = Message.IPDataV4(data)
-//        print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
-//
-//        sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-//            (maybeSendError) in
-//
-//            if let sendError = maybeSendError
-//            {
-//                print("\nReceived a send error: \(sendError)\n")
-//                return
-//            }
-////            else
-////            {
-////                self.transferFromTUN()
-////            }
-//        }
-//
-//
-//
-//        )
-//
-//        )
-//
-////        switch Int32(protocolNumber)
-////        {
-////            case AF_INET:
-////                let packet = Packet(rawBytes: payload, timestamp: Date())
-////                let destAddress = packet.destinationIPAddress.debugDescription
-////
-////                guard let conduit = conduitCollection.getConduit(with: destAddress) else
-////                {
-////                    return
-////                }
-////
-////                let sendConnection = conduit.transportConnection
-////
-////                print("🌷 Transfer from TUN payload: \(payload) 🌷")
-////                let message = Message.IPDataV4(payload)
-////                print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
-////
-////                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-////                    (maybeSendError) in
-////
-////                    if let sendError = maybeSendError
-////                    {
-////                        print("\nReceived a send error: \(sendError)\n")
-////                        return
-////                    }
-////                    else
-////                    {
-////                        self.transferFromTUN()
-////                    }
-////                }))
-////            case AF_INET6:
-////                let packet = Packet(rawBytes: payload, timestamp: Date())
-////                let destAddress = packet.destinationIPAddress.debugDescription
-////
-////                guard let conduit = conduitCollection.getConduit(with: destAddress) else
-////                {
-////                    return
-////                }
-////
-////                let sendConnection = conduit.transportConnection
-////
-////                let message = Message.IPDataV6(payload)
-////
-////                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
-////                    (maybeSendError) in
-////
-////                    if let sendError = maybeSendError
-////                    {
-////                        print("\nReceived a send error: \(sendError)\n")
-////                        return
-////                    }
-////                    else
-////                    {
-////                        self.transferFromTUN()
-////                    }
-////                }))
-////            default:
-////                print("Unsupported protocol number")
-////                return
-////        }
-//    }
+    //    func transferFromTUN(data: Data)
+    //    {
+    ////        guard let payload = self.tun.read(packetSize: packetSize) else
+    ////        {
+    ////            print("No packet from TUN")
+    ////            return
+    ////        }
+    //
+    //        let packet = Packet(rawBytes: data, timestamp: Date())
+    //
+    //        guard let ipv4 = packet.ipv4
+    //        else { return }
+    //
+    //        let destAddress = ipv4.destinationAddress.debugDescription
+    //
+    //        guard let conduit = conduitCollection.getConduit(with: destAddress)
+    //        else { return }
+    //
+    //        let sendConnection = conduit.transportConnection
+    //
+    //        // FIXME: May not be IPV4
+    //        print("🌷 Transfer from TUN payload: \(data) 🌷")
+    //        let message = Message.IPDataV4(data)
+    //        print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
+    //
+    //        sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+    //            (maybeSendError) in
+    //
+    //            if let sendError = maybeSendError
+    //            {
+    //                print("\nReceived a send error: \(sendError)\n")
+    //                return
+    //            }
+    ////            else
+    ////            {
+    ////                self.transferFromTUN()
+    ////            }
+    //        }
+    //
+    //
+    //
+    //        )
+    //
+    //        )
+    //
+    ////        switch Int32(protocolNumber)
+    ////        {
+    ////            case AF_INET:
+    ////                let packet = Packet(rawBytes: payload, timestamp: Date())
+    ////                let destAddress = packet.destinationIPAddress.debugDescription
+    ////
+    ////                guard let conduit = conduitCollection.getConduit(with: destAddress) else
+    ////                {
+    ////                    return
+    ////                }
+    ////
+    ////                let sendConnection = conduit.transportConnection
+    ////
+    ////                print("🌷 Transfer from TUN payload: \(payload) 🌷")
+    ////                let message = Message.IPDataV4(payload)
+    ////                print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
+    ////
+    ////                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+    ////                    (maybeSendError) in
+    ////
+    ////                    if let sendError = maybeSendError
+    ////                    {
+    ////                        print("\nReceived a send error: \(sendError)\n")
+    ////                        return
+    ////                    }
+    ////                    else
+    ////                    {
+    ////                        self.transferFromTUN()
+    ////                    }
+    ////                }))
+    ////            case AF_INET6:
+    ////                let packet = Packet(rawBytes: payload, timestamp: Date())
+    ////                let destAddress = packet.destinationIPAddress.debugDescription
+    ////
+    ////                guard let conduit = conduitCollection.getConduit(with: destAddress) else
+    ////                {
+    ////                    return
+    ////                }
+    ////
+    ////                let sendConnection = conduit.transportConnection
+    ////
+    ////                let message = Message.IPDataV6(payload)
+    ////
+    ////                sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed({
+    ////                    (maybeSendError) in
+    ////
+    ////                    if let sendError = maybeSendError
+    ////                    {
+    ////                        print("\nReceived a send error: \(sendError)\n")
+    ////                        return
+    ////                    }
+    ////                    else
+    ////                    {
+    ////                        self.transferFromTUN()
+    ////                    }
+    ////                }))
+    ////            default:
+    ////                print("Unsupported protocol number")
+    ////                return
+    ////        }
+    //    }
     
     ///TODO: This is meant for development purposes only
-//    func sampleReplicantConfig() -> ReplicantConfig?
-//    {
-//        // Generate private key
-//        let tag = "org.operatorfoundation.replicant.server".data(using: .utf8)!
-//
-//        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
-//                                                     kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
-//                                                     .privateKeyUsage,
-//                                                     nil)!
-//
-//        let privateKeyAttributes: [String: Any] = [
-//            kSecAttrIsPermanent as String: true,
-//            kSecAttrApplicationTag as String: tag
-//            /*kSecAttrAccessControl as String: access*/
-//        ]
-//
-//        let attributes: [String: Any] = [
-//            kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom,
-//            kSecAttrKeySizeInBits as String: 256,
-//            /*kSecAttrTokenID as String: kSecAttrTokenIDSecureEnclave,*/
-//            kSecPrivateKeyAttrs as String: privateKeyAttributes
-//        ]
-//
-//        var error: Unmanaged<CFError>?
-//        guard let bobPrivate = SecKeyCreateRandomKey(attributes as CFDictionary, &error)
-//            else
-//        {
-//            print("\nUnable to generate the client private key: \(error!.takeRetainedValue() as Error)\n")
-//            return nil
-//        }
-//
-//        guard let bobPublic = SecKeyCopyPublicKey(bobPrivate)
-//            else
-//        {
-//            print("\nUnable to generate a public key from the provided private key.\n")
-//            return nil
-//        }
-//
-//        // Encode key as data
-//        guard let bobPublicData = SecKeyCopyExternalRepresentation(bobPublic, &error) as Data?
-//            else
-//        {
-//            print("\nUnable to generate public key external representation: \(error!.takeRetainedValue() as Error)\n")
-//            return nil
-//        }
-//
-//        guard let sampleSequence = SequenceModel(sequence: Data(string: "You say hello, and I say goodbye."), length: 256)
-//            else
-//        {
-//            return nil
-//        }
-//
-//        return ReplicantConfig(serverPublicKey: bobPublicData, chunkSize: 4096, chunkTimeout: 60, addSequences: [sampleSequence], removeSequences: [sampleSequence])
-//    }
+    //    func sampleReplicantConfig() -> ReplicantConfig?
+    //    {
+    //        // Generate private key
+    //        let tag = "org.operatorfoundation.replicant.server".data(using: .utf8)!
+    //
+    //        let access = SecAccessControlCreateWithFlags(kCFAllocatorDefault,
+    //                                                     kSecAttrAccessibleWhenUnlockedThisDeviceOnly,
+    //                                                     .privateKeyUsage,
+    //                                                     nil)!
+    //
+    //        let privateKeyAttributes: [String: Any] = [
+    //            kSecAttrIsPermanent as String: true,
+    //            kSecAttrApplicationTag as String: tag
+    //            /*kSecAttrAccessControl as String: access*/
+    //        ]
+    //
+    //        let attributes: [String: Any] = [
+    //            kSecAttrKeyType as String: kSecAttrKeyTypeECSECPrimeRandom,
+    //            kSecAttrKeySizeInBits as String: 256,
+    //            /*kSecAttrTokenID as String: kSecAttrTokenIDSecureEnclave,*/
+    //            kSecPrivateKeyAttrs as String: privateKeyAttributes
+    //        ]
+    //
+    //        var error: Unmanaged<CFError>?
+    //        guard let bobPrivate = SecKeyCreateRandomKey(attributes as CFDictionary, &error)
+    //            else
+    //        {
+    //            print("\nUnable to generate the client private key: \(error!.takeRetainedValue() as Error)\n")
+    //            return nil
+    //        }
+    //
+    //        guard let bobPublic = SecKeyCopyPublicKey(bobPrivate)
+    //            else
+    //        {
+    //            print("\nUnable to generate a public key from the provided private key.\n")
+    //            return nil
+    //        }
+    //
+    //        // Encode key as data
+    //        guard let bobPublicData = SecKeyCopyExternalRepresentation(bobPublic, &error) as Data?
+    //            else
+    //        {
+    //            print("\nUnable to generate public key external representation: \(error!.takeRetainedValue() as Error)\n")
+    //            return nil
+    //        }
+    //
+    //        guard let sampleSequence = SequenceModel(sequence: Data(string: "You say hello, and I say goodbye."), length: 256)
+    //            else
+    //        {
+    //            return nil
+    //        }
+    //
+    //        return ReplicantConfig(serverPublicKey: bobPublicData, chunkSize: 4096, chunkTimeout: 60, addSequences: [sampleSequence], removeSequences: [sampleSequence])
+    //    }
 }
