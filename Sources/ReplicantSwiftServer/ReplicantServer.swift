@@ -166,10 +166,10 @@ class ReplicantServer
             return
         }
         
-        let serverConfig = ServerConfig(withPort: NWEndpoint.Port(integerLiteral: 1234), andHost: nil)
+        let serverConfig = ServerConfig(withPort: NWEndpoint.Port(integerLiteral: 1234), andHost: NWEndpoint.Host.ipv4(IPv4Address("0.0.0.0")!))
 
         ///FIXME: User should control whether transport is enabled
-        routingController.startListening(serverConfig: serverConfig, replicantConfig: serverReplicantConfig, replicantEnabled: true)
+        routingController.startListening(serverConfig: serverConfig, replicantConfig: serverReplicantConfig, replicantEnabled: false)
         
         // FIXME - what's the right way to do this?
         while true
