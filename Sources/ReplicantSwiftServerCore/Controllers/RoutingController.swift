@@ -131,6 +131,7 @@ public class RoutingController: NSObject
         
         if replicantEnabled
         {
+            print("Replicant listener")
             do
             {
                 let replicantListener = try ReplicantListener(replicantConfig: replicantConfig, serverConfig: serverConfig, logger: logger)
@@ -153,6 +154,7 @@ public class RoutingController: NSObject
         }
         else
         {
+            print("Plain listener")
             do
             {
                 let listener = try NWListener(using: .tcp, on: serverConfig.port)
