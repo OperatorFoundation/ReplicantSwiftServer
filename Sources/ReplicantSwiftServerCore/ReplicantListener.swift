@@ -13,9 +13,9 @@ import ReplicantSwift
 import SwiftQueue
 
 #if os(Linux)
-import NetworkLinux
+import TransmissionLinux
 #else
-import Network
+import Transmission
 #endif
 
 class ReplicantListener: Listener
@@ -41,15 +41,13 @@ class ReplicantListener: Listener
         self.logger = logger
         
         // Create the listener
-        do
-        {
-            listener = try NWListener(using: .tcp, on: serverConfig.port)
-        }
-        catch (let error)
+        guard let listener = Listener(serverConfig.port) else
         {
             print("\n😮  Listener creation error: \(error)  😮\n")
             throw ListenerError.initializationError
         }
+
+        self.listener = listener
     }
     
     func replicantListenerNewConnectionHandler(newConnection: Connection)
@@ -109,33 +107,23 @@ class ReplicantListener: Listener
     
     func start(queue: DispatchQueue)
     {
-        // Start the listener
-        listener.stateUpdateHandler =
+        queue.async
         {
-            (state) in
-            
-            print("Network listener stateUpdateHandler state: \(state)")
-            
-            // Call the Replicant stateUpdateHandler and pass along the network listener's state
             if let handler = self.stateUpdateHandler
             {
-                handler(state)
+                handler(.ready)
             }
-            
+
+            while true
+            {
+                let newNetworkConnection = listener.accept()
+
+                print("We have a new network connection.")
+
+                // Try to turn our network connection into a ReplicantServerConnection
+                self.replicantListenerNewConnectionHandler(newConnection: newNetworkConnection)
+            }
         }
-        
-        listener.newTransportConnectionHandler =
-        {
-            (newNetworkConnection) in
-            
-            print("We have a new network connection.")
-            
-            // Try to turn our network connection into a ReplicantServerConnection
-            self.replicantListenerNewConnectionHandler(newConnection: newNetworkConnection)
-            
-        }
-        
-        listener.start(queue: queue)
     }
     
     func cancel()

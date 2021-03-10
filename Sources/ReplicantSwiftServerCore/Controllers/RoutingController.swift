@@ -165,6 +165,7 @@ public class RoutingController
                 }
 
                 listener.start(queue: listenerQueue)
+                print("started listener")
             }
             catch
             {
