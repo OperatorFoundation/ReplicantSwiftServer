@@ -14,12 +14,13 @@ let package = Package(
         .executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"])
     ],
     dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.0"),
         .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.2.3"),
         .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.1"),
+        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.0"),
+        .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.0"),
+        .package(url: "https://github.com/OperatorFoundation/Transmission.git", from: "0.1.12"),
         .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.5"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.8.3"),
-        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.0"),
         .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.4"),
     ],
     targets: [
@@ -28,7 +29,10 @@ let package = Package(
 
         .target(
             name: "ReplicantSwiftServerCore",
-            dependencies: ["ReplicantSwift", "Transport", "Flower", "Tun", "Flow", "InternetProtocols", "Routing"]),
+            dependencies: ["ReplicantSwift", "Transport", "Flower", "Tun", "Flow", "InternetProtocols", "Routing",
+               .product(name: "TransmissionLinux", package: "Transmission", condition: .when(platforms: [.linux]))
+            ]
+        ),
         .target(
             name: "ReplicantSwiftServer",
             dependencies: ["ReplicantSwiftServerCore"]),

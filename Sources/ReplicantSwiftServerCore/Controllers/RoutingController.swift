@@ -169,6 +169,7 @@ public class RoutingController: NSObject
                 }
 
                 listener.start(queue: listenerQueue)
+                print("started listener")
             }
             catch
             {
