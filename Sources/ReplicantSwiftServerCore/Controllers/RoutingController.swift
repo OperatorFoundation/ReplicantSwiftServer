@@ -17,6 +17,14 @@ import Routing
 
 import NetworkLinux
 
+#if os(Linux)
+import TransmissionLinux
+#else
+import Transmission
+#endif
+
+import TransmissionTransport
+
 public class RoutingController
 {
     let logger: Logger
@@ -36,6 +44,7 @@ public class RoutingController
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
+        print("RoutingController.startListening")
         var packetCount = 0
         let reader =
         {
@@ -121,7 +130,7 @@ public class RoutingController
         //        print("[S] Current ipv6 NAT: \n\n\(getNATv6())\n\n")
 
         let port = serverConfig.port
-        print("\nListening on port \(port)")
+        print("\n! Listening on port \(port)")
 
         self.replicantEnabled = replicantEnabled
         
@@ -142,6 +151,7 @@ public class RoutingController
                 }
                 
                 replicantListener.start(queue: listenerQueue)
+                print("! Replicant listener started and listening")
             }
             catch
             {
@@ -150,22 +160,24 @@ public class RoutingController
         }
         else
         {
-            print("Plain listener")
+            print("! Plain listener")
             do
             {
-                let listener = try NWListener(using: .tcp, on: serverConfig.port)
-                listener.stateUpdateHandler = debugListenerStateUpdateHandler
-                listener.newTransportConnectionHandler =
-                {
-                    (connection) in
-
-                    print("\nNew plain connection rececived.")
-                    self.consoleIO.writeMessage("New plain Connection!")
-                    self.process(newReplicantConnection: connection, port: serverConfig.port)
-                }
-
-                listener.start(queue: listenerQueue)
+                #if os(Linux)
+                guard let listener = TransmissionLinux.Listener(port: Int(serverConfig.port.rawValue)) else {return}
+                #else
+                guard let listener = Transmission.Listener(port: Int(serverConfig.port.rawValue)) else {return}
+                #endif
                 print("started listener")
+
+                while true
+                {
+                  guard let connection = listener.accept() else {return}
+                  print("\nNew plain connection rececived.")
+                  self.consoleIO.writeMessage("New plain Connection!")
+                  let transport = TransmissionToTransportConnection(connection)
+                  self.process(newReplicantConnection: transport, port: serverConfig.port)
+                }
             }
             catch
             {
@@ -179,6 +191,8 @@ public class RoutingController
         //        {
         //            self.transferFromTUN()
         //        }
+
+      print("End RoutingController.startListening")
     }
     
     func debugListenerStateUpdateHandler(newState: NWListener.State)
@@ -215,7 +229,7 @@ public class RoutingController
         }
     }
 
-    func process(newReplicantConnection: Connection, port: NWEndpoint.Port)
+    func process(newReplicantConnection: Transport.Connection, port: NWEndpoint.Port)
     {
         print("Routing controller listener connection handler called.")
 
@@ -256,7 +270,7 @@ public class RoutingController
         }
     }
     
-    func transfer(from receiveConnection: Connection, toAddress sendAddress: String)
+    func transfer(from receiveConnection: Transport.Connection, toAddress sendAddress: String)
     {
         receiveConnection.readMessages
         {
