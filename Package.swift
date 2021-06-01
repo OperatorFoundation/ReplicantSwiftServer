@@ -14,14 +14,14 @@ let package = Package(
         .executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"])
     ],
     dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.2.3"),
-        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.1"),
-        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.0"),
+        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.3.0"),
+        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.3"),
+        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.5"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionLinux.git", from: "0.2.0"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "0.0.1"),
-        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.9"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.8.5"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionLinux.git", from: "0.3.2"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "0.1.0"),
+        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.10"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.8.6"),
         .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.4"),
     ],
     targets: [
