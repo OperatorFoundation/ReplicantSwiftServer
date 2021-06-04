@@ -294,7 +294,7 @@ open class ReplicantServerConnection: Connection
                 if self.sendBuffer.count > 0
                 {
                     #if os(Linux)
-                    // TODO: Different timer for Linux as #selector requires objC
+                    // FIXME: Different timer for Linux as #selector requires objC
                     #else
                     self.sendTimer = Timer(timeInterval: TimeInterval(polishServer.chunkTimeout),
                                            target: self,
@@ -502,7 +502,7 @@ open class ReplicantServerConnection: Connection
         }
     }
     
-    @objc func chunkTimeout()
+    func chunkTimeout()
     {
         // Lock so that send isn't called while we're working
         bufferLock.enter()
