@@ -95,6 +95,7 @@ class ReplicantListener: Transport.Listener
         }
         
         replicantConnection.start(queue: queue!)
+        print("Replicant connection started!")
     }
     #else
     func replicantListenerNewConnectionHandler(newConnection: Transmission.Connection) {
