@@ -250,7 +250,7 @@ public class RoutingController
 
         print("conduit added successfully")
         
-        newReplicantConnection.send(content: "A".data, contentContext: nil, isComplete: false, completion: .contentProcessed({ maybeError in
+        newReplicantConnection.send(content: "A".data, contentContext: .defaultMessage, isComplete: false, completion: .contentProcessed({ maybeError in
             print("test send callback called")
         }))
         
