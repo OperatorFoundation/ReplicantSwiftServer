@@ -75,27 +75,30 @@ class ReplicantListener: Transport.Listener
             return
         }
         
-        replicantConnection.stateUpdateHandler =
-        {
-            newState in
-            
-            print("Received a state update on our Replicant connection: \(newState)")
-            
-            switch newState
-            {
-            case .ready:
-                print("Replicant connection state update handler is in the READY state.")
-                if let connectionHandler = self.newTransportConnectionHandler
-                {
-                    connectionHandler(replicantConnection)
-                }
-            default:
-                return
-            }
-        }
+//        replicantConnection.stateUpdateHandler =
+//        {
+//            newState in
+//
+//            print("Received a state update on our Replicant connection: \(newState)")
+//
+//            switch newState
+//            {
+//            case .ready:
+//                print("Replicant connection state update handler is in the READY state.")
+//                if let connectionHandler = self.newTransportConnectionHandler
+//                {
+//                    connectionHandler(replicantConnection)
+//                }
+//            default:
+//                return
+//            }
+//        }
         
         replicantConnection.start(queue: queue!)
         print("Replicant connection started!")
+        
+        connectionHandler(replicantConnection)
+        
     }
     #else
     func replicantListenerNewConnectionHandler(newConnection: Transmission.Connection) {
