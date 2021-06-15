@@ -200,7 +200,9 @@ open class ReplicantServerConnection: Connection
         }
         else
         {
+            print("Replicant send is calling network send")
             network.send(content: content, contentContext: contentContext, isComplete: isComplete, completion: completion)
+            print("Replicant send is finished calling Replicant send")
         }
     }
     
