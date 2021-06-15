@@ -206,7 +206,7 @@ open class ReplicantServerConnection: Connection
                 print("Replicant send completion handler called")
                 switch completion {
                     case .contentProcessed(let callback):
-                        callback()
+                        callback(maybeError)
                     default: return
                 }
             }))
