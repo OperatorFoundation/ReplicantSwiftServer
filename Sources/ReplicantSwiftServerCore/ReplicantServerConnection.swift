@@ -202,9 +202,13 @@ open class ReplicantServerConnection: Connection
         {
             print("Replicant send is calling network send")
             network.send(content: content, contentContext: contentContext, isComplete: isComplete, completion: .contentProcessed({
-                maybeError in 
+                maybeError in
                 print("Replicant send completion handler called")
-                completion()
+                switch completion {
+                    case .contentProcessed(let callback):
+                        callback()
+                    default: return
+                }
             }))
             print("Replicant send is finished calling network send")
         }
