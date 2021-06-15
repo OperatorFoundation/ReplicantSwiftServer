@@ -248,6 +248,8 @@ public class RoutingController
         
         conduitCollection.addConduit(address: address, transportConnection: newReplicantConnection)
 
+        print("conduit added successfully")
+        
         // FIXME - support IPv6
         let ipv4AssignMessage = Message.IPAssignV4(v4)
         newReplicantConnection.writeMessage(message: ipv4AssignMessage)
@@ -268,6 +270,7 @@ public class RoutingController
                 self.transfer(from: newReplicantConnection, toAddress: address)
             }
         }
+        print("WriteMessage called!")
     }
     
     func transfer(from receiveConnection: Transport.Connection, toAddress sendAddress: String)
