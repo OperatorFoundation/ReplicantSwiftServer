@@ -97,7 +97,10 @@ class ReplicantListener: Transport.Listener
         replicantConnection.start(queue: queue!)
         print("Replicant connection started!")
         
-        connectionHandler(replicantConnection)
+                if let connectionHandler = self.newTransportConnectionHandler
+                {
+                    connectionHandler(replicantConnection)
+                }
         
     }
     #else
