@@ -250,10 +250,6 @@ public class RoutingController
 
         print("conduit added successfully")
         
-        newReplicantConnection.send(content: "A".data, contentContext: .defaultMessage, isComplete: false, completion: .contentProcessed({ maybeError in
-            print("test send callback called")
-        }))
-        
         // FIXME - support IPv6
         let ipv4AssignMessage = Message.IPAssignV4(v4)
         newReplicantConnection.writeMessage(message: ipv4AssignMessage)

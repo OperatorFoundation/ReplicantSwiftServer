@@ -199,16 +199,7 @@ class ReplicantListener: Transport.Listener
             while true
             {
                 guard let newNetworkConnection = listener.accept() else {return}
-
-                print("We have a new network connection.")
-                print("\n newNetworkConnection: \(type(of: newNetworkConnection)) \n ")
-                print("I seen't it.")
-                newNetworkConnection.write(string: "start")
-                let ipMessage = Message.IPAssignV4(IPv4Address("127.0.0.1")!)
-                let ipMessageData = ipMessage.data
-                newNetworkConnection.write(data: ipMessageData)
-                newNetworkConnection.write(string: "\(ipMessageData)")
-                print(ipMessageData)
+                
                 // Try to turn our network connection into a ReplicantServerConnection
                 self.replicantListenerNewConnectionHandler(newConnection: newNetworkConnection)
             }
