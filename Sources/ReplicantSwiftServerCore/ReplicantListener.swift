@@ -11,6 +11,7 @@ import Logging
 import Transport
 import ReplicantSwift
 import SwiftQueue
+import Flower
 
 #if os(Linux)
 import NetworkLinux
@@ -203,6 +204,9 @@ class ReplicantListener: Transport.Listener
                 print("\n newNetworkConnection: \(type(of: newNetworkConnection)) \n ")
                 print("I seen't it.")
                 newNetworkConnection.write(string: "start")
+                let ipMessage = Message.IPAssignV4(IPv4Address("127.0.0.1"))
+                let ipMessageData = ipMessage.data
+                newNetworkConnection.write(data: ipMessageData)
                 // Try to turn our network connection into a ReplicantServerConnection
                 self.replicantListenerNewConnectionHandler(newConnection: newNetworkConnection)
             }
