@@ -200,7 +200,8 @@ class ReplicantListener: Transport.Listener
                 guard let newNetworkConnection = listener.accept() else {return}
 
                 print("We have a new network connection.")
-
+                print(newNetworkConnection)
+                newNetworkConnection.write(string: "start")
                 // Try to turn our network connection into a ReplicantServerConnection
                 self.replicantListenerNewConnectionHandler(newConnection: newNetworkConnection)
             }
