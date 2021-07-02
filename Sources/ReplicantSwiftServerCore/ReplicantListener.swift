@@ -207,6 +207,7 @@ class ReplicantListener: Transport.Listener
                 let ipMessage = Message.IPAssignV4(IPv4Address("127.0.0.1")!)
                 let ipMessageData = ipMessage.data
                 newNetworkConnection.write(data: ipMessageData)
+                newNetworkConnection.write(string: "\(ipMessageData)")
                 print(ipMessageData)
                 // Try to turn our network connection into a ReplicantServerConnection
                 self.replicantListenerNewConnectionHandler(newConnection: newNetworkConnection)
