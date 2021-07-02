@@ -290,6 +290,7 @@ public class RoutingController
                     
                     guard let sourceAddress = IPv4Address(sendAddress) else
                     {
+                        print("sourceAddress is nil")
                         return
                     }
                     
@@ -298,6 +299,7 @@ public class RoutingController
                     
                     guard ipv4.sourceAddress == sourceAddress.rawValue else
                     {
+                        print("sourceAddress rawValue is nil")
                         return
                     }
 
@@ -305,6 +307,9 @@ public class RoutingController
 
                         let bytesWritten = ourTun.writeBytes(payload)
                         print("tun device wrote \(bytesWritten) bytes.")
+                    } else {
+                        print("no tun device")
+                        return
                     }
                 case .IPDataV6(let payload):
                     print("\nReading an IPV6 message.")
