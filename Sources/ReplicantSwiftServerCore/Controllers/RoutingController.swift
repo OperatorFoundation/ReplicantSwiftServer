@@ -295,7 +295,10 @@ public class RoutingController
                     }
                     
                     guard let ipv4 = packet.ipv4
-                    else { return }
+                    else {
+                        print("Packet was not IPV4")
+                        return
+                    }
                     
                     guard ipv4.sourceAddress == sourceAddress.rawValue else
                     {
