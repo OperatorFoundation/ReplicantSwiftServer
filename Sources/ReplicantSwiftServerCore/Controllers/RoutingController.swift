@@ -288,7 +288,7 @@ public class RoutingController
                 case .IPDataV4(let payload):
                     print("\nReading an ipv4 message")
                     let now = Date()
-                    let packet = Packet(rawBytes: payload, timestamp: now)
+                    let packet = Packet(rawBytes: payload, timestamp: now, debugPrints: true)
                     
                     print("Checking for sourceAddress")
                     guard let sourceAddress = IPv4Address(sendAddress) else
