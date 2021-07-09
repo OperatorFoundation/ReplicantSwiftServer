@@ -288,24 +288,28 @@ public class RoutingController
                     let now = Date()
                     let packet = Packet(rawBytes: payload, timestamp: now)
                     
+                    print("Checking for sourceAddress")
                     guard let sourceAddress = IPv4Address(sendAddress) else
                     {
                         print("sourceAddress is nil")
                         return
                     }
                     
+                    print("Checking for IPV4 Packet")
                     guard let ipv4 = packet.ipv4
                     else {
                         print("Packet was not IPV4")
                         return
                     }
                     
+                    print("Checking sourceAddress rawValue")
                     guard ipv4.sourceAddress == sourceAddress.rawValue else
                     {
                         print("sourceAddress rawValue is nil")
                         return
                     }
 
+                    print("Checking for tun device")
                     if let ourTun = self.tun{
 
                         let bytesWritten = ourTun.writeBytes(payload)
