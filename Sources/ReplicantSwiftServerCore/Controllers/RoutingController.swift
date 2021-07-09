@@ -14,6 +14,8 @@ import ReplicantSwift
 import Flower
 import Tun
 import Routing
+import SwiftHexTools
+
 
 import NetworkLinux
 
@@ -299,6 +301,7 @@ public class RoutingController
                     guard let ipv4 = packet.ipv4
                     else {
                         print("Packet was not IPV4")
+                        print(payload.hex)
                         return
                     }
                     
