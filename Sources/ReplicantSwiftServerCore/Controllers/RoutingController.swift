@@ -112,11 +112,8 @@ public class RoutingController
         //setIPv6Forwarding(setTo: true)
 
         print("[S] Deleting all ipv4 NAT entries for \(internetInterface)")
-        var result4 = false
-        while !result4
-        {
-            result4 = deleteServerNAT(serverPublicInterface: internetInterface)
-        }
+        while deleteServerNAT(serverPublicInterface: internetInterface) {}
+        
 
         //        print("[S] Deleting all ipv6 NAT entries for \(internetInterface)")
         //        var result6 = false
