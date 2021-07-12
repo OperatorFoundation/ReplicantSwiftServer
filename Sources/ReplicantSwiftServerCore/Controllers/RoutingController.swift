@@ -56,7 +56,7 @@ public class RoutingController
             print("packet count: \(packetCount)")
             print("Number of bytes: \(data.count)")
 
-            let packet = Packet(rawBytes: data, timestamp: Date())
+            let packet = Packet(rawBytes: data, timestamp: Date(), debugPrints: true)
 
             guard let ipv4 = packet.ipv4 else
             {
@@ -65,15 +65,22 @@ public class RoutingController
             }
 
             let destAddress = ipv4.destinationAddress.debugDescription
+            print("destAddress: \(destAddress)")
 
             guard let conduit = self.conduitCollection.getConduit(with: destAddress)
-            else { return }
+            else {
+                print("Could not find Conduit")
+                return
+            }
+            print("conduit: \(conduit)")
 
             let sendConnection = conduit.transportConnection
+            print("sendConnection: \(sendConnection)")
 
             // FIXME: May not be IPV4
             print("🌷 Transfer from TUN payload: \(data) 🌷")
             let message = Message.IPDataV4(data)
+            print("message: \(message)")
             print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
 
             sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
@@ -104,8 +111,12 @@ public class RoutingController
         let internetInterface: String = "eth0"
         print("⚠️ Setting internet interface to value: \(internetInterface)! Update code to set value from config file. ⚠️")
 
-        guard let tunName = tunDevice.maybeName else { return }
+        guard let tunName = tunDevice.maybeName else {
+            print("could not find tun name")
+            return
+        }
         setMTU(interface: tunName, mtu: 1380)
+        print("tun Name: \(tunName)")
         //setAddressV6(interfaceName: tunName, addressString: tunAv6, subnetPrefix: 64)
 
         setIPv4Forwarding(setTo: true)
