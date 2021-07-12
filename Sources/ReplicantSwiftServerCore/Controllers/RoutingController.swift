@@ -56,9 +56,7 @@ public class RoutingController
             print("packet count: \(packetCount)")
             print("Number of bytes: \(data.count)")
 
-            let packet = Packet(rawBytes: data, timestamp: Date(), debugPrints: true)
-
-            guard let ipv4 = packet.ipv4 else
+            guard let ipv4 = IPv4(data: data) else
             {
                 print("no ipv4")
                 return
