@@ -315,11 +315,12 @@ public class RoutingController
                         return
                     }
                     
-                    print("Checking sourceAddress rawValue")
+                    print("checking sourceAddress value")
                     guard ipv4.sourceAddress == sourceAddress.rawValue else
                     {
                         print(ipv4.description)
-                        print("sourceAddress rawValue is nil")
+                        print("sourceAddress value was unexpected. packet:\(ipv4.sourceAddress.array), assigned ip:\(sourceAddress.rawValue.array)")
+                        
                         return
                     }
 
