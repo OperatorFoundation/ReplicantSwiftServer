@@ -278,7 +278,9 @@ public class RoutingController
             
             transferQueue1.async
             {
+                print("Starting Transfer")
                 self.transfer(from: newReplicantConnection, toAddress: address)
+                print("Transfer Finished")
             }
         }
         print("WriteMessage called!")
@@ -286,6 +288,7 @@ public class RoutingController
     
     func transfer(from receiveConnection: Transport.Connection, toAddress sendAddress: String)
     {
+        print("Transfer called")
         receiveConnection.readMessages
         {
             (message) in
