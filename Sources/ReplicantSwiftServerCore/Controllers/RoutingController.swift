@@ -57,13 +57,14 @@ public class RoutingController
             print("Number of bytes: \(data.count)")
             print(data.hex)
             
-            let packet = Packet(rawBytes: data, timestamp: Date(), debugPrints: true)
-            guard let ipv4 = packet.ipv4 else
+            guard let ipv4 = IPv4(data: data) else
             {
                 print("no ipv4")
                 return
             }
 
+            print(ipv4)
+            
             let destAddress = ipv4.destinationAddress.debugDescription
             print("destAddress: \(destAddress)")
 
