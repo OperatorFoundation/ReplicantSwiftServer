@@ -56,6 +56,7 @@ public class RoutingController
             print("packet count: \(packetCount)")
             print("Number of bytes: \(data.count)")
             print(data.hex)
+            print(data.array)
             
             guard let ipv4 = IPv4(data: data) else
             {
@@ -63,7 +64,8 @@ public class RoutingController
                 return
             }
 
-            print(ipv4)
+            print("IPV4 address: \(ipv4)")
+            print(ipv4.description)
             
             let destAddress = ipv4.destinationAddress.debugDescription
             print("destAddress: \(destAddress)")
