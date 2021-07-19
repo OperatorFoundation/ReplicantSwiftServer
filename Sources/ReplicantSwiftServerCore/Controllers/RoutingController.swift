@@ -318,6 +318,7 @@ public class RoutingController
                     print("Checking sourceAddress rawValue")
                     guard ipv4.sourceAddress == sourceAddress.rawValue else
                     {
+                        print(ipv4.description)
                         print("sourceAddress rawValue is nil")
                         return
                     }
