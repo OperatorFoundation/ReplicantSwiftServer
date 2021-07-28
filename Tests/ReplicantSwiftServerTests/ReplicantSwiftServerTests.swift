@@ -1,6 +1,10 @@
 import XCTest
 import ReplicantSwift
+#if os(Linux)
+import NetworkLinux
+#else
 import Network
+#endif
 import Tun
 
 @testable import ReplicantSwiftServerCore
