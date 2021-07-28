@@ -48,7 +48,7 @@ let package = Package(
             dependencies: ["ReplicantSwiftServerCore"]),
         .testTarget(
             name: "ReplicantSwiftServerTests",
-            dependencies: ["ReplicantSwiftServerCore", "Tun"]),
+            dependencies: ["ReplicantSwiftServerCore"]),
     ],
     swiftLanguageVersions: [.v5]
 )
@@ -99,7 +99,7 @@ let package = Package(
             dependencies: ["ReplicantSwiftServerCore"]),
         .testTarget(
             name: "ReplicantSwiftServerTests",
-            dependencies: ["ReplicantSwiftServerCore", "Tun"]),
+            dependencies: ["ReplicantSwiftServerCore"]),
     ],
     swiftLanguageVersions: [.v5]
 )
