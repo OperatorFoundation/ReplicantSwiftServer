@@ -1,6 +1,5 @@
 import XCTest
 import ReplicantSwift
-import Replicant
 import Network
 import Tun
 
