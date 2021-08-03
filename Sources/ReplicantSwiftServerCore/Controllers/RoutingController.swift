@@ -331,6 +331,7 @@ public class RoutingController
 
                         let bytesWritten = ourTun.writeBytes(payload)
                         print("tun device wrote \(bytesWritten) bytes.")
+                        print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
                     } else {
                         print("no tun device")
                         return
