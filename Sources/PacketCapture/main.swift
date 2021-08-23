@@ -12,121 +12,71 @@ import Gardener
 
 struct PacketCapture: ParsableCommand
 {
-    let command = Command()
-    let git = Git()
-    let scp = SCP("root", "138.197.196.245")
-    let queue = DispatchQueue(label: "packetCaptureQueue")
-    
+
     @Argument(help: "IP address for the system to build on.")
-    var buildServerIP: String
-
-    @Argument(help: "IP address for the system to test the build on.")
-    var testServerIP: String
+    var replicantServerIP: String
     
-    func validate() throws
+    func run() throws
     {
-        // This pings the server ip and returns nil if it fails
-        guard let _ = SSH(username: "root", host: buildServerIP)
-        else
-        {
-            throw ValidationError("'<BuildServerIP>' is not valid.")
-        }
-
-        // This pings the server ip and returns nil if it fails
-        guard let _ = SSH(username: "root", host: testServerIP)
-        else
-        {
-            throw ValidationError("'<TestServerIP>' is not valid.")
-        }
-    }
-    
-    func run()
-    {
+        let queue = DispatchQueue(label: "packetCaptureQueue")
+        let packetCaptureController = PacketCaptureController(replicantServerIP: replicantServerIP)
         var replicantServer: Cancellable? = nil
         var packetCapture: Cancellable? = nil
         var moonbounceTest: Cancellable? = nil
+        let scp = SCP(username: "root", host: replicantServerIP)
         
-        buildForLinux()
+        packetCaptureController.buildForLinux()
         
         queue.async {
-            replicantServer = runReplicantSwiftServer()
+            replicantServer = packetCaptureController.runReplicantSwiftServer()
         }
         
         queue.async {
-            packetCapture = runPacketCapture()
+            packetCapture = packetCaptureController.runPacketCapture()
         }
         
         // sleep for 30 seconds
         Thread.sleep(forTimeInterval: 30)
         queue.async {
-            moonbounceTest = runMoonbounce()
+            moonbounceTest = packetCaptureController.runMoonbounce()
         }
         Thread.sleep(forTimeInterval: 30)
         
-        packetCapture.cancel()
-        moonbounceTest.cancel()
-        replicantServer.cancel()
-        
-        //scp root@138.197.196.245:packets.pcap packets.pcap
-        scp.download("packets.pcap", "~/packets.pcap")
-        
-    }
-
-    func buildForLinux()
-    {
-        // make sure we're in the home directory
-        command.cd("~")
-        
-        // Download Moonbounce locally
-        git.clone("https://github.com/OperatorFoundation/Moonbounce.git")
-        
-        // Download and build ReplicantSwiftServer on the remote server
-        let result = Bootstrap.bootstrap(username: "root", host: buildServerIP, source: "https://github.com/OperatorFoundation/ReplicantSwiftServer", branch: "main", target: "ReplicantSwiftServer")
-        
-        if result
-        {
-            print("Finished building ReplicantSwiftServer.")
+        if let unwrappedPacketCapture = packetCapture {
+            unwrappedPacketCapture.cancel()
+        } else {
+            print("packet capture failed")
         }
-        else
-        {
-            print("Failed to build ReplicantSwiftServer")
+        
+        if let unwrappedMoonbounceTest = moonbounceTest {
+            unwrappedMoonbounceTest.cancel()
+        } else {
+            print("Moonbounce test failed")
+        }
+        
+        if let unwrappedReplicantServer = replicantServer {
+            unwrappedReplicantServer.cancel()
+        } else {
+            print("Replicant server failed to initialize")
+        }
+        
+        if let unwrappedScp = scp {
+            //scp root@138.197.196.245:packets.pcap packets.pcap
+            unwrappedScp.download(remotePath: "packets.pcap", localPath: "~/packets.pcap")
+        } else {
+          print("scp unsuccessful")
         }
     }
 
-    func runReplicantSwiftServer() -> Cancellable {
-        guard let ssh = SSH(username: "root", host: testServerIP)
-        else
-        {
-            print("could not ssh into packet capture server.")
-            return
-        }
-        
-        command.cd("ReplicantSwiftServer")
-        let cancellable = command.runWithCancellation("./run.sh")
-        
-        return cancellable
-    }
-    
-    func runMoonbounce() -> Cancellable {
-        command.cd("~/Moonbounce")
-        
-        let cancellable = command.runWithCancellation("xcodebuild", "-product", "testPing", "Moonbounce.xcodeproj", "-scheme", "MoonbounceTests", "-testPlan", "MoonbounceTests", "test")
-        
-        return cancellable
-    }
-    
-    func runPacketCapture()
+    func validate() throws
     {
-        // ssh into the server
-        guard let ssh = SSH(username: "root", host: testServerIP)
+        // This pings the server ip and returns nil if it fails
+        guard let _ = SSH(username: "root", host: replicantServerIP)
         else
         {
-            print("could not ssh into packet capture server.")
-            return
+            throw ValidationError("'<BuildServerIP>' is not valid.")
         }
-        
-        //run tcpdump and wait a while for the server to receive the packets
-        command.run("tcpdump", "-w", "packets.pcap")
-        pause(3000)
     }
 }
+
+PacketCapture.main()
