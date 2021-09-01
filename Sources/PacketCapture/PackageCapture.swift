@@ -14,11 +14,11 @@ struct PacketCaptureController
     var replicantServerIP: String
     let command = Command()
     let git = Git()
-    
+    let homeDir = File.homeDirectory().path
     func buildForLinux()
     {
         // make sure we're in the home directory
-        command.cd("~")
+        command.cd(homeDir)
         // Download Moonbounce locally
         git.clone("https://github.com/OperatorFoundation/Moonbounce.git")
         
@@ -43,17 +43,7 @@ struct PacketCaptureController
             return nil
         }
         
-        print("\n current directory:")
-        let current = File.currentDirectory()
-        print(current)
-        
-        print("\n contents of directory:")
-        let contents = File.contentsOfDirectory(atPath: current)
-        print(contents)
-        
-        command.cd("ReplicantSwiftServer")
-        
-        guard let cancellable = command.runWithCancellation("./run.sh") else {
+        guard let cancellable = ssh.remoteWithCancellation(command: "cd ReplicantSwiftServer; ./run.sh") else {
             print("failed to execute run.sh")
             return nil
         }
@@ -62,7 +52,7 @@ struct PacketCaptureController
     }
     
     func runMoonbounce() -> Cancellable? {
-        command.cd("~/Moonbounce")
+        command.cd("\(homeDir)/Moonbounce")
         
         guard let cancellable = command.runWithCancellation("xcodebuild", "-product", "testPing", "Moonbounce.xcodeproj", "-scheme", "MoonbounceTests", "-testPlan", "MoonbounceTests", "test") else {
             print("failed to execute Moonbounce test")
@@ -85,7 +75,7 @@ struct PacketCaptureController
         }
         
         //run tcpdump and wait a while for the server to receive the packets
-        guard let cancellable = command.runWithCancellation("tcpdump", "-w", "packets.pcap") else {
+        guard let cancellable = ssh.remoteWithCancellation(command: "tcpdump -w packets.pcap") else {
             print("failed to run tcpDump")
             return nil
         }

@@ -24,6 +24,7 @@ struct PacketCapture: ParsableCommand
         var packetCapture: Cancellable? = nil
         var moonbounceTest: Cancellable? = nil
         let scp = SCP(username: "root", host: replicantServerIP)
+        let homeDir = File.homeDirectory().path
         
         packetCaptureController.buildForLinux()
         
@@ -36,10 +37,11 @@ struct PacketCapture: ParsableCommand
         }
         
         // sleep for 30 seconds
-        Thread.sleep(forTimeInterval: 30)
+        Thread.sleep(forTimeInterval: 10)
         queue.async {
             moonbounceTest = packetCaptureController.runMoonbounce()
         }
+        print("running the moonbounceTest")
         Thread.sleep(forTimeInterval: 30)
         
         if let unwrappedPacketCapture = packetCapture {
@@ -60,9 +62,11 @@ struct PacketCapture: ParsableCommand
             print("Replicant server failed to initialize")
         }
         
+        Thread.sleep(forTimeInterval: 5)
+        
         if let unwrappedScp = scp {
             //scp root@138.197.196.245:packets.pcap packets.pcap
-            unwrappedScp.download(remotePath: "packets.pcap", localPath: "~/packets.pcap")
+            unwrappedScp.download(remotePath: "packets.pcap", localPath: "\(homeDir)/packets.pcap")
         } else {
           print("scp unsuccessful")
         }
