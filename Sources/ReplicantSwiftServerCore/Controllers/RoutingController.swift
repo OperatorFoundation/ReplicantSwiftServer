@@ -67,7 +67,8 @@ public class RoutingController
             print("IPV4 address: \(ipv4)")
             print(ipv4.description)
             
-            let destAddress = ipv4.destinationAddress.debugDescription
+            let destAddressData = ipv4.destinationAddress
+            let destAddress = "\(destAddressData[0].string).\(destAddressData[1].string).\(destAddressData[2].string).\(destAddressData[3].string)"
             print("destAddress: \(destAddress)")
 
             guard let conduit = self.conduitCollection.getConduit(with: destAddress)
