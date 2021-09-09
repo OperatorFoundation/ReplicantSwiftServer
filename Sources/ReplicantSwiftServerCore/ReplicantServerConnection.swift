@@ -159,7 +159,7 @@ open class ReplicantServerConnection: Connection
     func startReceivingPackets()
     {
         // This is actually kicking off a loop that will continue reading
-        self.readMessages
+        self.readMessages(log: self.log)
         {
             (message) in
             
