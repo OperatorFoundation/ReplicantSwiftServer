@@ -16,7 +16,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.3.0"),
-        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.14"),
+        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.15"),
         .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.3"),
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.5"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionLinux.git", from: "0.3.3"),
@@ -75,7 +75,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.3.0"),
-        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.14"),
+        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.15"),
         .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.3"),
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.5"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionLinux.git", from: "0.3.3"),
