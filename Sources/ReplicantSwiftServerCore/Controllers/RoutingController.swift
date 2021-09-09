@@ -95,6 +95,8 @@ public class RoutingController
                     {
                         print("\nReceived a send error: \(sendError)\n")
                         return
+                    } else {
+                        self.logger.debug("finished sending an IPDataV4 message to the client")
                     }
                 })
             )
