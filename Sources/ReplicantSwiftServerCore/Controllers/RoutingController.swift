@@ -292,7 +292,7 @@ public class RoutingController
     func transfer(from receiveConnection: Transport.Connection, toAddress sendAddress: String)
     {
         print("Transfer called")
-        receiveConnection.readMessages
+        receiveConnection.readMessages(log: self.logger)
         {
             (message) in
             
