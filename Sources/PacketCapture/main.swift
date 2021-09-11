@@ -41,25 +41,25 @@ struct PacketCapture: ParsableCommand
         queue.async {
             moonbounceTest = packetCaptureController.runMoonbounce()
         }
-        print("running the moonbounceTest")
+        //print("running the moonbounceTest")
         Thread.sleep(forTimeInterval: 30)
         
         if let unwrappedPacketCapture = packetCapture {
             unwrappedPacketCapture.cancel()
         } else {
-            print("packet capture failed")
+            //print("packet capture failed")
         }
         
         if let unwrappedMoonbounceTest = moonbounceTest {
             unwrappedMoonbounceTest.cancel()
         } else {
-            print("Moonbounce test failed")
+            //print("Moonbounce test failed")
         }
         
         if let unwrappedReplicantServer = replicantServer {
             unwrappedReplicantServer.cancel()
         } else {
-            print("Replicant server failed to initialize")
+            //print("Replicant server failed to initialize")
         }
         
         Thread.sleep(forTimeInterval: 5)
@@ -68,7 +68,7 @@ struct PacketCapture: ParsableCommand
             //scp root@138.197.196.245:packets.pcap packets.pcap
             unwrappedScp.download(remotePath: "packets.pcap", localPath: "\(homeDir)/packets.pcap")
         } else {
-          print("scp unsuccessful")
+          //print("scp unsuccessful")
         }
     }
 

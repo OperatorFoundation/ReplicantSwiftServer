@@ -200,18 +200,18 @@ open class ReplicantServerConnection: Connection
         }
         else
         {
-            print("Replicant send is calling network send")
-            print("\n network:\(type(of: network))\n ")
+            //print("Replicant send is calling network send")
+            //print("\n network:\(type(of: network))\n ")
             network.send(content: content, contentContext: contentContext, isComplete: isComplete, completion: .contentProcessed({
                 maybeError in
-                print("Replicant send completion handler called")
+                //print("Replicant send completion handler called")
                 switch completion {
                     case .contentProcessed(let callback):
                         callback(maybeError)
                     default: return
                 }
             }))
-            print("Replicant send is finished calling network send")
+            //print("Replicant send is finished calling network send")
         }
     }
     

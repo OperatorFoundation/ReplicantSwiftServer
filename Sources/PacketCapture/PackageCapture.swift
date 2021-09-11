@@ -27,11 +27,11 @@ struct PacketCaptureController
         
         if result
         {
-            print("Finished building ReplicantSwiftServer.")
+            //print("Finished building ReplicantSwiftServer.")
         }
         else
         {
-            print("Failed to build ReplicantSwiftServer")
+            //print("Failed to build ReplicantSwiftServer")
         }
     }
 
@@ -39,12 +39,12 @@ struct PacketCaptureController
         guard let ssh = SSH(username: "root", host: replicantServerIP)
         else
         {
-            print("could not ssh into packet capture server.")
+            //print("could not ssh into packet capture server.")
             return nil
         }
         
         guard let cancellable = ssh.remoteWithCancellation(command: "cd ReplicantSwiftServer; ./run.sh") else {
-            print("failed to execute run.sh")
+            //print("failed to execute run.sh")
             return nil
         }
         
@@ -55,7 +55,7 @@ struct PacketCaptureController
         command.cd("\(homeDir)/Moonbounce")
         
         guard let cancellable = command.runWithCancellation("xcodebuild", "-product", "testPing", "Moonbounce.xcodeproj", "-scheme", "MoonbounceTests", "-testPlan", "MoonbounceTests", "test") else {
-            print("failed to execute Moonbounce test")
+            //print("failed to execute Moonbounce test")
             return nil
         }
         
@@ -65,22 +65,22 @@ struct PacketCaptureController
     func runPacketCapture() -> Cancellable?
     {
         // TODO: put these prints on all functions
-        print("* beginning runPacketCapture() *")
+        //print("* beginning runPacketCapture() *")
         // ssh into the server
         guard let ssh = SSH(username: "root", host: replicantServerIP)
         else
         {
-            print("could not ssh into packet capture server.")
+            //print("could not ssh into packet capture server.")
             return nil
         }
         
         //run tcpdump and wait a while for the server to receive the packets
         guard let cancellable = ssh.remoteWithCancellation(command: "tcpdump -w packets.pcap") else {
-            print("failed to run tcpDump")
+            //print("failed to run tcpDump")
             return nil
         }
         
-        print("* finished runPacketCapture() *")
+        //print("* finished runPacketCapture() *")
         
         return cancellable
     }

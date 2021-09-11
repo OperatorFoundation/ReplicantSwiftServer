@@ -10,7 +10,7 @@ import NetworkLinux
 import Network
 #endif
 
-print("\nI'm here to listen for Replicants.")
+//print("\nI'm here to listen for Replicants.")
 
 
 let consoleIO = ConsoleIO()
@@ -23,7 +23,7 @@ if let replicantServer = ReplicantServer()
 }
 else
 {
-    print("Unable to process your request: Failed to launch the Replicant Server.")
+    //print("Unable to process your request: Failed to launch the Replicant Server.")
 }
 
 

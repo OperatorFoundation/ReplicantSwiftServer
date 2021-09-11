@@ -162,7 +162,7 @@ class ReplicantServer
         guard let serverReplicantConfig = ReplicantServerConfig(polish: nil, toneBurst: nil)
         else
         {
-            print("failed to create Replicant Config")
+            //print("failed to create Replicant Config")
             return
         }
         
