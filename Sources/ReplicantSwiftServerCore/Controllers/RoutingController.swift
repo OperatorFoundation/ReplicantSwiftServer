@@ -46,46 +46,46 @@ public class RoutingController
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
-        //print("RoutingController.startListening")
+        print("RoutingController.startListening")
         var packetCount = 0
         let reader =
         {
             (data: Data) in
 
             packetCount += 1
-            //print("packet count: \(packetCount)")
-            //print("Number of bytes: \(data.count)")
-            //print(data.hex)
-            //print(data.array)
+            print("packet count: \(packetCount)")
+            print("Number of bytes: \(data.count)")
+            print(data.hex)
+            print(data.array)
             
             guard let ipv4 = IPv4(data: data) else
             {
-                //print("no ipv4")
+                print("no ipv4")
                 return
             }
 
-            //print("IPV4 address: \(ipv4)")
-            //print(ipv4.description)
+            print("IPV4 address: \(ipv4)")
+            print(ipv4.description)
             
             let destAddressData = ipv4.destinationAddress
             let destAddress = "\(destAddressData[0].string).\(destAddressData[1].string).\(destAddressData[2].string).\(destAddressData[3].string)"
-            //print("destAddress: \(destAddress)")
+            print("destAddress: \(destAddress)")
 
             guard let conduit = self.conduitCollection.getConduit(with: destAddress)
             else {
-                //print("Could not find Conduit")
+                print("Could not find Conduit")
                 return
             }
-            //print("conduit: \(conduit)")
+            print("conduit: \(conduit)")
 
             let sendConnection = conduit.transportConnection
-            //print("sendConnection: \(sendConnection)")
+            print("sendConnection: \(sendConnection)")
 
             // FIXME: May not be IPV4
-            //print("🌷 Transfer from TUN payload: \(data) 🌷")
+            print("🌷 Transfer from TUN payload: \(data) 🌷")
             let message = Message.IPDataV4(data)
-            //print("message: \(message)")
-            //print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
+            print("message: \(message)")
+            print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
 
             sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
                 {
@@ -93,7 +93,7 @@ public class RoutingController
 
                     if let sendError = maybeSendError
                     {
-                        //print("\nReceived a send error: \(sendError)\n")
+                        print("\nReceived a send error: \(sendError)\n")
                         return
                     } else {
                         self.logger.debug("finished sending an IPDataV4 message to the client")
@@ -105,7 +105,7 @@ public class RoutingController
         guard let tunDevice = TunDevice(address: "10.0.0.1", reader: reader)
         else
         {
-            //print("🚨 Failed to create tun device. 🚨")
+            print("🚨 Failed to create tun device. 🚨")
             //return nil
             return
         }
@@ -115,24 +115,24 @@ public class RoutingController
         //setup routing (nat, ip forwarding, and mtu)
         // FIXME - server config should include an interface name to listen for connections on, for now it's static...
         let internetInterface: String = "eth0"
-        //print("⚠️ Setting internet interface to value: \(internetInterface)! Update code to set value from config file. ⚠️")
+        print("⚠️ Setting internet interface to value: \(internetInterface)! Update code to set value from config file. ⚠️")
 
         guard let tunName = tunDevice.maybeName else {
-            //print("could not find tun name")
+            print("could not find tun name")
             return
         }
         setMTU(interface: tunName, mtu: 1380)
-        //print("tun Name: \(tunName)")
+        print("tun Name: \(tunName)")
         //setAddressV6(interfaceName: tunName, addressString: tunAv6, subnetPrefix: 64)
 
         setIPv4Forwarding(setTo: true)
         //setIPv6Forwarding(setTo: true)
 
-        //print("[S] Deleting all ipv4 NAT entries for \(internetInterface)")
+        print("[S] Deleting all ipv4 NAT entries for \(internetInterface)")
         while deleteServerNAT(serverPublicInterface: internetInterface) {}
         
 
-        //        //print("[S] Deleting all ipv6 NAT entries for \(internetInterface)")
+        //        print("[S] Deleting all ipv6 NAT entries for \(internetInterface)")
         //        var result6 = false
         //        while !result6
         //        {
@@ -140,19 +140,19 @@ public class RoutingController
         //        }
 
         configServerNAT(serverPublicInterface: internetInterface)
-        //print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
+        print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
 
         //        configServerNATv6(serverPublicInterface: internetInterface)
         //        print("[S] Current ipv6 NAT: \n\n\(getNATv6())\n\n")
 
         let port = serverConfig.port
-        //print("\n! Listening on port \(port)")
+        print("\n! Listening on port \(port)")
 
         self.replicantEnabled = replicantEnabled
         
         if replicantEnabled
         {
-            //print("Replicant listener")
+            print("Replicant listener")
             do
             {
                 let replicantListener = try ReplicantListener(replicantConfig: replicantConfig, serverConfig: serverConfig, logger: logger)
@@ -161,22 +161,22 @@ public class RoutingController
                 {
                     (replicantConnection) in
 
-                    //print("\nNew Replicant connection rececived.")
+                    print("\nNew Replicant connection rececived.")
                     self.consoleIO.writeMessage("New Replicant Connection!")
                     self.process(newReplicantConnection: replicantConnection, port: serverConfig.port)
                 }
                 
                 replicantListener.start(queue: listenerQueue)
-                //print("! Replicant listener started and listening")
+                print("! Replicant listener started and listening")
             }
             catch
             {
-                //print("\nUnable to create ReplicantListener\n")
+                print("\nUnable to create ReplicantListener\n")
             }
         }
         else
         {
-            //print("! Plain listener")
+            print("! Plain listener")
             do
             {
                 #if os(Linux)
@@ -184,12 +184,12 @@ public class RoutingController
                 #else
                 guard let listener = Transmission.Listener(port: Int(serverConfig.port.rawValue)) else {return}
                 #endif
-                //print("started listener")
+                print("started listener")
 
                 while true
                 {
                   guard let connection = listener.accept() else {return}
-                  //print("\nNew plain connection rececived.")
+                  print("\nNew plain connection rececived.")
                   self.consoleIO.writeMessage("New plain Connection!")
                   let transport = TransmissionToTransportConnection(connection)
                   self.process(newReplicantConnection: transport, port: serverConfig.port)
@@ -197,7 +197,7 @@ public class RoutingController
             }
             catch
             {
-                //print("\nUnable to create ReplicantListener\n")
+                print("\nUnable to create ReplicantListener\n")
             }
         }
         
@@ -208,7 +208,7 @@ public class RoutingController
         //            self.transferFromTUN()
         //        }
 
-      //print("End RoutingController.startListening")
+      print("End RoutingController.startListening")
     }
     
     func debugListenerStateUpdateHandler(newState: NWListener.State)
@@ -216,13 +216,13 @@ public class RoutingController
         switch newState
         {
             case .ready:
-                //print("\nListening...\n")
+                print("\nListening...\n")
             case .failed(let error):
-                //print("\nListener failed with error: \(error.localizedDescription)\n")
+                print("\nListener failed with error: \(error.localizedDescription)\n")
             case .waiting(let error):
-                //print("\nListener waiting with error: \(error)\n")
+                print("\nListener waiting with error: \(error)\n")
             default:
-                //print("\nReceived unexpected state: \(newState)\n")
+                print("\nReceived unexpected state: \(newState)\n")
         }
     }
     
@@ -231,40 +231,40 @@ public class RoutingController
         switch newState
         {
             case .cancelled:
-                //print("Server connection canceled.\n")
+                print("Server connection canceled.\n")
             case .failed(let networkError):
-                //print("Server connection failed with error:  \(networkError)\n")
+                print("Server connection failed with error:  \(networkError)\n")
             case .preparing:
-                //print("Preparing connection to server.\n")
+                print("Preparing connection to server.\n")
             case .setup:
-                //print("Connection in setup phase.\n")
+                print("Connection in setup phase.\n")
             case .waiting(let waitError):
-                //print("⏳ Connection waiting with error: \(waitError)\n")
+                print("⏳ Connection waiting with error: \(waitError)\n")
             case .ready:
-                //print("Connection is Ready\n")
+                print("Connection is Ready\n")
         }
     }
 
     func process(newReplicantConnection: Transport.Connection, port: NWEndpoint.Port)
     {
-        //print("Routing controller listener connection handler called.")
+        print("Routing controller listener connection handler called.")
 
         // FIXME - support IPv6
         guard let address = pool.allocate() else
         {
-            //print("Error getting connection address in connection handler.")
+            print("Error getting connection address in connection handler.")
             return
         }
         
         guard let v4 = IPv4Address(address) else
         {
-            //print("Unable to get IPV4 address in connection handler.")
+            print("Unable to get IPV4 address in connection handler.")
             return
         }
         
         conduitCollection.addConduit(address: address, transportConnection: newReplicantConnection)
 
-        //print("conduit added successfully")
+        print("conduit added successfully")
         
         // FIXME - support IPv6
         let ipv4AssignMessage = Message.IPAssignV4(v4)
@@ -272,10 +272,10 @@ public class RoutingController
         {
             (maybeError) in
             
-            //print("\n🌷 Listener connection handler sent a message.\(ipv4AssignMessage) 🌷")
+            print("\n🌷 Listener connection handler sent a message.\(ipv4AssignMessage) 🌷")
             guard maybeError == nil else
             {
-                //print("Error sending IP assignment")
+                print("Error sending IP assignment")
                 return
             }
             
@@ -283,70 +283,70 @@ public class RoutingController
             
             transferQueue1.async
             {
-                //print("Starting Transfer")
+                print("Starting Transfer")
                 self.transfer(from: newReplicantConnection, toAddress: address)
-                //print("Transfer Finished")
+                print("Transfer Finished")
             }
         }
-        //print("WriteMessage called!")
+        print("WriteMessage called!")
     }
     
     func transfer(from receiveConnection: Transport.Connection, toAddress sendAddress: String)
     {
-        //print("Transfer called")
+        print("Transfer called")
         receiveConnection.readMessages(log: self.logger)
         {
             (message) in
             
-            //print("🌷 Received a message: \(message.description) 🌷")
+            print("🌷 Received a message: \(message.description) 🌷")
             
             switch message
             {
                 case .IPDataV4(let payload):
-                    //print("\nReading an ipv4 message")
+                    print("\nReading an ipv4 message")
                     let now = Date()
                     
-                    //print("Checking for sourceAddress")
+                    print("Checking for sourceAddress")
                     guard let sourceAddress = IPv4Address(sendAddress) else
                     {
-                        //print("sourceAddress is nil")
+                        print("sourceAddress is nil")
                         return
                     }
                     
-                    //print("Checking for IPV4 Packet")
+                    print("Checking for IPV4 Packet")
                     guard let ipv4 = IPv4(data: payload)
                     else {
-                        //print("Packet was not IPV4")
+                        print("Packet was not IPV4")
                         return
                     }
                     
-                    //print("checking sourceAddress value")
+                    print("checking sourceAddress value")
                     guard ipv4.sourceAddress == sourceAddress.rawValue else
                     {
-                        //print(ipv4.description)
-                        //print("sourceAddress value was unexpected. packet:\(ipv4.sourceAddress.array), assigned ip:\(sourceAddress.rawValue.array)")
+                        print(ipv4.description)
+                        print("sourceAddress value was unexpected. packet:\(ipv4.sourceAddress.array), assigned ip:\(sourceAddress.rawValue.array)")
                         
                         return
                     }
 
-                    //print("Checking for tun device")
+                    print("Checking for tun device")
                     if let ourTun = self.tun{
 
                         let bytesWritten = ourTun.writeBytes(payload)
-                        //print("tun device wrote \(bytesWritten) bytes.")
-                        //print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
+                        print("tun device wrote \(bytesWritten) bytes.")
+                        print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
                     } else {
-                        //print("no tun device")
+                        print("no tun device")
                         return
                     }
                 case .IPDataV6(let payload):
-                    //print("\nReading an IPV6 message.")
+                    print("\nReading an IPV6 message.")
                     if let ourTun = self.tun {
                         let bytesWritten = ourTun.writeBytes(payload)
-                        //print("tun device wrote \(bytesWritten) bytes.")
+                        print("tun device wrote \(bytesWritten) bytes.")
                     }
                 default:
-                    //print("\nUnsupported message type")
+                    print("\nUnsupported message type")
                     return
             }
         }

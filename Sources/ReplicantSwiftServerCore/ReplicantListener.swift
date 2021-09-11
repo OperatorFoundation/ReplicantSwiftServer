@@ -52,13 +52,13 @@ class ReplicantListener: Transport.Listener
         #if os(Linux)
         guard let listener = TransmissionLinux.Listener(port: Int(serverConfig.port.rawValue)) else
 	{
-            //print("\n😮  Listener creation error  😮\n")
+            print("\n😮  Listener creation error  😮\n")
             throw ListenerError.initializationError
         }
         #else
         guard let listener = Transmission.Listener(port: Int(serverConfig.port.rawValue)) else
 	{
-            //print("\n😮  Listener creation error  😮\n")
+            print("\n😮  Listener creation error  😮\n")
             throw ListenerError.initializationError
         }
         #endif
@@ -68,11 +68,11 @@ class ReplicantListener: Transport.Listener
 
     #if os(Linux)    
     func replicantListenerNewConnectionHandler(newConnection: TransmissionLinux.Connection) {
-        //print("\nReplicant Listener new connection handler called.")
+        print("\nReplicant Listener new connection handler called.")
         guard var replicantConnection = makeReplicant(connection: newConnection)
         else
         {
-            //print("Unable to convert new connection to a Replicant connection.")
+            print("Unable to convert new connection to a Replicant connection.")
             return
         }
         
@@ -96,7 +96,7 @@ class ReplicantListener: Transport.Listener
 //        }
         
         replicantConnection.start(queue: queue!)
-        //print("Replicant connection started!")
+        print("Replicant connection started!")
         
                 if let connectionHandler = self.newTransportConnectionHandler
                 {
@@ -106,11 +106,11 @@ class ReplicantListener: Transport.Listener
     }
     #else
     func replicantListenerNewConnectionHandler(newConnection: Transmission.Connection) {
-        //print("\nReplicant Listener new connection handler called.")
+        print("\nReplicant Listener new connection handler called.")
         guard var replicantConnection = makeReplicant(connection: newConnection)
         else
         {
-            //print("Unable to convert new connection to a Replicant connection.")
+            print("Unable to convert new connection to a Replicant connection.")
             return
         }
         
@@ -118,12 +118,12 @@ class ReplicantListener: Transport.Listener
         {
             newState in
             
-            //print("Received a state update on our Replicant connection: \(newState)")
+            print("Received a state update on our Replicant connection: \(newState)")
             
             switch newState
             {
             case .ready:
-                //print("Replicant connection state update handler is in the READY state.")
+                print("Replicant connection state update handler is in the READY state.")
                 if let connectionHandler = self.newTransportConnectionHandler
                 {
                     connectionHandler(replicantConnection)
@@ -151,11 +151,11 @@ class ReplicantListener: Transport.Listener
         
         if newConnection == nil
         {
-            //print("\nReplicant connection factory returned a nil connection object.")
+            print("\nReplicant connection factory returned a nil connection object.")
         }
         else
         {
-            //print("\nConnection object created with Replicant connection factory.")
+            print("\nConnection object created with Replicant connection factory.")
         }
         
         return newConnection
@@ -172,11 +172,11 @@ class ReplicantListener: Transport.Listener
         
         if newConnection == nil
         {
-            //print("\nReplicant connection factory returned a nil connection object.")
+            print("\nReplicant connection factory returned a nil connection object.")
         }
         else
         {
-            //print("\nConnection object created with Replicant connection factory.")
+            print("\nConnection object created with Replicant connection factory.")
         }
         
         return newConnection

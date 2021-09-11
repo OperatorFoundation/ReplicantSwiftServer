@@ -128,7 +128,7 @@ final class ReplicantSwiftServerTests: XCTestCase
         guard let port = NWEndpoint.Port(rawValue: 51820)
         else
         {
-            //print("\nUnable to initialize port.\n")
+            print("\nUnable to initialize port.\n")
             XCTFail()
             return
         }
@@ -138,7 +138,7 @@ final class ReplicantSwiftServerTests: XCTestCase
         guard let jsonData = serverConfig.createJSON()
         else
         {
-            //print("\nUnable to convert ServerConfig to JSON.\n")
+            print("\nUnable to convert ServerConfig to JSON.\n")
             XCTFail()
             return
         }
@@ -185,7 +185,7 @@ final class ReplicantSwiftServerTests: XCTestCase
         guard let port = NWEndpoint.Port(rawValue: testPort)
             else
         {
-            //print("\nUnable to initialize port.\n")
+            print("\nUnable to initialize port.\n")
             XCTFail()
             return
         }
@@ -219,7 +219,7 @@ final class ReplicantSwiftServerTests: XCTestCase
         guard let replicantClientConfig = ReplicantConfig(polish: nil, toneBurst: nil)
             else
         {
-            //print("\nUnable to create ReplicantClient config.\n")
+            print("\nUnable to create ReplicantClient config.\n")
             XCTFail()
             return
         }
@@ -246,7 +246,7 @@ final class ReplicantSwiftServerTests: XCTestCase
                             
                             if let error = maybeError
                             {
-                                //print("\nreceived an error on client connection send: \(error)\n")
+                                print("\nreceived an error on client connection send: \(error)\n")
                                 XCTFail()
                                 return
                             }
@@ -254,7 +254,7 @@ final class ReplicantSwiftServerTests: XCTestCase
                             sent.fulfill()
                     }))
                 default:
-                    //print("\nReceived a state other than ready: \(state)\n")
+                    print("\nReceived a state other than ready: \(state)\n")
                     return
             }
         }
@@ -278,7 +278,7 @@ final class ReplicantSwiftServerTests: XCTestCase
             else
         {
             //FIXME: This is the approach taken in the apple docs but...
-            //print("Something went wrong, the app support directory is empty.")
+            print("Something went wrong, the app support directory is empty.")
             return nil
         }
         
@@ -292,11 +292,11 @@ final class ReplicantSwiftServerTests: XCTestCase
         do
         {
             try fileManager.createDirectory(at: directoryPath, withIntermediateDirectories: true, attributes: nil)
-            //print("\nCreated a directory at: \(directoryPath)\n")
+            print("\nCreated a directory at: \(directoryPath)\n")
         }
         catch (let error)
         {
-            //print("\nEncountered an error attempting to create our application support directory: \(error)\n")
+            print("\nEncountered an error attempting to create our application support directory: \(error)\n")
             return nil
         }
         
