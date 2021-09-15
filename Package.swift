@@ -3,7 +3,6 @@
 
 import PackageDescription
 
-#if os(macOS)
 let package = Package(
     name: "ReplicantSwiftServer",
     platforms: [
@@ -15,74 +14,15 @@ let package = Package(
         .executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"])
     ],
     dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.3.0"),
-        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.16"),
-        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.3"),
-        .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.5"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionLinux.git", from: "0.3.3"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "0.2.6"),
-        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.10"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.10.0"),
-        .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.8"),
-        .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from:"1.2.3"),
-        .package(url: "https://github.com/apple/swift-argument-parser.git",
-                 from: "0.4.4"),
-        .package(url: "https://github.com/OperatorFoundation/Gardener.git",
-                 from: "0.0.47"),
-        .package(url: "https://github.com/OperatorFoundation/SwiftQueue.git", from: "0.1.0")
-    ],
-    targets: [
-        // Targets are the basic building blocks of a package. A target can define a module or a test suite.
-        // Targets can depend on other targets in this package, and on products in packages which this package depends on.
-
-        .target(
-            name: "ReplicantSwiftServerCore",
-            dependencies: [
-		"ReplicantSwift",
-		"Transport",
-		"Flower",
-		"Tun",
-		"Flow",
-		"InternetProtocols",
-		"Routing",
-        "SwiftHexTools",
-        "TransmissionTransport",
-        ]),
-        .target(
-            name: "ReplicantSwiftServer",
-            dependencies: ["ReplicantSwiftServerCore"]),
-        .target(
-            name: "PacketCapture",
-            dependencies: ["Gardener", "SwiftQueue",
-                           .product(name: "ArgumentParser",
-                                    package: "swift-argument-parser")]),
-        .testTarget(
-            name: "ReplicantSwiftServerTests",
-            dependencies: ["ReplicantSwiftServerCore"]),
-    ],
-    swiftLanguageVersions: [.v5]
-)
-#else
-let package = Package(
-    name: "ReplicantSwiftServer",
-    platforms: [
-        .macOS(.v11)
-    ],
-    products: [
-        // Products define the executables and libraries produced by a package, and make them visible to other packages.
-        .library(name: "ReplicantSwiftServerCore", targets: ["ReplicantSwiftServerCore"]),
-        .executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"])
-    ],
-    dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.3.0"),
-        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.16"),
-        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.3"),
-        .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.5"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionLinux.git", from: "0.3.3"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "0.2.7"),
-        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.10"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.10.0"),
-        .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.8"),
+        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.3.1"),
+        .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.17"),
+        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.4"),
+        .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.6"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionLinux.git", from: "0.3.4"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "0.2.8"),
+        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.12"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.10.3"),
+        .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.9"),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from:"1.2.3"),
     ],
     targets: [
@@ -113,4 +53,3 @@ let package = Package(
     ],
     swiftLanguageVersions: [.v5]
 )
-#endif
