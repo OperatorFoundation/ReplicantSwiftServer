@@ -15,15 +15,8 @@ import Flower
 import Tun
 import Routing
 import SwiftHexTools
-
-
 import NetworkLinux
-
-#if os(Linux)
 import TransmissionLinux
-#else
-import Transmission
-#endif
 
 import TransmissionTransport
 
@@ -179,11 +172,7 @@ public class RoutingController
             print("! Plain listener")
             do
             {
-                #if os(Linux)
                 guard let listener = TransmissionLinux.Listener(port: Int(serverConfig.port.rawValue)) else {return}
-                #else
-                guard let listener = Transmission.Listener(port: Int(serverConfig.port.rawValue)) else {return}
-                #endif
                 print("started listener")
 
                 while true

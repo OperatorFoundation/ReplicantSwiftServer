@@ -32,12 +32,7 @@ import Logging
 import Flower
 import Transport
 import ReplicantSwift
-
-#if os(Linux)
 import NetworkLinux
-#else
-import Network
-#endif
 
 open class ReplicantServerConnection: Connection
 {
@@ -244,12 +239,8 @@ open class ReplicantServerConnection: Connection
             switch completion
             {
                 case .contentProcessed(let handler):
-                    #if os(Linux)
                     let errorCode: Int32 = 126
                     handler(NWError.posix(POSIXErrorCode(rawValue: errorCode)!))
-                    #else
-                    handler(NWError.posix(POSIXErrorCode.EAUTH))
-                    #endif
                     
                     bufferLock.leave()
                     return
@@ -304,15 +295,9 @@ open class ReplicantServerConnection: Connection
                 // Start the timer
                 if self.sendBuffer.count > 0
                 {
-                    #if os(Linux)
+                    
                     // FIXME: Different timer for Linux as #selector requires objC
-                    #else
-                    self.sendTimer = Timer(timeInterval: TimeInterval(polishServer.chunkTimeout),
-                                           target: self,
-                                           selector: #selector(self.chunkTimeout),
-                                           userInfo: nil,
-                                           repeats: true)
-                    #endif
+                    
                 }
                 
                 switch completion

@@ -12,12 +12,7 @@ import Datable
 import ReplicantSwiftServerCore
 import ReplicantSwift
 import Transport
-
-#if os(Linux)
 import NetworkLinux
-#else
-import Network
-#endif
 
 class ReplicantServer
 {

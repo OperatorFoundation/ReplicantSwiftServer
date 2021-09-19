@@ -31,12 +31,7 @@ import Logging
 import Transport
 import ReplicantSwift
 import SwiftQueue
-
-#if os(Linux)
 import NetworkLinux
-#else
-import Network
-#endif
 
 open class ReplicantServerConnectionFactory
 {
