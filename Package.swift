@@ -11,7 +11,8 @@ let package = Package(
     products: [
         // Products define the executables and libraries produced by a package, and make them visible to other packages.
         .library(name: "ReplicantSwiftServerCore", targets: ["ReplicantSwiftServerCore"]),
-        .executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"])
+        .executable(name: "ReplicantSwiftServer", targets: ["ReplicantSwiftServer"]),
+        .executable(name: "PacketCapture", targets: ["PacketCapture"])
     ],
     dependencies: [
         .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.3.1"),
@@ -47,6 +48,9 @@ let package = Package(
         .target(
             name: "ReplicantSwiftServer",
             dependencies: ["ReplicantSwiftServerCore"]),
+        .target(
+            name: "PacketCapture",
+            dependencies: ["PacketCapture"]),
         .testTarget(
             name: "ReplicantSwiftServerTests",
             dependencies: ["ReplicantSwiftServerCore"]),
