@@ -50,7 +50,7 @@ let package = Package(
             dependencies: ["ReplicantSwiftServerCore"]),
         .target(
             name: "PacketCapture",
-            dependencies: ["PacketCapture"]),
+            dependencies: ["Gardner", "ReplicantSwiftServer", "ReplicantSwiftServerCore"]),
         .testTarget(
             name: "ReplicantSwiftServerTests",
             dependencies: ["ReplicantSwiftServerCore"]),
