@@ -286,7 +286,7 @@ public class RoutingController
             switch message
             {
                 case .IPDataV4(let payload):
-                    print("\nReading an ipv4 message")
+                    print("\n🚢 Reading an ipv4 message 🚢")
                     let now = Date()
                     
                     print("Checking for sourceAddress")
