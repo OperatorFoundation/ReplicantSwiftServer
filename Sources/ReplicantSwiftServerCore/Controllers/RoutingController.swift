@@ -27,6 +27,7 @@ public class RoutingController
     let listenerQueue = DispatchQueue(label: "Listener")
     var tun: TunDevice?
     let packetSize: Int = 2000 // FIXME - set this to a thoughtful value
+    var packetCount = 0
     
     var conduitCollection = ConduitCollection()
     var replicantEnabled = true
@@ -40,7 +41,6 @@ public class RoutingController
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
     {
         print("RoutingController.startListening")
-        var packetCount = 0
         
         guard let tunDevice = TunDevice(address: "10.0.0.1", reader: self.transferFromTUN)
         else
