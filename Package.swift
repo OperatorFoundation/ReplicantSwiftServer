@@ -27,6 +27,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from:"1.2.3"),
         .package(url: "https://github.com/OperatorFoundation/Gardener.git", from:"0.0.47"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.4.4"),
+        .package(url: "https://github.com/OperatorFoundation/SwiftQueue.git", from: "0.1.0"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -52,7 +53,7 @@ let package = Package(
             dependencies: ["ReplicantSwiftServerCore"]),
         .target(
             name: "PacketCapture",
-            dependencies: ["Gardener", "ReplicantSwiftServer", "ReplicantSwiftServerCore"]),
+            dependencies: ["Gardener", "SwiftQueue", .product(name: "ArgumentParser", package: "swift-argument-parser")]),
         .testTarget(
             name: "ReplicantSwiftServerTests",
             dependencies: ["ReplicantSwiftServerCore"]),
