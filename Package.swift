@@ -25,6 +25,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.10.3"),
         .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.9"),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from:"1.2.3"),
+        .package(url: "https://github.com/OperatorFoundation/Gardener.git", from:"0.0.47"),
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
