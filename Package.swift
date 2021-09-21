@@ -17,11 +17,11 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.3.1"),
         .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "0.1.17"),
-        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"1.1.4"),
+        .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"2.1.0"),
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.7"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionLinux.git", from: "0.3.5"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "0.2.9"),
-        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.12"),
+        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.13"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.10.3"),
         .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.9"),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from:"1.2.3"),
