@@ -179,19 +179,18 @@ public class RoutingController
         print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
 
         print("sendConnection type : \(type(of: sendConnection))")
-        sendConnection.send(content: message.data, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
+        sendConnection.writeMessage(log: self.logger, message: message)
+        {
+            maybeSendError in
+            
+            if let sendError = maybeSendError
             {
-                (maybeSendError) in
-
-                if let sendError = maybeSendError
-                {
-                    print("\nReceived a send error: \(sendError)\n")
-                    return
-                } else {
-                    self.logger.debug("finished sending an IPDataV4 message to the client")
-                }
-            })
-        )
+                print("\nReceived a send error: \(sendError)\n")
+                return
+            } else {
+                self.logger.debug("finished sending an IPDataV4 message to the client")
+            }
+        }
     }
     
     func debugListenerStateUpdateHandler(newState: NWListener.State)
