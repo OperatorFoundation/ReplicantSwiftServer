@@ -45,7 +45,7 @@ let package = Package(
         "Routing",
         "SwiftHexTools",
         "TransmissionTransport",
-        .product(name: "TransmissionLinux", package: "TransmissionLinux")
+        .product(name: "Transmission", package: "Transmission")
             ]
         ),
         .target(

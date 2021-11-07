@@ -13,7 +13,7 @@ import ReplicantSwift
 import SwiftQueue
 import Flower
 import NetworkLinux
-import TransmissionLinux
+import Transmission
 import TransmissionTransport
 
 class ReplicantListener: Transport.Listener
@@ -28,7 +28,7 @@ class ReplicantListener: Transport.Listener
     
     var newConnectionHandler: ((Transport.Connection) -> Void)?
     var config: ReplicantServerConfig
-    var listener: TransmissionLinux.Listener    
+    var listener: Transmission.Listener    
    
     required init(replicantConfig: ReplicantServerConfig, serverConfig: ServerConfig, logger: Logger) throws
     {
@@ -38,7 +38,7 @@ class ReplicantListener: Transport.Listener
         self.logger = logger
         
         // Create the listener
-        guard let listener = TransmissionLinux.Listener(port: Int(serverConfig.port.rawValue)) else
+        guard let listener = Transmission.Listener(port: Int(serverConfig.port.rawValue)) else
 	{
             print("\n😮  Listener creation error  😮\n")
             throw ListenerError.initializationError
@@ -46,7 +46,7 @@ class ReplicantListener: Transport.Listener
         self.listener = listener
     }
 
-    func replicantListenerNewConnectionHandler(newConnection: TransmissionLinux.Connection) {
+    func replicantListenerNewConnectionHandler(newConnection: Transmission.Connection) {
         print("\nReplicant Listener new connection handler called.")
         guard var replicantConnection = makeReplicant(connection: newConnection)
         else
@@ -84,7 +84,7 @@ class ReplicantListener: Transport.Listener
         
     }
     
-    func makeReplicant(connection: TransmissionLinux.Connection) -> Transport.Connection?
+    func makeReplicant(connection: Transmission.Connection) -> Transport.Connection?
     {
         let transport = TransmissionToTransportConnection(connection)
 
