@@ -15,13 +15,13 @@ let package = Package(
         .executable(name: "PacketCapture", targets: ["PacketCapture"])
     ],
     dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.3.1"),
+        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.4.0"),
         .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "2.0.2"),
         .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"2.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.8"),
         .package(url: "https://github.com/OperatorFoundation/Transmission.git", from: "1.0.1"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "0.3.0"),
-        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.0.13"),
+        .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.1.0"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.13.0"),
         .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.9"),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from:"1.2.3"),
