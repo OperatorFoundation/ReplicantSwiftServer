@@ -22,7 +22,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/Transmission.git", from: "1.0.1"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "0.3.0"),
         .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.1.0"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.13.0"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.13.1"),
         .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.9"),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from:"1.2.3"),
         .package(url: "https://github.com/OperatorFoundation/Gardener.git", from:"0.0.47"),
