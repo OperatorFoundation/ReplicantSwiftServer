@@ -1,4 +1,4 @@
-// swift-tools-version:5.3
+// swift-tools-version:5.5
 // The swift-tools-version declares the minimum version of Swift required to build this package.
 
 import PackageDescription
@@ -21,7 +21,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/Transmission.git", from: "1.0.2"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "0.3.0"),
         .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.1.0"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.13.3"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.13.4"),
         .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.9"),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", from:"1.2.3"),
         .package(url: "https://github.com/OperatorFoundation/Gardener.git", from:"0.0.47"),
