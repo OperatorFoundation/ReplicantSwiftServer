@@ -15,7 +15,6 @@ let package = Package(
         .executable(name: "PacketCapture", targets: ["PacketCapture"])
     ],
     dependencies: [
-        .package(url: "https://github.com/OperatorFoundation/Flow.git", from: "0.4.0"),
         .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "2.0.2"),
         .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"2.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.8"),
@@ -40,7 +39,6 @@ let package = Package(
         "Transport",
         "Flower",
         "Tun",
-        "Flow",
         "InternetProtocols",
         "Routing",
         "SwiftHexTools",
