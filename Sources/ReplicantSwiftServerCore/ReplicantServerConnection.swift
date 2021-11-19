@@ -81,63 +81,30 @@ open class ReplicantServerConnection: Connection
     
     public func start(queue: DispatchQueue)
     {
-        network.stateUpdateHandler =
+        self.introductions
         {
-            (newState) in
+            (maybeIntroError) in
             
-            self.log.debug("The state update handler for the tcp connection was called: \(newState)")
-            
-            guard let updateHandler = self.stateUpdateHandler
-            else { return }
-            
-            switch newState
+            guard maybeIntroError == nil
+                else
             {
-            case .failed(let error):
-                self.log.error("Receied a network state update of failed. \nError: \(error)")
-                updateHandler(newState)
-            case .waiting(let error):
-                self.log.error("Received a network state update of waiting. \nError: \(error)")
-                updateHandler(newState)
-            case .ready:
-                guard self.wasReady == false
+                self.log.error("\nError attempting to meet the server during Replicant Connection Init: \(maybeIntroError!)\n")
+                if let introError = maybeIntroError as? NWError
+                {
+                    updateHandler(.failed(introError))
+                }
                 else
                 {
-                    //We've already done all of this let's move on.
-                    return
+                    updateHandler(.cancelled)
                 }
                 
-                self.log.debug("@->- ReplicantServerConnection Network state is READY.")
-                self.wasReady = true
-                self.introductions
-                {
-                    (maybeIntroError) in
-                    
-                    guard maybeIntroError == nil
-                        else
-                    {
-                        self.log.error("\nError attempting to meet the server during Replicant Connection Init: \(maybeIntroError!)\n")
-                        if let introError = maybeIntroError as? NWError
-                        {
-                            updateHandler(.failed(introError))
-                        }
-                        else
-                        {
-                            updateHandler(.cancelled)
-                        }
-                        
-                        return
-                    }
-                    
-                    self.log.debug("\n New Replicant connection is ready. 🎉 \n")
-                    
-                    updateHandler(.ready)
-                }
-            default:
-                updateHandler(newState)
+                return
             }
+            
+            self.log.debug("\n New Replicant connection is ready. 🎉 \n")
+            
+            updateHandler(.ready)
         }
-        
-        network.start(queue: queue)
     }
     
     public func send(content: Data?, contentContext: NWConnection.ContentContext, isComplete: Bool, completion: NWConnection.SendCompletion)
@@ -168,18 +135,17 @@ open class ReplicantServerConnection: Connection
         }
         else
         {
-            print("Replicant send is calling network send")
-            print("\n network:\(type(of: network))\n ")
-            network.send(content: content, contentContext: contentContext, isComplete: isComplete, completion: NWConnection.SendCompletion.contentProcessed({
-                maybeError in
-                print("Replicant send completion handler called")
-                switch completion {
-                    case .contentProcessed(let callback):
-                        callback(maybeError)
-                    default: return
-                }
-            }))
-            print("Replicant send is finished calling network send")
+            log.debug("Replicant send is calling network send")
+            log.debug("\n network:\(type(of: network))\n ")
+            guard network.write(data: content) else {
+                log.error("ReplicantServerConnection.swift: network write failed")
+            }
+            switch completion {
+                case .contentProcessed(let callback):
+                    callback(NWError.posix(POSIXErrorCode.ECONNREFUSED))
+                default: return
+            }
+            log.debug("Replicant send is finished calling network send")
         }
     }
     
@@ -236,56 +202,57 @@ open class ReplicantServerConnection: Connection
         }
         
         // Keep calling network.send if the leftover data is at least chunk size
-        self.network.send(content: maybeEncryptedData, contentContext: contentContext, isComplete: isComplete, completion: NWConnection.SendCompletion.contentProcessed(
+        guard let encryptedData = maybeEncryptedData else {
+            // FIXME: is this all we need to do?
+            self.bufferLock.leave()
+            return
+        }
+        
+        guard self.network.write(data: encryptedData) else {
+            self.log.error("ReplicantServerConnection.swift: Received an error on network write")
+            self.sendTimer!.invalidate()
+            self.sendTimer = nil
+            
+            switch completion
+            {
+                case .contentProcessed(let handler):
+                    handler(NWError.posix(POSIXErrorCode.ECONNREFUSED))
+                    self.bufferLock.leave()
+                    return
+                default:
+                    self.bufferLock.leave()
+                    return
+            }
+            return
+        }
+        
+        if self.sendBuffer.count >= (polishServer.chunkSize)
         {
-            (maybeError) in
-            
-            if let error = maybeError
+            // Play it again Sam
+            self.sendBufferChunks(polishServer: polishServer, contentContext: contentContext, isComplete: isComplete, completion: completion)
+        }
+        else
+        {
+            // Start the timer
+            if self.sendBuffer.count > 0
             {
-                self.log.error("Received an error on Send:\(error)")
-                self.sendTimer!.invalidate()
-                self.sendTimer = nil
                 
-                switch completion
-                {
-                    case .contentProcessed(let handler):
-                        handler(error)
-                        self.bufferLock.leave()
-                        return
-                    default:
-                        self.bufferLock.leave()
-                        return
-                }
+                // FIXME: Different timer for Linux as #selector requires objC
+                
             }
             
-            if self.sendBuffer.count >= (polishServer.chunkSize)
+            switch completion
             {
-                // Play it again Sam
-                self.sendBufferChunks(polishServer: polishServer, contentContext: contentContext, isComplete: isComplete, completion: completion)
+                // FIXME: There might be data in the buffer
+                case .contentProcessed(let handler):
+                    handler(nil)
+                    self.bufferLock.leave()
+                    return
+                default:
+                    self.bufferLock.leave()
+                    return
             }
-            else
-            {
-                // Start the timer
-                if self.sendBuffer.count > 0
-                {
-                    
-                    // FIXME: Different timer for Linux as #selector requires objC
-                    
-                }
-                
-                switch completion
-                {
-                    // FIXME: There might be data in the buffer
-                    case .contentProcessed(let handler):
-                        handler(nil)
-                        self.bufferLock.leave()
-                        return
-                    default:
-                        self.bufferLock.leave()
-                        return
-                }
-            }
-        }))
+        }
     }
 
     public func receive(completion: @escaping (Data?, NWConnection.ContentContext?, Bool, NWError?) -> Void)
@@ -317,30 +284,31 @@ open class ReplicantServerConnection: Connection
             }
             else
             {
-                network.receive(minimumIncompleteLength: Int(polishServerConnection.chunkSize), maximumLength: Int(polishServerConnection.chunkSize))
-                {
-                    (maybeData, maybeContext, connectionComplete, maybeError) in
-                    
-                    // Check to see if we got data
-                    guard let someData = maybeData
-                        else
-                    {
-                        self.log.error("\nReceive called with no content.\n")
-                        completion(maybeData, maybeContext, connectionComplete, maybeError)
-                        return
-                    }
-                    
-                    let maybeReturnData = self.handleReceivedData(polish: polishServerConnection, minimumIncompleteLength: minimumIncompleteLength, maximumLength: maximumLength, encryptedData: someData)
-                    
-                    completion(maybeReturnData, maybeContext, connectionComplete, maybeError)
+                guard let data = network.read(size: Int(polishServerConnection.chunkSize)) else {
+                    self.log.error("ReplicantServerConnection.swift: failed on network read")
+                    completion(nil, nil, true, NWError.posix(POSIXErrorCode.ECONNREFUSED))
                     self.bufferLock.leave()
                     return
                 }
+                
+                let maybeReturnData = self.handleReceivedData(polish: polishServerConnection, minimumIncompleteLength: minimumIncompleteLength, maximumLength: maximumLength, encryptedData: someData)
+                
+                completion(data, nil, false, nil)
+                self.bufferLock.leave()
+                return
             }
         }
         else
         {
-            network.receive(minimumIncompleteLength: minimumIncompleteLength, maximumLength: maximumLength, completion: completion)
+            guard let data = network.read(size: minimumIncompleteLength) else {
+                self.log.error("ReplicantServerConnection.swift: failed on second network read")
+                completion(nil, nil, true, NWError.posix(POSIXErrorCode.ECONNREFUSED))
+                self.bufferLock.leave()
+                return
+            }
+            completion(data, nil, false, nil)
+            self.bufferLock.leave()
+            return
         }
     }
 
