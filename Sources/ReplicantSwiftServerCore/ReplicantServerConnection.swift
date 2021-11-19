@@ -55,7 +55,7 @@ open class ReplicantServerConnection: Connection
     var decryptedReceiveBuffer = Data()
     var wasReady = false
     
-    public init?(connection: Connection,
+    public init?(connection: Transmission.Connection,
                  parameters: NWParameters,
                  replicantConfig: ReplicantServerConfig,
                  logger: Logger)
