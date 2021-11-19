@@ -50,7 +50,7 @@ open class ReplicantServerConnectionFactory
     {
         if let currentConnection = connection
         {
-            return ReplicantServerConnection(connection: currentConnection, parameters: .tcp, replicantConfig: replicantConfig, logger: log)
+            return ReplicantServerConnection(connection: currentConnection, parameters: NWParameters.tcp, replicantConfig: replicantConfig, logger: log)
         }
         
         return nil

@@ -338,7 +338,7 @@ open class ReplicantServerConnection: Connection
                 // Remove what was delivered from the buffer
                 self.decryptedReceiveBuffer = self.decryptedReceiveBuffer[sliceLength...]
                 
-                completion(returnData, NWConnection.ContentContext.defaultMessage, false, nil)
+                completion(returnData, nil, false, nil)
                 bufferLock.leave()
                 return
             }
@@ -535,7 +535,7 @@ open class ReplicantServerConnection: Connection
             self.sendBuffer = Data()
             
             // Keep calling network.send if the leftover data is at least chunk size
-            self.network.send(content: maybeEncryptedData, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
+            self.network.send(content: maybeEncryptedData, contentContext: nil, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
             {
                 (maybeError) in
                 
@@ -572,7 +572,7 @@ open class ReplicantServerConnection: Connection
             self.sendBuffer = Data()
             
             // Keep calling network.send if the leftover data is at least chunk size
-            self.network.send(content: dataChunk, contentContext: .defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
+            self.network.send(content: dataChunk, contentContext: nil, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
             {
                 (maybeError) in
                 
