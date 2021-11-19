@@ -50,7 +50,7 @@ open class ReplicantServerConnection: Connection
     var bufferLock = DispatchGroup()
     var networkQueue = DispatchQueue(label: "Replicant Queue")
     var sendBufferQueue = DispatchQueue(label: "SendBuffer Queue")
-    var network: Connection
+    var network: Transmission.Connection
     var sendBuffer = Data()
     var decryptedReceiveBuffer = Data()
     var wasReady = false
