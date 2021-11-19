@@ -36,17 +36,17 @@ import Net
 open class ReplicantServerConnectionFactory
 {
     public let log: Logger
-    public var connection: Connection?
+    public var connection: Transmission.Connection?
     public var replicantConfig: ReplicantServerConfig
         
-    public init(connection: Connection, replicantConfig: ReplicantServerConfig, logger: Logger)
+    public init(connection: Transmission.Connection, replicantConfig: ReplicantServerConfig, logger: Logger)
     {
         self.connection = connection
         self.replicantConfig = replicantConfig
         self.log = logger
     }
     
-    public func connect() -> Connection?
+    public func connect() -> Transport.Connection?
     {
         if let currentConnection = connection
         {

@@ -138,6 +138,9 @@ open class ReplicantServerConnection: Connection
         {
             log.debug("Replicant send is calling network send")
             log.debug("\n network:\(type(of: network))\n ")
+            guard content != nil else {
+                self.log.error("ReplicantServerConnection.swift: send data was nil")
+            }
             guard network.write(data: content) else {
                 log.error("ReplicantServerConnection.swift: network write failed")
             }
