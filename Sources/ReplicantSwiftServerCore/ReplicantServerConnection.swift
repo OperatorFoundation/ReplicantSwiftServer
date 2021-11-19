@@ -35,7 +35,7 @@ import Transmission
 import ReplicantSwift
 import Net
 
-open class ReplicantServerConnection: Connection
+open class ReplicantServerConnection: Transport.Connection
 {
     public let payloadLengthOverhead = 2
     public var stateUpdateHandler: ((NWConnection.State) -> Void)?
@@ -138,10 +138,10 @@ open class ReplicantServerConnection: Connection
         {
             log.debug("Replicant send is calling network send")
             log.debug("\n network:\(type(of: network))\n ")
-            guard content != nil else {
+            guard let data = content else {
                 self.log.error("ReplicantServerConnection.swift: send data was nil")
             }
-            guard network.write(data: content) else {
+            guard network.write(data: data) else {
                 log.error("ReplicantServerConnection.swift: network write failed")
             }
             switch completion {
@@ -318,7 +318,8 @@ open class ReplicantServerConnection: Connection
 
     public func cancel()
     {
-        network.cancel()
+        // FIXME: need a proper way to cancel network connections
+        // network.cancel()
         
         if let stateUpdate = self.stateUpdateHandler
         {
