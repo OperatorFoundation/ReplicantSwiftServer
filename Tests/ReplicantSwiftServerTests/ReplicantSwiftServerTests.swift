@@ -1,6 +1,6 @@
 import XCTest
 import ReplicantSwift
-import NetworkLinux
+import Net
 @testable import ReplicantSwiftServerCore
 import class Foundation.Bundle
 import SwiftQueue
