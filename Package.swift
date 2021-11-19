@@ -19,7 +19,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"2.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.10"),
         .package(url: "https://github.com/OperatorFoundation/Transmission.git", from: "1.2.1"),
-        .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "1.1.0"),
+        .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "1.1.2"),
         .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.1.0"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.13.9"),
         .package(url: "https://github.com/OperatorFoundation/Routing.git", from:"0.0.9"),
