@@ -31,6 +31,7 @@ import Logging
 
 import Flower
 import Transport
+import Transmission
 import ReplicantSwift
 import Net
 
@@ -91,11 +92,11 @@ open class ReplicantServerConnection: Connection
                 self.log.error("\nError attempting to meet the server during Replicant Connection Init: \(maybeIntroError!)\n")
                 if let introError = maybeIntroError as? NWError
                 {
-                    updateHandler(.failed(introError))
+                    updateHandler(NWConnection.NWState.failed(introError))
                 }
                 else
                 {
-                    updateHandler(.cancelled)
+                    updateHandler(NWConnection.NWState.cancelled)
                 }
                 
                 return
@@ -103,7 +104,7 @@ open class ReplicantServerConnection: Connection
             
             self.log.debug("\n New Replicant connection is ready. 🎉 \n")
             
-            updateHandler(.ready)
+            updateHandler(NWConnection.NWState.ready)
         }
     }
     
@@ -533,7 +534,7 @@ open class ReplicantServerConnection: Connection
         }
     }
     
-    func updateHandler(_ state: NWState) {
+    func updateHandler(_ state: NWConnection.NWState) {
         if let handler = self.stateUpdateHandler {
             handler(state)
         }
