@@ -514,23 +514,15 @@ open class ReplicantServerConnection: Connection
             self.sendBuffer = Data()
             
             // Keep calling network.send if the leftover data is at least chunk size
-            self.network.send(content: dataChunk, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
-            {
-                (maybeError) in
+            guard self.network.write(data: dataChunk) else {
+                self.log.error("Received an error on Send:\(error)")
                 
-                if let error = maybeError
-                {
-                    self.log.error("Received an error on Send:\(error)")
-                    
-                    self.bufferLock.leave()
-                    return
-                }
-                else
-                {
-                    self.bufferLock.leave()
-                    return
-                }
-            }))
+                self.bufferLock.leave()
+                return
+            }
+            
+            self.bufferLock.leave()
+            return
         }
     }
     
