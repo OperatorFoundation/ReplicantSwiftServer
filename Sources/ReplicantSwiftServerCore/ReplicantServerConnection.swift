@@ -50,6 +50,7 @@ open class ReplicantServerConnection: Connection
     var bufferLock = DispatchGroup()
     var networkQueue = DispatchQueue(label: "Replicant Queue")
     var sendBufferQueue = DispatchQueue(label: "SendBuffer Queue")
+    var sendMessageQueue = DispatchQueue(label: "ReplicantServerConnection.sendMessageQueue")
     var network: Transmission.Connection
     var sendBuffer = Data()
     var decryptedReceiveBuffer = Data()
@@ -129,18 +130,6 @@ open class ReplicantServerConnection: Connection
                     
                     self.log.debug("\n New Replicant connection is ready. 🎉 \n")
                     
-                    // Data Handling
-                    self.networkQueue.async
-                    {
-                        self.startReceivingPackets()
-                    }
-                    
-                    self.sendBufferQueue.async
-                    {
-                        self.startSendingPackets()
-                    }
-                    
-                    self.log.debug("💪 Introductions are complete! Let's do some work. 💪")
                     updateHandler(.ready)
                 }
             default:
@@ -149,22 +138,6 @@ open class ReplicantServerConnection: Connection
         }
         
         network.start(queue: queue)
-    }
-    
-    func startReceivingPackets()
-    {
-        // This is actually kicking off a loop that will continue reading
-        self.readMessages(log: self.log)
-        {
-            (message) in
-            
-            self.log.debug("Received a message: \(message)")
-        }
-    }
-    
-    func startSendingPackets()
-    {
-        
     }
     
     public func send(content: Data?, contentContext: NWConnection.ContentContext, isComplete: Bool, completion: NWConnection.SendCompletion)
@@ -197,7 +170,7 @@ open class ReplicantServerConnection: Connection
         {
             print("Replicant send is calling network send")
             print("\n network:\(type(of: network))\n ")
-            network.send(content: content, contentContext: contentContext, isComplete: isComplete, completion: .contentProcessed({
+            network.send(content: content, contentContext: contentContext, isComplete: isComplete, completion: NWConnection.SendCompletion.contentProcessed({
                 maybeError in
                 print("Replicant send completion handler called")
                 switch completion {
@@ -232,7 +205,7 @@ open class ReplicantServerConnection: Connection
         let payloadData = self.sendBuffer[0 ..< polishServer.chunkSize]
         let payloadSize = polishServer.chunkSize
         let dataChunk = payloadSize.data + payloadData
-        guard let polishServerConnection = polishServer.newConnection(connection: self)
+        guard let polishServerConnection = polishServer.newConnection(connection: self.network)
         else
         {
             log.error("Received a send command but we could not derive the symmetric key.")
@@ -389,7 +362,7 @@ open class ReplicantServerConnection: Connection
     func handleReceivedData(polish: PolishServer, minimumIncompleteLength: Int, maximumLength: Int, encryptedData: Data) -> Data?
     {
         // Try to decrypt the entire contents of the encrypted buffer
-        guard let polishServerConnection = polish.newConnection(connection: self)
+        guard let polishServerConnection = polish.newConnection(connection: self.network)
         else
         {
             self.log.error("Unable to decrypt received data: Failed to create a polish connection")
