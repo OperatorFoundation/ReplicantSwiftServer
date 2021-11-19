@@ -202,7 +202,7 @@ open class ReplicantServerConnection: Connection
             self.sendTimer = nil
         }
         
-        // Keep calling network.send if the leftover data is at least chunk size
+        // Keep calling network.write if the leftover data is at least chunk size
         guard let encryptedData = maybeEncryptedData else {
             // FIXME: is this all we need to do?
             self.bufferLock.leave()
@@ -476,24 +476,21 @@ open class ReplicantServerConnection: Connection
             // Buffer should only contain unsent data
             self.sendBuffer = Data()
             
-            // Keep calling network.send if the leftover data is at least chunk size
-            self.network.send(content: maybeEncryptedData, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
-            {
-                (maybeError) in
-                
-                if let error = maybeError
-                {
-                    self.log.error("Received an error on Send:\(error)")
-                    
-                    self.bufferLock.leave()
-                    return
-                }
-                else
-                {
-                    self.bufferLock.leave()
-                    return
-                }
-            }))
+            // Keep calling network.write if the leftover data is at least chunk size
+            guard let encryptedData = maybeEncryptedData else {
+                self.log.error("ReplicantServerConnection.swift: could not unwrap encrypted data")
+                self.bufferLock.leave()
+                return
+            }
+            
+            guard self.network.write(data: encryptedData) else {
+                self.log.error("ReplicantServerConnection.swift: failed network write")
+                self.bufferLock.leave()
+                return
+            }
+            self.bufferLock.leave()
+            return
+            
         }
         else /// Replicant without polish
         {
@@ -513,9 +510,9 @@ open class ReplicantServerConnection: Connection
             // Buffer should only contain unsent data
             self.sendBuffer = Data()
             
-            // Keep calling network.send if the leftover data is at least chunk size
+            // Keep calling network.write if the leftover data is at least chunk size
             guard self.network.write(data: dataChunk) else {
-                self.log.error("Received an error on Send:\(error)")
+                self.log.error("ReplicantServerConnection.swift: Received an error on Send")
                 
                 self.bufferLock.leave()
                 return
