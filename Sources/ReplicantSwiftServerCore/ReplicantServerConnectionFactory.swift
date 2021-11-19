@@ -29,6 +29,7 @@ import Foundation
 import Logging
 
 import Transport
+import Transmission
 import ReplicantSwift
 import SwiftQueue
 import Net
