@@ -32,7 +32,7 @@ import Logging
 import Flower
 import Transport
 import ReplicantSwift
-import NetworkLinux
+import Net
 
 open class ReplicantServerConnection: Connection
 {
@@ -535,7 +535,7 @@ open class ReplicantServerConnection: Connection
             self.sendBuffer = Data()
             
             // Keep calling network.send if the leftover data is at least chunk size
-            self.network.send(content: maybeEncryptedData, contentContext: nil, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
+            self.network.send(content: maybeEncryptedData, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
             {
                 (maybeError) in
                 
@@ -572,7 +572,7 @@ open class ReplicantServerConnection: Connection
             self.sendBuffer = Data()
             
             // Keep calling network.send if the leftover data is at least chunk size
-            self.network.send(content: dataChunk, contentContext: nil, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
+            self.network.send(content: dataChunk, contentContext: NWConnection.ContentContext.defaultMessage, isComplete: false, completion: NWConnection.SendCompletion.contentProcessed(
             {
                 (maybeError) in
                 

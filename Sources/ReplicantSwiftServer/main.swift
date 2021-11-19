@@ -3,7 +3,7 @@ import Logging
 
 import Transport
 import ReplicantSwiftServerCore
-import NetworkLinux
+import Net
 
 print("\nI'm here to listen for Replicants.")
 

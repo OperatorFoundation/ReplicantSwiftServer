@@ -8,7 +8,7 @@
 //import Foundation
 //
 //#if os(Linux)
-//import NetworkLinux
+//import Net
 //#else
 //import Network
 //#endif

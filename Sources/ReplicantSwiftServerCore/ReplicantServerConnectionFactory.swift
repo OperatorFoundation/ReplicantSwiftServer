@@ -31,7 +31,7 @@ import Logging
 import Transport
 import ReplicantSwift
 import SwiftQueue
-import NetworkLinux
+import Net
 
 open class ReplicantServerConnectionFactory
 {

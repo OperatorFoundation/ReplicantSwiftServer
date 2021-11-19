@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/Flower.git", from: "2.0.2"),
         .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", from:"2.1.1"),
         .package(url: "https://github.com/OperatorFoundation/Transport.git", from: "2.3.9"),
-        .package(url: "https://github.com/OperatorFoundation/Transmission.git", from: "1.0.5"),
+        .package(url: "https://github.com/OperatorFoundation/Transmission.git", from: "1.2.0"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", from: "1.1.0"),
         .package(url: "https://github.com/OperatorFoundation/Tun.git", from: "0.1.0"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", from: "0.13.7"),
@@ -27,6 +27,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/Gardener.git", from:"0.0.48"),
         .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.5.0"),
         .package(url: "https://github.com/OperatorFoundation/SwiftQueue.git", from: "0.1.2"),
+        .package(url: "https://github.com/OperatorFoundation/Net.git", from: "0.0.1")
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -43,6 +44,7 @@ let package = Package(
         "Routing",
         "SwiftHexTools",
         "TransmissionTransport",
+        "Net",
         .product(name: "Transmission", package: "Transmission")
             ]
         ),

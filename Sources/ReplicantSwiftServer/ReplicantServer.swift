@@ -12,7 +12,7 @@ import Datable
 import ReplicantSwiftServerCore
 import ReplicantSwift
 import Transport
-import NetworkLinux
+import Net
 
 class ReplicantServer
 {

@@ -12,7 +12,7 @@ import Transport
 import ReplicantSwift
 import SwiftQueue
 import Flower
-import NetworkLinux
+import Net
 import Transmission
 import TransmissionTransport
 
