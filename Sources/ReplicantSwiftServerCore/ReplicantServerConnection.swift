@@ -295,7 +295,8 @@ open class ReplicantServerConnection: Transport.Connection
                     return
                 }
                 
-                let maybeReturnData = self.handleReceivedData(polish: polishServerConnection, minimumIncompleteLength: minimumIncompleteLength, maximumLength: maximumLength, encryptedData: data)
+                // let maybeReturnData = 
+                self.handleReceivedData(polish: polishServerConnection, minimumIncompleteLength: minimumIncompleteLength, maximumLength: maximumLength, encryptedData: data)
                 
                 completion(data, nil, false, nil)
                 self.bufferLock.leave()

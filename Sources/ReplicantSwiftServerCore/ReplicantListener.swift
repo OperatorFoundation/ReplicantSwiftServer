@@ -48,7 +48,7 @@ class ReplicantListener: Transport.Listener
 
     func replicantListenerNewConnectionHandler(newConnection: Transmission.Connection) {
         print("\nReplicant Listener new connection handler called.")
-        guard var replicantConnection = makeReplicant(connection: newConnection)
+        guard let replicantConnection = makeReplicant(connection: newConnection)
         else
         {
             print("Unable to convert new connection to a Replicant connection.")
@@ -115,10 +115,8 @@ class ReplicantListener: Transport.Listener
         {
             [self] in
 
-            if let handler = self.stateUpdateHandler
-            {
-                handler(.ready)
-            }
+            let handler = self.stateUpdateHandler
+            handler(.ready)
 
             while true
             {
