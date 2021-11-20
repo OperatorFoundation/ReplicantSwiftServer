@@ -115,12 +115,14 @@ class ReplicantListener: Transport.Listener
         {
             [self] in
 
-            let handler = self.stateUpdateHandler
+            guard let handler = self.stateUpdateHandler else {
+                return
+            }
             handler(.ready)
 
             while true
             {
-                guard let newNetworkConnection = listener.accept() else {return}
+                let newNetworkConnection = listener.accept()
                 
                 // Try to turn our network connection into a ReplicantServerConnection
                 self.replicantListenerNewConnectionHandler(newConnection: newNetworkConnection)
