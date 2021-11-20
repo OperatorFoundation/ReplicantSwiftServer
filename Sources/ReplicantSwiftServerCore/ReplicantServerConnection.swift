@@ -92,11 +92,11 @@ open class ReplicantServerConnection: Transport.Connection
                 self.log.error("\nError attempting to meet the server during Replicant Connection Init: \(maybeIntroError!)\n")
                 if let introError = maybeIntroError as? NWError
                 {
-                    updateHandler(NWConnection.State.failed(introError))
+                    self.updateHandler(NWConnection.State.failed(introError))
                 }
                 else
                 {
-                    updateHandler(NWConnection.State.cancelled)
+                    self.updateHandler(NWConnection.State.cancelled)
                 }
                 
                 return
@@ -104,7 +104,7 @@ open class ReplicantServerConnection: Transport.Connection
             
             self.log.debug("\n New Replicant connection is ready. 🎉 \n")
             
-            updateHandler(NWConnection.State.ready)
+            self.updateHandler(NWConnection.State.ready)
         }
     }
     
