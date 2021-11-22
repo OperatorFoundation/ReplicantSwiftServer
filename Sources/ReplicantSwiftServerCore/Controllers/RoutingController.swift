@@ -170,7 +170,8 @@ public class RoutingController
         print("conduit: \(conduit)")
 
         let sendConnection = conduit.transportConnection
-        let flowerConnection = FlowerConnection(connection: sendConnection)
+        let transmissionConnection = makeTransmissionConnection(sendConnection)
+        let flowerConnection = FlowerConnection(connection: transmissionConnection)
         print("sendConnection: \(sendConnection)")
 
         // FIXME: May not be IPV4
@@ -258,58 +259,61 @@ public class RoutingController
     func transfer(from receiveConnection: FlowerConnection, toAddress sendAddress: String)
     {
         print("Transfer called")
-        let message = receiveConnection.readMessages()
+        while true {
+            let message = receiveConnection.readMessage()
 
-        print("🌷 Received a message: \(message.description) 🌷")
-        
-        switch message
-        {
-            case .IPDataV4(let payload):
-                print("\n🚢 Reading an ipv4 message 🚢")
-                let now = Date()
-                
-                print("Checking for sourceAddress")
-                guard let sourceAddress = IPv4Address(sendAddress) else
-                {
-                    print("sourceAddress is nil")
-                    return
-                }
-                
-                print("Checking for IPV4 Packet")
-                guard let ipv4 = IPv4(data: payload)
-                else {
-                    print("Packet was not IPV4")
-                    return
-                }
-                
-                print("checking sourceAddress value")
-                guard ipv4.sourceAddress == sourceAddress.rawValue else
-                {
-                    print(ipv4.description)
-                    print("sourceAddress value was unexpected. packet:\(ipv4.sourceAddress.array), assigned ip:\(sourceAddress.rawValue.array)")
+            print("🌷 Received a message: \(message.description) 🌷")
+            
+            switch message
+            {
+                case .IPDataV4(let payload):
+                    print("\n🚢 Reading an ipv4 message 🚢")
+                    let now = Date()
                     
-                    return
-                }
+                    print("Checking for sourceAddress")
+                    guard let sourceAddress = IPv4Address(sendAddress) else
+                    {
+                        print("sourceAddress is nil")
+                        return
+                    }
+                    
+                    print("Checking for IPV4 Packet")
+                    guard let ipv4 = IPv4(data: payload)
+                    else {
+                        print("Packet was not IPV4")
+                        return
+                    }
+                    
+                    print("checking sourceAddress value")
+                    guard ipv4.sourceAddress == sourceAddress.rawValue else
+                    {
+                        print(ipv4.description)
+                        print("sourceAddress value was unexpected. packet:\(ipv4.sourceAddress.array), assigned ip:\(sourceAddress.rawValue.array)")
+                        
+                        return
+                    }
 
-                print("Checking for tun device")
-                if let ourTun = self.tun{
+                    print("Checking for tun device")
+                    if let ourTun = self.tun{
 
-                    let bytesWritten = ourTun.writeBytes(payload)
-                    print("tun device wrote \(bytesWritten) bytes.")
-                    print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
-                } else {
-                    print("no tun device")
+                        let bytesWritten = ourTun.writeBytes(payload)
+                        print("tun device wrote \(bytesWritten) bytes.")
+                        print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
+                    } else {
+                        print("no tun device")
+                        return
+                    }
+                case .IPDataV6(let payload):
+                    print("\nReading an IPV6 message.")
+                    if let ourTun = self.tun {
+                        let bytesWritten = ourTun.writeBytes(payload)
+                        print("tun device wrote \(bytesWritten) bytes.")
+                    }
+                default:
+                    print("\nUnsupported message type")
                     return
-                }
-            case .IPDataV6(let payload):
-                print("\nReading an IPV6 message.")
-                if let ourTun = self.tun {
-                    let bytesWritten = ourTun.writeBytes(payload)
-                    print("tun device wrote \(bytesWritten) bytes.")
-                }
-            default:
-                print("\nUnsupported message type")
-                return
+            }
         }
     }
 }
+
