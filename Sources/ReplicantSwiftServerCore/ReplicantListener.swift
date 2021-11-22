@@ -38,7 +38,7 @@ class ReplicantListener: Transport.Listener
         self.logger = logger
         
         // Create the listener
-        guard let listener = Transmission.Listener(port: Int(serverConfig.port.rawValue)) else
+        guard let listener = TransmissionListener(port: Int(serverConfig.port.rawValue), logger: logger) else
 	{
             print("\n😮  Listener creation error  😮\n")
             throw ListenerError.initializationError
@@ -86,10 +86,8 @@ class ReplicantListener: Transport.Listener
     
     func makeReplicant(connection: Transmission.Connection) -> Transport.Connection?
     {
-        let transport = TransmissionToTransportConnection(connection)
-
         let replicantConnectionFactory = ReplicantServerConnectionFactory(
-            connection: transport,
+            connection: connection,
             replicantConfig: config,
             logger: logger)
         
