@@ -170,7 +170,9 @@ public class RoutingController
         print("conduit: \(conduit)")
 
         let sendConnection = conduit.transportConnection
-        let transmissionConnection = TransmissionConnection(transport: sendConnection)
+        guard let transmissionConnection = TransmissionConnection(transport: sendConnection) else {
+            return
+        }
         let flowerConnection = FlowerConnection(connection: transmissionConnection)
         print("sendConnection: \(sendConnection)")
 
@@ -241,7 +243,9 @@ public class RoutingController
         
         // FIXME - support IPv6
         let ipv4AssignMessage = Message.IPAssignV4(v4)
-        let transmissionConnection = TransmissionConnection(transport: newReplicantConnection)
+        guard let transmissionConnection = TransmissionConnection(transport: newReplicantConnection) else {
+            return
+        }
         let flowerConnection = FlowerConnection(connection: transmissionConnection)
         flowerConnection.writeMessage(message: ipv4AssignMessage)
         
