@@ -170,7 +170,7 @@ public class RoutingController
         print("conduit: \(conduit)")
 
         let sendConnection = conduit.transportConnection
-        let transmissionConnection = makeTransmissionConnection(sendConnection)
+        let transmissionConnection = TransmissionConnection(sendConnection)
         let flowerConnection = FlowerConnection(connection: transmissionConnection)
         print("sendConnection: \(sendConnection)")
 
@@ -241,7 +241,8 @@ public class RoutingController
         
         // FIXME - support IPv6
         let ipv4AssignMessage = Message.IPAssignV4(v4)
-        let flowerConnection = FlowerConnection(connection: newReplicantConnection)
+        let transmissionConnection = TransmissionConnection(newReplicantConnection)
+        let flowerConnection = FlowerConnection(connection: transmissionConnection)
         flowerConnection.writeMessage(message: ipv4AssignMessage)
         
         let transferQueue1 = DispatchQueue(label: "Transfer Queue 1")
@@ -260,8 +261,12 @@ public class RoutingController
     {
         print("Transfer called")
         while true {
-            let message = receiveConnection.readMessage()
+            let maybeMessage = receiveConnection.readMessage()
 
+            guard let message = maybeMessage else {
+                return
+            }
+            
             print("🌷 Received a message: \(message.description) 🌷")
             
             switch message
