@@ -28,7 +28,7 @@ class ReplicantListener: Transport.Listener
     
     var newConnectionHandler: ((Transport.Connection) -> Void)?
     var config: ReplicantServerConfig
-    var listener: Transmission.Listener    
+    var listener: TransmissionListener    
    
     required init(replicantConfig: ReplicantServerConfig, serverConfig: ServerConfig, logger: Logger) throws
     {
@@ -39,7 +39,7 @@ class ReplicantListener: Transport.Listener
         
         // Create the listener
         guard let listener = TransmissionListener(port: Int(serverConfig.port.rawValue), logger: logger) else
-	{
+        {
             print("\n😮  Listener creation error  😮\n")
             throw ListenerError.initializationError
         }
