@@ -124,11 +124,12 @@ public class RoutingController
 
                 while true
                 {
-                  guard let connection = listener.accept() else {return}
-                  print("\nNew plain connection rececived.")
-                  self.consoleIO.writeMessage("New plain Connection!")
-                  let transport = TransmissionToTransportConnection(connection)
-                  self.process(newReplicantConnection: transport, port: serverConfig.port)
+                    let connection = listener.accept()
+                    print("\nNew plain connection rececived.")
+                    self.consoleIO.writeMessage("New plain Connection!")
+                    let factory = {return connection}
+                    let transport = TransmissionToTransportConnection(factory)
+                    self.process(newReplicantConnection: transport, port: serverConfig.port)
                 }
             }
             catch
