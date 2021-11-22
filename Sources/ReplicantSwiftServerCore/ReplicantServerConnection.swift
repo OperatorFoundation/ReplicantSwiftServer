@@ -140,9 +140,13 @@ open class ReplicantServerConnection: Transport.Connection
             log.debug("\n network:\(type(of: network))\n ")
             guard let data = content else {
                 self.log.error("ReplicantServerConnection.swift: send data was nil")
+                bufferLock.leave()
+                return
             }
             guard network.write(data: data) else {
                 log.error("ReplicantServerConnection.swift: network write failed")
+                bufferLock.leave()
+                return
             }
             switch completion {
                 case .contentProcessed(let callback):
