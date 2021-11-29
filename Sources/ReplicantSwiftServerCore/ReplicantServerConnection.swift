@@ -309,8 +309,9 @@ open class ReplicantServerConnection: Transport.Connection
         }
         else
         {
+            self.log.debug("minimumIncompleteLength: \(minimumIncompleteLength)")
             guard let data = network.read(size: minimumIncompleteLength) else {
-                self.log.error("ReplicantServerConnection.swift: failed on second network read")
+                self.log.error("ReplicantServerConnection.swift: failed on network read")
                 completion(nil, nil, true, NWError.posix(POSIXErrorCode.ECONNREFUSED))
                 self.bufferLock.leave()
                 return
