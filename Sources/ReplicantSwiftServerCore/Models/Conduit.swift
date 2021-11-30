@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import Transport
+import Transmission
 
 public struct Conduit
 {
     var address: String
-    var transportConnection: Connection
+    var transportConnection: Transmission.Connection
 }

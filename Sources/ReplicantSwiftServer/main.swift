@@ -1,7 +1,5 @@
 import Foundation
 import Logging
-
-import Transport
 import ReplicantSwiftServerCore
 import Net
 

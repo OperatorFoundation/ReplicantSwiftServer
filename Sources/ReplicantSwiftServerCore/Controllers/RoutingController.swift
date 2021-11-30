@@ -9,7 +9,6 @@ import Foundation
 import Logging
 
 import InternetProtocols
-import Transport
 import ReplicantSwift
 import Flower
 import Tun
@@ -17,6 +16,7 @@ import Routing
 import SwiftHexTools
 import Net
 import Transmission
+import Transport
 
 import TransmissionTransport
 

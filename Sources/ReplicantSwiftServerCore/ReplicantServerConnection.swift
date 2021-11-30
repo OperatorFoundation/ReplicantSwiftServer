@@ -30,20 +30,16 @@ import Dispatch
 import Logging
 
 import Flower
-import Transport
 import Transmission
 import ReplicantSwift
 import Net
+import Chord
 
-open class ReplicantServerConnection: Transport.Connection
+// FIXME: Make a release of replicantSwift
+open class ReplicantServerConnection: ReplicantBaseConnection
 {
-    public let payloadLengthOverhead = 2
-    public var stateUpdateHandler: ((NWConnection.State) -> Void)?
-    public var viabilityUpdateHandler: ((Bool) -> Void)?
     public var replicantConfig: ReplicantServerConfig
     public var replicantServerModel: ReplicantServerModel
-    
-    let log: Logger
     
     // FIXME: Unencrypted chunk size for non-polish instances
     var unencryptedChunkSize: UInt16 = 400
@@ -62,50 +58,33 @@ open class ReplicantServerConnection: Transport.Connection
                  replicantConfig: ReplicantServerConfig,
                  logger: Logger)
     {
-        guard let newReplicant = ReplicantServerModel(withConfig: replicantConfig, logger: logger)
-        else
-        {
-            logger.error("\nFailed to initialize ReplicantConnection because we failed to initialize Replicant.\n")
+        guard let newReplicant = ReplicantServerModel(withConfig: replicantConfig, logger: logger) else {
+            logger.error("failed to initialize ReplicantServerModel")
             return nil
         }
-        
-        self.log = logger
+
         self.network = connection
         self.replicantConfig = replicantConfig
         self.replicantServerModel = newReplicant
-        if let polish = replicantServerModel.polish
+        self.decryptedReceiveBuffer = Data()
+        self.sendBuffer = Data()
+        self.log = logger
+
+        if let polishConnection = replicantServerModel.polish
         {
-            self.unencryptedChunkSize =
-            polish.chunkSize - UInt16(payloadLengthOverhead)
+            self.unencryptedChunkSize = polishConnection.chunkSize - UInt16(payloadLengthOverhead)
         }
-    }
-    
-    public func start(queue: DispatchQueue)
-    {
-        self.introductions
+
+        let maybeIntroError = Synchronizer.sync(introductions)
+        
+        guard maybeIntroError == nil
+        else
         {
-            (maybeIntroError) in
-            
-            guard maybeIntroError == nil
-                else
-            {
-                self.log.error("\nError attempting to meet the server during Replicant Connection Init: \(maybeIntroError!)\n")
-                if let introError = maybeIntroError as? NWError
-                {
-                    self.updateHandler(NWConnection.State.failed(introError))
-                }
-                else
-                {
-                    self.updateHandler(NWConnection.State.cancelled)
-                }
-                
-                return
-            }
-            
-            self.log.debug("\n New Replicant connection is ready. 🎉 \n")
-            
-            self.updateHandler(NWConnection.State.ready)
+            logger.error("Error attempting to meet the server during Replicant Connection Init.")
+            return
         }
+
+        logger.debug("\nNew Replicant connection is ready. 🎉 \n")
     }
     
     public func send(content: Data?, contentContext: NWConnection.ContentContext, isComplete: Bool, completion: NWConnection.SendCompletion)
@@ -322,21 +301,6 @@ open class ReplicantServerConnection: Transport.Connection
         }
     }
 
-    public func cancel()
-    {
-        // FIXME: need a proper way to cancel network connections
-        // network.cancel()
-        
-        if let stateUpdate = self.stateUpdateHandler
-        {
-            stateUpdate(NWConnection.State.cancelled)
-        }
-        
-        if let viabilityUpdate = self.viabilityUpdateHandler
-        {
-            viabilityUpdate(false)
-        }
-    }
     /// This takes an optional data and adds it to the buffer before acting on min/max lengths
     func handleReceivedData(polish: PolishServer, minimumIncompleteLength: Int, maximumLength: Int, encryptedData: Data) -> Data?
     {
@@ -412,7 +376,6 @@ open class ReplicantServerConnection: Transport.Connection
             guard maybeVKError == nil
                 else
             {
-                self.stateUpdateHandler?(NWConnection.State.cancelled)
                 completion(maybeVKError)
                 return
             }
@@ -432,13 +395,11 @@ open class ReplicantServerConnection: Transport.Connection
                     
                     if let handshakeError = maybeHandshakeError
                     {
-                        self.stateUpdateHandler?(NWConnection.State.cancelled)
                         completion(handshakeError)
                         return
                     }
                     else
                     {
-                        self.stateUpdateHandler?(NWConnection.State.ready)
                         completion(nil)
                     }
                 }
@@ -530,12 +491,6 @@ open class ReplicantServerConnection: Transport.Connection
             
             self.bufferLock.leave()
             return
-        }
-    }
-    
-    func updateHandler(_ state: NWConnection.State) {
-        if let handler = self.stateUpdateHandler {
-            handler(state)
         }
     }
 }

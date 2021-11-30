@@ -8,7 +8,6 @@
 import Foundation
 import Logging
 
-import Transport
 import ReplicantSwift
 import SwiftQueue
 import Flower
@@ -16,82 +15,55 @@ import Net
 import Transmission
 import TransmissionTransport
 
-class ReplicantListener: Transport.Listener
+class ReplicantListener: Transmission.Listener
 {
     var debugDescription: String = "[ReplicantTCPListener]"
-    var newTransportConnectionHandler: ((Transport.Connection) -> Void)?
+    var newTransportConnectionHandler: ((Transmission.Connection) -> Void)?
     var parameters: NWParameters
-    var port: NWEndpoint.Port?
+    var port: Int
     var queue: DispatchQueue? = DispatchQueue(label: "Replicant Server Queue")
     var stateUpdateHandler: ((NWListener.State) -> Void)?
     let logger: Logger
     
-    var newConnectionHandler: ((Transport.Connection) -> Void)?
+    var newConnectionHandler: ((Transmission.Connection) -> Void)?
     var config: ReplicantServerConfig
     var listener: TransmissionListener    
    
-    required init(replicantConfig: ReplicantServerConfig, serverConfig: ServerConfig, logger: Logger) throws
+    required init(port: Int, replicantConfig: ReplicantServerConfig, logger: Logger) throws
     {
         self.parameters = .tcp
         self.config = replicantConfig
-        self.port = serverConfig.port
+        self.port = port
         self.logger = logger
         
         // Create the listener
-        guard let listener = TransmissionListener(port: Int(serverConfig.port.rawValue), logger: logger) else
+        guard let listener = TransmissionListener(port: port, logger: logger) else
         {
             print("\n😮  Listener creation error  😮\n")
             throw ListenerError.initializationError
         }
         self.listener = listener
     }
-
-    func replicantListenerNewConnectionHandler(newConnection: Transmission.Connection) {
-        print("\nReplicant Listener new connection handler called.")
-        guard let replicantConnection = makeReplicant(connection: newConnection)
-        else
-        {
-            print("Unable to convert new connection to a Replicant connection.")
-            return
+    
+    func accept() -> Connection {
+        while true {
+            let networkConnection = self.listener.accept()
+            
+            print("\nReplicant Listener new connection handler called.")
+            guard let replicantConnection = makeReplicant(connection: networkConnection)
+            else
+            {
+                print("Unable to convert new connection to a Replicant connection.")
+                continue
+            }
+            
+            return replicantConnection
         }
-        
-//        replicantConnection.stateUpdateHandler =
-//        {
-//            newState in
-//
-//            print("Received a state update on our Replicant connection: \(newState)")
-//
-//            switch newState
-//            {
-//            case .ready:
-//                print("Replicant connection state update handler is in the READY state.")
-//                if let connectionHandler = self.newTransportConnectionHandler
-//                {
-//                    connectionHandler(replicantConnection)
-//                }
-//            default:
-//                return
-//            }
-//        }
-        
-        replicantConnection.start(queue: queue!)
-        print("Replicant connection started!")
-        
-                if let connectionHandler = self.newTransportConnectionHandler
-                {
-                    connectionHandler(replicantConnection)
-                }
-        
     }
     
-    func makeReplicant(connection: Transmission.Connection) -> Transport.Connection?
+    func makeReplicant(connection: Transmission.Connection) -> Transmission.Connection?
     {
-        let replicantConnectionFactory = ReplicantServerConnectionFactory(
-            connection: connection,
-            replicantConfig: config,
-            logger: logger)
-        
-        let newConnection = replicantConnectionFactory.connect()
+        let newConnection = ReplicantServerConnection(connection: connection, parameters: .tcp, replicantConfig: config, logger: logger)
         
         if newConnection == nil
         {
@@ -104,41 +76,6 @@ class ReplicantListener: Transport.Listener
         
         return newConnection
     }
-    
-    //MARK: Transport API Listener Protocol
-    
-    func start(queue: DispatchQueue)
-    {
-        queue.async
-        {
-            [self] in
-
-            guard let handler = self.stateUpdateHandler else {
-                return
-            }
-            handler(.ready)
-
-            while true
-            {
-                let newNetworkConnection = listener.accept()
-                
-                // Try to turn our network connection into a ReplicantServerConnection
-                self.replicantListenerNewConnectionHandler(newConnection: newNetworkConnection)
-            }
-        }
-    }
-    
-    func cancel()
-    {
-        // FIXME: Implement cancel() in Transmission
-        // listener.cancel()
-        
-        if let stateUpdateHandler = stateUpdateHandler
-        {
-            stateUpdateHandler(NWListener.State.cancelled)
-        }
-    }
-  
 }
 
 enum ListenerError: Error

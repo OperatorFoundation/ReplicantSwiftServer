@@ -11,8 +11,8 @@ import Logging
 import Datable
 import ReplicantSwiftServerCore
 import ReplicantSwift
-import Transport
 import Net
+import Transport
 
 class ReplicantServer
 {
