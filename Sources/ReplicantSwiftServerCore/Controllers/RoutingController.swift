@@ -221,7 +221,7 @@ public class RoutingController
         }
     }
 
-    func process(newReplicantConnection: Transport.Connection, port: NWEndpoint.Port)
+    func process(newReplicantConnection: Transmission.Connection, port: NWEndpoint.Port)
     {
         print("Routing controller listener connection handler called.")
 
@@ -238,7 +238,7 @@ public class RoutingController
             return
         }
         
-        conduitCollection.addConduit(address: address, transportConnection: newReplicantConnection)
+        conduitCollection.addConduit(address: address, transmissionConnection: newReplicantConnection)
 
         print("conduit added successfully")
         

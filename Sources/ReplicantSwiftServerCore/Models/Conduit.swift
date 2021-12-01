@@ -11,5 +11,5 @@ import Transmission
 public struct Conduit
 {
     var address: String
-    var transportConnection: Transmission.Connection
+    var transmissionConnection: Transmission.Connection
 }
