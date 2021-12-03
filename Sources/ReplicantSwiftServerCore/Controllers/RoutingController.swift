@@ -99,7 +99,7 @@ public class RoutingController
                 replicantListener.stateUpdateHandler = debugListenerStateUpdateHandler
                 replicantListener.newTransportConnectionHandler =
                 {
-                    (replicantConnection) in
+                    (replicantConnection: Transmission.Connection) in
 
                     print("\nNew Replicant connection rececived.")
                     self.consoleIO.writeMessage("New Replicant Connection!")
@@ -127,9 +127,7 @@ public class RoutingController
                     let connection = listener.accept()
                     print("\nNew plain connection rececived.")
                     self.consoleIO.writeMessage("New plain Connection!")
-                    let factory = {return connection}
-                    let transport = TransmissionToTransportConnection(factory)
-                    self.process(newReplicantConnection: transport, port: serverConfig.port)
+                    self.process(newReplicantConnection: connection, port: serverConfig.port)
                 }
             }
             catch
