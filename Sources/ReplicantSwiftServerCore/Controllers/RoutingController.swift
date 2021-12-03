@@ -95,7 +95,7 @@ public class RoutingController
             print("Replicant listener")
             do
             {
-                let replicantListener = try ReplicantListener(replicantConfig: replicantConfig, serverConfig: serverConfig, logger: logger)
+                let replicantListener = try ReplicantListener(port: port, replicantConfig: replicantConfig, logger: logger)
                 replicantListener.stateUpdateHandler = debugListenerStateUpdateHandler
                 replicantListener.newTransportConnectionHandler =
                 {
@@ -170,11 +170,13 @@ public class RoutingController
         }
         print("conduit: \(conduit)")
 
-        let sendConnection = conduit.transportConnection
-        guard let transmissionConnection = TransmissionConnection(transport: sendConnection) else {
-            return
-        }
-        let flowerConnection = FlowerConnection(connection: transmissionConnection)
+        let sendConnection = conduit.transmissionConnection
+        
+        // FIXME: double check that we don't wanna use the below variable to make flower connection
+//        guard let transmissionConnection = TransmissionConnection(transport: sendConnection) else {
+//            return
+//        }
+        let flowerConnection = FlowerConnection(connection: sendConnection)
         print("sendConnection: \(sendConnection)")
 
         // FIXME: May not be IPV4
@@ -244,10 +246,11 @@ public class RoutingController
         
         // FIXME - support IPv6
         let ipv4AssignMessage = Message.IPAssignV4(v4)
-        guard let transmissionConnection = TransmissionConnection(transport: newReplicantConnection) else {
-            return
-        }
-        let flowerConnection = FlowerConnection(connection: transmissionConnection)
+        // FIXME: commented out to use provided connection
+//        guard let transmissionConnection = TransmissionConnection(host: address, port: port) else {
+//            return
+//        }
+        let flowerConnection = FlowerConnection(connection: newReplicantConnection)
         flowerConnection.writeMessage(message: ipv4AssignMessage)
         
         let transferQueue1 = DispatchQueue(label: "Transfer Queue 1")
