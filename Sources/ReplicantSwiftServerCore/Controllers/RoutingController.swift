@@ -85,7 +85,7 @@ public class RoutingController
         //        configServerNATv6(serverPublicInterface: internetInterface)
         //        print("[S] Current ipv6 NAT: \n\n\(getNATv6())\n\n")
 
-        let port = serverConfig.port
+        let port = Int(serverConfig.port.rawValue)
         print("\n! Listening on port \(port)")
 
         self.replicantEnabled = replicantEnabled
