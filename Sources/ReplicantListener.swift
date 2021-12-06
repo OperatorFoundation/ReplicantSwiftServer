@@ -15,7 +15,7 @@ import Net
 import Transmission
 import TransmissionTransport
 
-class ReplicantListener: Transmission.Listener
+public class ReplicantListener: Transmission.Listener
 {
     var debugDescription: String = "[ReplicantTCPListener]"
     var parameters: NWParameters
@@ -26,7 +26,7 @@ class ReplicantListener: Transmission.Listener
     var config: ReplicantServerConfig
     var listener: TransmissionListener    
    
-    required init(port: Int, replicantConfig: ReplicantServerConfig, logger: Logger) throws
+    required public init(port: Int, replicantConfig: ReplicantServerConfig, logger: Logger) throws
     {
         self.parameters = .tcp
         self.config = replicantConfig
@@ -42,7 +42,7 @@ class ReplicantListener: Transmission.Listener
         self.listener = listener
     }
     
-    func accept() -> Connection {
+    public func accept() -> Connection {
         while true {
             let networkConnection = self.listener.accept()
             
