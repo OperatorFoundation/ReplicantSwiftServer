@@ -191,6 +191,7 @@ open class ReplicantServerConnection: ReplicantBaseConnection
         // Keep calling network.write if the leftover data is at least chunk size
         guard let encryptedData = maybeEncryptedData else {
             // FIXME: is this all we need to do?
+            print("leaving bufferLock")
             self.bufferLock.leave()
             return
         }
@@ -326,6 +327,7 @@ open class ReplicantServerConnection: ReplicantBaseConnection
         guard decryptedReceiveBuffer.count >= minimumIncompleteLength
             else
         {
+            self.log.error("decrypted buffer does not meet min/max parameters")
             // Not enough data return nothing
             return nil
         }
@@ -434,6 +436,8 @@ open class ReplicantServerConnection: ReplicantBaseConnection
             
             guard payloadSize > 0, payloadSize < polish.chunkSize else
             {
+                // FIXME: is this an error or is this intended when theres no more left to read?
+                log.error("payload size is zero or less than polish chunk size. Leaving the buffer lock")
                 bufferLock.leave()
                 return
             }
@@ -468,6 +472,7 @@ open class ReplicantServerConnection: ReplicantBaseConnection
             guard payloadSize > 0
                 else
             {
+                log.error("payload size is zero. Leaving the buffer lock")
                 bufferLock.leave()
                 return
             }

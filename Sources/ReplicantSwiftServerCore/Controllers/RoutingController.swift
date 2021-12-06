@@ -119,7 +119,10 @@ public class RoutingController
             print("! Plain listener")
             do
             {
-                guard let listener = TransmissionListener(port: Int(serverConfig.port.rawValue), logger: logger) else {return}
+                guard let listener = TransmissionListener(port: Int(serverConfig.port.rawValue), logger: logger) else {
+                    print("Transmission listener failed to start")
+                    return
+                }
                 print("started listener")
 
                 while true
@@ -270,6 +273,7 @@ public class RoutingController
             let maybeMessage = receiveConnection.readMessage()
 
             guard let message = maybeMessage else {
+                print("transfer message not received")
                 return
             }
             
