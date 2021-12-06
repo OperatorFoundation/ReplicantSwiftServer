@@ -93,18 +93,15 @@ public class RoutingController
         if replicantEnabled
         {
             print("Replicant listener")
-            do
-            {
-                let replicantListener = try ReplicantListener(port: port, replicantConfig: replicantConfig, logger: logger)
-                let replicantConnection = replicantListener.accept()
-                print("\nNew Replicant connection rececived.")
-                self.consoleIO.writeMessage("New Replicant Connection!")
-                self.process(newReplicantConnection: replicantConnection, port: serverConfig.port)
+            
+            guard let replicantListener = ReplicantListener(port: port, replicantConfig: replicantConfig, logger: logger) else {
+                print("unable to create replicant listener")
+                return
             }
-            catch
-            {
-                print("\nUnable to create ReplicantListener\n")
-            }
+            let replicantConnection = replicantListener.accept()
+            print("\nNew Replicant connection rececived.")
+            self.consoleIO.writeMessage("New Replicant Connection!")
+            self.process(newReplicantConnection: replicantConnection, port: serverConfig.port)
         }
         else
         {

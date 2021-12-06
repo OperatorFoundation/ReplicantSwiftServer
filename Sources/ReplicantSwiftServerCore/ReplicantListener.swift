@@ -26,7 +26,7 @@ public class ReplicantListener: Transmission.Listener
     var config: ReplicantServerConfig
     var listener: TransmissionListener    
    
-    required public init(port: Int, replicantConfig: ReplicantServerConfig, logger: Logger) throws
+    required public init?(port: Int, replicantConfig: ReplicantServerConfig, logger: Logger)
     {
         self.parameters = .tcp
         self.config = replicantConfig
@@ -37,7 +37,7 @@ public class ReplicantListener: Transmission.Listener
         guard let listener = TransmissionListener(port: port, logger: logger) else
         {
             print("\n😮  Listener creation error  😮\n")
-            throw ListenerError.initializationError
+            return nil
         }
         self.listener = listener
     }
