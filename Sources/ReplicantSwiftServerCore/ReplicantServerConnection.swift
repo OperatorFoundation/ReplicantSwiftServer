@@ -58,7 +58,7 @@ open class ReplicantServerConnection: ReplicantBaseConnection
         self.replicantConfig = replicantConfig
         self.replicantServerModel = newReplicant
         
-        super.init(log: log, network: connection)
+        super.init(log: logger, network: connection)
         
         if let polishConnection = replicantServerModel.polish
         {
