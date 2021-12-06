@@ -96,18 +96,10 @@ public class RoutingController
             do
             {
                 let replicantListener = try ReplicantListener(port: port, replicantConfig: replicantConfig, logger: logger)
-                replicantListener.stateUpdateHandler = debugListenerStateUpdateHandler
-                replicantListener.newTransportConnectionHandler =
-                {
-                    (replicantConnection: Transmission.Connection) in
-
-                    print("\nNew Replicant connection rececived.")
-                    self.consoleIO.writeMessage("New Replicant Connection!")
-                    self.process(newReplicantConnection: replicantConnection, port: serverConfig.port)
-                }
-                
-                replicantListener.start(queue: listenerQueue)
-                print("! Replicant listener started and listening")
+                let replicantConnection = replicantListener.accept()
+                print("\nNew Replicant connection rececived.")
+                self.consoleIO.writeMessage("New Replicant Connection!")
+                self.process(newReplicantConnection: replicantConnection, port: serverConfig.port)
             }
             catch
             {

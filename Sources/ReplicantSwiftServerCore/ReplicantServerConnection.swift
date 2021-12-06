@@ -42,15 +42,7 @@ open class ReplicantServerConnection: ReplicantBaseConnection
     public var replicantServerModel: ReplicantServerModel
     
     // FIXME: Unencrypted chunk size for non-polish instances
-    var unencryptedChunkSize: UInt16 = 400
-    var sendTimer: Timer?
-    var bufferLock = DispatchGroup()
-    var networkQueue = DispatchQueue(label: "Replicant Queue")
-    var sendBufferQueue = DispatchQueue(label: "SendBuffer Queue")
     var sendMessageQueue = DispatchQueue(label: "ReplicantServerConnection.sendMessageQueue")
-    var network: Transmission.Connection
-    var sendBuffer = Data()
-    var decryptedReceiveBuffer = Data()
     var wasReady = false
     
     public init?(connection: Transmission.Connection,
@@ -63,13 +55,11 @@ open class ReplicantServerConnection: ReplicantBaseConnection
             return nil
         }
 
-        self.network = connection
         self.replicantConfig = replicantConfig
         self.replicantServerModel = newReplicant
-        self.decryptedReceiveBuffer = Data()
-        self.sendBuffer = Data()
-        self.log = logger
-
+        
+        super.init(log: log, network: connection)
+        
         if let polishConnection = replicantServerModel.polish
         {
             self.unencryptedChunkSize = polishConnection.chunkSize - UInt16(payloadLengthOverhead)

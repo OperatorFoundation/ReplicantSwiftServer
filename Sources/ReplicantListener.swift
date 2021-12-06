@@ -18,14 +18,11 @@ import TransmissionTransport
 class ReplicantListener: Transmission.Listener
 {
     var debugDescription: String = "[ReplicantTCPListener]"
-    var newTransportConnectionHandler: ((Transmission.Connection) -> Void)?
     var parameters: NWParameters
     var port: Int
     var queue: DispatchQueue? = DispatchQueue(label: "Replicant Server Queue")
-    var stateUpdateHandler: ((NWListener.State) -> Void)?
     let logger: Logger
     
-    var newConnectionHandler: ((Transmission.Connection) -> Void)?
     var config: ReplicantServerConfig
     var listener: TransmissionListener    
    
