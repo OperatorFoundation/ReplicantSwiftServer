@@ -240,7 +240,7 @@ public class RoutingController
 //        guard let transmissionConnection = TransmissionConnection(host: address, port: port) else {
 //            return
 //        }
-        let flowerConnection = FlowerConnection(connection: newReplicantConnection)
+        let flowerConnection = FlowerConnection(connection: newReplicantConnection, log: self.logger)
         flowerConnection.writeMessage(message: ipv4AssignMessage)
         
         let transferQueue1 = DispatchQueue(label: "Transfer Queue 1")
@@ -259,7 +259,7 @@ public class RoutingController
     {
         print("Transfer called")
         while true {
-            let maybeMessage = receiveConnection.readMessage(log: logger)
+            let maybeMessage = receiveConnection.readMessage()
 
             guard let message = maybeMessage else {
                 print("transfer message not received")
