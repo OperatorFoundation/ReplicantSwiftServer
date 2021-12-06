@@ -259,7 +259,7 @@ public class RoutingController
     {
         print("Transfer called")
         while true {
-            let maybeMessage = receiveConnection.readMessage()
+            let maybeMessage = receiveConnection.readMessage(log: logger)
 
             guard let message = maybeMessage else {
                 print("transfer message not received")
