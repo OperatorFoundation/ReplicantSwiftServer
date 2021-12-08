@@ -100,7 +100,8 @@ public class RoutingController
             }
             let replicantConnection = replicantListener.accept()
             print("\nNew Replicant connection rececived.")
-            let flowerConnection = FlowerConnection(connection: replicantConnection, log: self.logger)            self.consoleIO.writeMessage("New Replicant Connection!")
+            let flowerConnection = FlowerConnection(connection: replicantConnection, log: self.logger)            
+            self.consoleIO.writeMessage("New Replicant Connection!")
             self.process(flowerConnection: flowerConnection, port: serverConfig.port)
         }
         else
