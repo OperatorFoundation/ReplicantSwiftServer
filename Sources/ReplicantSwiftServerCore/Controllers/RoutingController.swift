@@ -28,6 +28,7 @@ public class RoutingController
     var tun: TunDevice?
     let packetSize: Int = 2000 // FIXME - set this to a thoughtful value
     var packetCount = 0
+    let listener: FlowerListener
     
     var conduitCollection = ConduitCollection()
     var replicantEnabled = true
@@ -98,9 +99,12 @@ public class RoutingController
             return
         }
 
-        let flowerConnection = flowerListener.accept()
-        self.consoleIO.writeMessage("New Replicant Connection!")
-        self.process(flowerConnection: flowerConnection, port: serverConfig.port)
+        while true
+        {
+            let flowerConnection = flowerListener.accept()
+            self.consoleIO.writeMessage("New Replicant Connection!")
+            self.process(flowerConnection: flowerConnection, port: serverConfig.port)
+        }
     }
     
     func transferFromTUN(data: Data) {

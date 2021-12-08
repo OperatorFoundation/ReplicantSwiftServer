@@ -16,21 +16,12 @@ import Transport
 
 class ReplicantServer
 {
-    let routingController: RoutingController
-    
+
     init?()
     {
         // Setup the logger
         LoggingSystem.bootstrap(StreamLogHandler.standardError)
         appLog.logLevel = .debug
-        
-        guard let rController = RoutingController(logger: appLog)
-        else
-        {
-            return nil
-        }
-        
-        routingController = rController
     }
     
     /// Figure out what the user wants to do.
@@ -163,14 +154,14 @@ class ReplicantServer
         
         let serverConfig = ServerConfig(withPort: NWEndpoint.Port(integerLiteral: 1234), andHost: NWEndpoint.Host.ipv4(IPv4Address("0.0.0.0")!))
 
-        ///FIXME: User should control whether transport is enabled
-        routingController.startListening(serverConfig: serverConfig, replicantConfig: serverReplicantConfig, replicantEnabled: true)
-        
-        // FIXME - what's the right way to do this?
-        while true
+        guard let routingController = RoutingController(logger: appLog)
+        else
         {
-            sleep(100000)
+            return
         }
+
+        ///FIXME: User should control whether transport is enabled
+        routingController.startListening(serverConfig: serverConfig, replicantConfig: serverReplicantConfig, replicantEnabled: true)        
     }
 }
 
