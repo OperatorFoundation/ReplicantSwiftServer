@@ -6,16 +6,16 @@
 //
 
 import Foundation
-import Transmission
+import Flower
 
 public class ConduitCollection: NSObject
 {
     private var conduits: [String : Conduit] = [ : ]
     
-    func addConduit(address: String, transmissionConnection: Transmission.Connection)
+    func addConduit(address: String, flowerConnection: FlowerConnection)
     {
         print("\nAdding a conduit to the conduit collection.")
-        let newConduit = Conduit(address: address, transmissionConnection: transmissionConnection)
+        let newConduit = Conduit(address: address, flowerConnection: flowerConnection)
         
         conduits[address] = newConduit
     }

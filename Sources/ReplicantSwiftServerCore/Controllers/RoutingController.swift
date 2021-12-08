@@ -100,8 +100,8 @@ public class RoutingController
             }
             let replicantConnection = replicantListener.accept()
             print("\nNew Replicant connection rececived.")
-            self.consoleIO.writeMessage("New Replicant Connection!")
-            self.process(newReplicantConnection: replicantConnection, port: serverConfig.port)
+            let flowerConnection = FlowerConnection(connection: replicantConnection, log: self.logger)            self.consoleIO.writeMessage("New Replicant Connection!")
+            self.process(flowerConnection: flowerConnection, port: serverConfig.port)
         }
         else
         {
@@ -116,10 +116,11 @@ public class RoutingController
 
                 while true
                 {
-                    let connection = listener.accept()
+                    let transmissionConnection = listener.accept()
+                    let flowerConnection = FlowerConnection(connection: transmissionConnection, log: self.logger)
                     print("\nNew plain connection rececived.")
                     self.consoleIO.writeMessage("New plain Connection!")
-                    self.process(newReplicantConnection: connection, port: serverConfig.port)
+                    self.process(flowerConnection: flowerConnection, port: serverConfig.port)
                 }
             }
             catch
@@ -160,60 +161,17 @@ public class RoutingController
         }
         print("conduit: \(conduit)")
 
-        let sendConnection = conduit.transmissionConnection
-        
-        // FIXME: double check that we don't wanna use the below variable to make flower connection
-//        guard let transmissionConnection = TransmissionConnection(transport: sendConnection) else {
-//            return
-//        }
-        let flowerConnection = FlowerConnection(connection: sendConnection)
-        print("sendConnection: \(sendConnection)")
+        let flowerConnection = conduit.flowerConnection
 
-        // FIXME: May not be IPV4
         print("🌷 Transfer from TUN payload: \(data) 🌷")
         let message = Message.IPDataV4(data)
         print("message: \(message)")
         print("🌷 Transfer from TUN created a message: \(message.description) 🌷")
 
-        print("sendConnection type : \(type(of: sendConnection))")
         flowerConnection.writeMessage(message: message)
     }
-    
-    func debugListenerStateUpdateHandler(newState: NWListener.State)
-    {
-        switch newState
-        {
-            case .ready:
-                print("\nListening...\n")
-            case .failed(let error):
-                print("\nListener failed with error: \(error.localizedDescription)\n")
-            case .waiting(let error):
-                print("\nListener waiting with error: \(error)\n")
-            default:
-                print("\nReceived unexpected state: \(newState)\n")
-        }
-    }
-    
-    func debugConnectionStateUpdateHandler(newState: NWConnection.State)
-    {
-        switch newState
-        {
-            case .cancelled:
-                print("Server connection canceled.\n")
-            case .failed(let networkError):
-                print("Server connection failed with error:  \(networkError)\n")
-            case .preparing:
-                print("Preparing connection to server.\n")
-            case .setup:
-                print("Connection in setup phase.\n")
-            case .waiting(let waitError):
-                print("⏳ Connection waiting with error: \(waitError)\n")
-            case .ready:
-                print("Connection is Ready\n")
-        }
-    }
 
-    func process(newReplicantConnection: Transmission.Connection, port: NWEndpoint.Port)
+    func process(flowerConnection: FlowerConnection, port: NWEndpoint.Port)
     {
         print("Routing controller listener connection handler called.")
 
@@ -230,17 +188,12 @@ public class RoutingController
             return
         }
         
-        conduitCollection.addConduit(address: address, transmissionConnection: newReplicantConnection)
+        conduitCollection.addConduit(address: address, flowerConnection: flowerConnection)
 
         print("conduit added successfully")
         
         // FIXME - support IPv6
         let ipv4AssignMessage = Message.IPAssignV4(v4)
-        // FIXME: commented out to use provided connection
-//        guard let transmissionConnection = TransmissionConnection(host: address, port: port) else {
-//            return
-//        }
-        let flowerConnection = FlowerConnection(connection: newReplicantConnection, log: self.logger)
         flowerConnection.writeMessage(message: ipv4AssignMessage)
         
         let transferQueue1 = DispatchQueue(label: "Transfer Queue 1")
