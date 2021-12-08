@@ -35,7 +35,6 @@ import ReplicantSwift
 import Net
 import Chord
 
-// FIXME: Make a release of replicantSwift
 open class ReplicantServerConnection: ReplicantBaseConnection
 {
     public var replicantConfig: ReplicantServerConfig

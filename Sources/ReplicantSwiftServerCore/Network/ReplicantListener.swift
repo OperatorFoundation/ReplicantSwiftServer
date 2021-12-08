@@ -42,7 +42,7 @@ public class ReplicantListener: Transmission.Listener
         self.listener = listener
     }
     
-    public func accept() -> Connection {
+    public func accept() -> Transmission.Connection {
         while true {
             let networkConnection = self.listener.accept()
             

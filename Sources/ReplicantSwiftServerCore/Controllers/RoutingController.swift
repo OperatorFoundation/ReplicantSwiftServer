@@ -38,7 +38,7 @@ public class RoutingController
         self.logger = logger
     }
     
-    public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig,  replicantEnabled: Bool)
+    public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig, replicantEnabled: Bool)
     {
         print("RoutingController.startListening")
         
@@ -90,47 +90,17 @@ public class RoutingController
 
         self.replicantEnabled = replicantEnabled
         
-        if replicantEnabled
-        {
-            print("Replicant listener")
-            
-            guard let replicantListener = ReplicantListener(port: port, replicantConfig: replicantConfig, logger: logger) else {
-                print("unable to create replicant listener")
-                return
-            }
-            let replicantConnection = replicantListener.accept()
-            print("\nNew Replicant connection rececived.")
-            let flowerConnection = FlowerConnection(connection: replicantConnection, log: self.logger)            
-            self.consoleIO.writeMessage("New Replicant Connection!")
-            self.process(flowerConnection: flowerConnection, port: serverConfig.port)
-        }
-        else
-        {
-            print("! Plain listener")
-            do
-            {
-                guard let listener = TransmissionListener(port: Int(serverConfig.port.rawValue), logger: logger) else {
-                    print("Transmission listener failed to start")
-                    return
-                }
-                print("started listener")
+        print("Replicant listener")
 
-                while true
-                {
-                    let transmissionConnection = listener.accept()
-                    let flowerConnection = FlowerConnection(connection: transmissionConnection, log: self.logger)
-                    print("\nNew plain connection rececived.")
-                    self.consoleIO.writeMessage("New plain Connection!")
-                    self.process(flowerConnection: flowerConnection, port: serverConfig.port)
-                }
-            }
-            catch
-            {
-                print("\nUnable to create ReplicantListener\n")
-            }
+        guard let flowerListener = FlowerListener(port: port, replicantConfig: replicantConfig, logger: logger) else
+        {
+            print("unable to create Flower listener")
+            return
         }
 
-      print("End RoutingController.startListening")
+        let flowerConnection = flowerListener.accept()
+        self.consoleIO.writeMessage("New Replicant Connection!")
+        self.process(flowerConnection: flowerConnection, port: serverConfig.port)
     }
     
     func transferFromTUN(data: Data) {
