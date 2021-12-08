@@ -43,12 +43,11 @@ public class ReplicantListener: Transmission.Listener
     }
     
     public func accept() -> Transmission.Connection {
-        while true {
+        while true
+        {
             let networkConnection = self.listener.accept()
             
-            print("\nReplicant Listener new connection handler called.")
-            guard let replicantConnection = makeReplicant(connection: networkConnection)
-            else
+            guard let replicantConnection = makeReplicant(connection: networkConnection) else
             {
                 print("Unable to convert new connection to a Replicant connection.")
                 continue
@@ -65,10 +64,6 @@ public class ReplicantListener: Transmission.Listener
         if newConnection == nil
         {
             print("\nReplicant connection factory returned a nil connection object.")
-        }
-        else
-        {
-            print("\nConnection object created with Replicant connection factory.")
         }
         
         return newConnection

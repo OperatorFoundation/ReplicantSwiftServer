@@ -72,7 +72,5 @@ open class ReplicantServerConnection: ReplicantBaseConnection
             logger.error("Error attempting to meet the server during Replicant Connection Init.")
             return
         }
-
-        logger.debug("\nNew Replicant connection is ready. 🎉 \n")
     }
 }

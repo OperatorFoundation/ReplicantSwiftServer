@@ -41,8 +41,6 @@ public class RoutingController
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig, replicantEnabled: Bool)
     {
-        print("RoutingController.startListening")
-        
         guard let tunDevice = TunDevice(address: "10.0.0.1", reader: self.transferFromTUN)
         else
         {
@@ -58,10 +56,12 @@ public class RoutingController
         let internetInterface: String = "eth0"
         print("⚠️ Setting internet interface to value: \(internetInterface)! Update code to set value from config file. ⚠️")
 
-        guard let tunName = tunDevice.maybeName else {
+        guard let tunName = tunDevice.maybeName else
+        {
             print("could not find tun name")
             return
         }
+
         setMTU(interface: tunName, mtu: 1380)
         print("tun Name: \(tunName)")
         //setAddressV6(interfaceName: tunName, addressString: tunAv6, subnetPrefix: 64)
@@ -90,8 +90,6 @@ public class RoutingController
         print("\n! Listening on port \(port)")
 
         self.replicantEnabled = replicantEnabled
-        
-        print("Replicant listener")
 
         guard let flowerListener = FlowerListener(port: port, replicantConfig: replicantConfig, logger: logger) else
         {
@@ -107,7 +105,8 @@ public class RoutingController
         }
     }
     
-    func transferFromTUN(data: Data) {
+    func transferFromTUN(data: Data)
+    {
         print("🚇 TransferFromTUN called 🚇")
         packetCount += 1
         print("packet count: \(packetCount)")
@@ -130,7 +129,8 @@ public class RoutingController
         print("destAddress: \(destAddress)")
 
         guard let conduit = self.conduitCollection.getConduit(with: destAddress)
-        else {
+        else
+        {
             print("Could not find Conduit")
             return
         }
@@ -148,8 +148,6 @@ public class RoutingController
 
     func process(flowerConnection: FlowerConnection, port: NWEndpoint.Port)
     {
-        print("Routing controller listener connection handler called.")
-
         // FIXME - support IPv6
         guard let address = pool.allocate() else
         {
@@ -165,8 +163,6 @@ public class RoutingController
         
         conduitCollection.addConduit(address: address, flowerConnection: flowerConnection)
 
-        print("conduit added successfully")
-        
         // FIXME - support IPv6
         let ipv4AssignMessage = Message.IPAssignV4(v4)
         flowerConnection.writeMessage(message: ipv4AssignMessage)
@@ -179,17 +175,16 @@ public class RoutingController
             self.transfer(from: flowerConnection, toAddress: address)
             print("Transfer Finished")
         }
-        
-        print("WriteMessage called!")
     }
     
     func transfer(from receiveConnection: FlowerConnection, toAddress sendAddress: String)
     {
-        print("Transfer called")
-        while true {
+        while true
+        {
             let maybeMessage = receiveConnection.readMessage()
 
-            guard let message = maybeMessage else {
+            guard let message = maybeMessage else
+            {
                 print("transfer message not received")
                 return
             }
@@ -226,21 +221,27 @@ public class RoutingController
                     }
 
                     print("Checking for tun device")
-                    if let ourTun = self.tun{
+                    if let ourTun = self.tun
+                    {
 
                         let bytesWritten = ourTun.writeBytes(payload)
                         print("tun device wrote \(bytesWritten) bytes.")
                         print("[S] Current ipv4 NAT: \n\n\(getNAT())\n\n")
-                    } else {
+                    }
+                    else
+                    {
                         print("no tun device")
                         return
                     }
+
                 case .IPDataV6(let payload):
                     print("\nReading an IPV6 message.")
-                    if let ourTun = self.tun {
+                    if let ourTun = self.tun
+                    {
                         let bytesWritten = ourTun.writeBytes(payload)
                         print("tun device wrote \(bytesWritten) bytes.")
                     }
+
                 default:
                     print("\nUnsupported message type")
                     return
@@ -248,4 +249,3 @@ public class RoutingController
         }
     }
 }
-
