@@ -28,7 +28,6 @@ public class RoutingController
     var tun: TunDevice?
     let packetSize: Int = 2000 // FIXME - set this to a thoughtful value
     var packetCount = 0
-    let listener: FlowerListener
     
     var conduitCollection = ConduitCollection()
     var replicantEnabled = true
