@@ -15,8 +15,8 @@ extension Command
     {
         static var configuration: CommandConfiguration
         {
-            init(
-                commandName: ReplicantServer,
+            .init(
+                commandName: "ReplicantServer",
                 abstract: "A program that can run a ReplicantTransportServer and create a config file compatible with that server.",
                 subcommands: [
                     Command.Launch.self,

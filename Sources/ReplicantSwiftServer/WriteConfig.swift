@@ -7,6 +7,10 @@
 
 import ArgumentParser
 import Foundation
+import Logging
+
+import ReplicantSwift
+import ReplicantSwiftServerCore
 
 extension Command
 {

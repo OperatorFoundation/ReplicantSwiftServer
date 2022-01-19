@@ -7,6 +7,12 @@
 
 import ArgumentParser
 import Foundation
+import Logging
+
+import ReplicantSwift
+import ReplicantSwiftServerCore
+import Transport
+import Net
 
 extension Command
 {
@@ -15,7 +21,6 @@ extension Command
         enum Error: LocalizedError
         {
             case configError
-            case routingError
             
             var errorDescription: String?
             {
@@ -50,6 +55,7 @@ extension Command
             }
             
             let serverConfig = ServerConfig(withPort: NWEndpoint.Port(integerLiteral: 1234), andHost: NWEndpoint.Host.ipv4(IPv4Address("0.0.0.0")!))
+            let routingController = RoutingController(logger: appLog)
 
             ///FIXME: User should control whether transport is enabled
             routingController.startListening(serverConfig: serverConfig, replicantConfig: serverReplicantConfig, replicantEnabled: true)
