@@ -33,7 +33,7 @@ public class RoutingController
     var replicantEnabled = true
     var pool = AddressPool()
     
-    public required init?(logger: Logger)
+    public required init(logger: Logger)
     {
         self.logger = logger
     }
@@ -55,7 +55,8 @@ public class RoutingController
         let internetInterface: String = "eth0"
         print("⚠️ Setting internet interface to value: \(internetInterface)! Update code to set value from config file. ⚠️")
 
-        guard let tunName = tunDevice.maybeName else
+        guard let tunName = tunDevice.maybeName
+        else
         {
             print("could not find tun name")
             return

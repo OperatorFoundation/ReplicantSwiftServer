@@ -1,19 +1,41 @@
+import ArgumentParser
 import Foundation
 import Logging
+
 import ReplicantSwiftServerCore
 import Net
 
-let consoleIO = ConsoleIO()
-
 var appLog = Logger(label: "org.OperatorFoundation.ReplicantSwiftServer.Linux")
 
-if let replicantServer = ReplicantServer()
+enum Command {}
+
+extension Command
 {
-    replicantServer.processRequest()
+    struct Main: ParsableCommand
+    {
+        static var configuration: CommandConfiguration
+        {
+            init(
+                commandName: ReplicantServer,
+                abstract: "A program that can run a ReplicantTransportServer and create a config file compatible with that server.",
+                subcommands: [
+                    Command.Launch.self,
+                    Command.WriteConfig.self
+                ]
+            )
+        }
+    }
 }
-else
+
+Command.Main.main()
+
+signal(SIGINT)
 {
-    print("Unable to process your request: Failed to launch the Replicant Server.")
+    (theSignal) in
+
+    print("Force exited ReplicantServer!! 😮")
+
+    exit(0)
 }
 
 
