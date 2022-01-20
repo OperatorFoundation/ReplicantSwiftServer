@@ -24,7 +24,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/Routing.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Gardener.git", branch: "main"),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "0.5.0"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.0.2"),
         .package(url: "https://github.com/OperatorFoundation/SwiftQueue.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Net.git", branch: "main"),
     ],
@@ -35,15 +35,15 @@ let package = Package(
         .target(
             name: "ReplicantSwiftServerCore",
             dependencies: [
-        "ReplicantSwift",
-        "Flower",
-        "Tun",
-        "InternetProtocols",
-        "Routing",
-        "SwiftHexTools",
-        "TransmissionTransport",
-        "Net",
-        "Transmission"
+                "ReplicantSwift",
+                "Flower",
+                "Tun",
+                "InternetProtocols",
+                "Routing",
+                "SwiftHexTools",
+                "TransmissionTransport",
+                "Net",
+                "Transmission"
             ]
         ),
         .executableTarget(
