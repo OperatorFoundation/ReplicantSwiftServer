@@ -48,7 +48,7 @@ let package = Package(
         ),
         .executableTarget(
             name: "ReplicantSwiftServer",
-            dependencies: ["ReplicantSwiftServerCore"]),
+            dependencies: ["ReplicantSwiftServerCore", .product(name: "ArgumentParser", package: "swift-argument-parser")]),
         .executableTarget(
             name: "PacketCapture",
             dependencies: ["Gardener", "SwiftQueue", .product(name: "ArgumentParser", package: "swift-argument-parser")]),
