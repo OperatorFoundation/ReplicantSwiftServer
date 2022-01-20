@@ -88,15 +88,15 @@ extension Command
                 throw Error.templateInvalid
             }
     
-            // Get the server public key
-            guard let serverPublicKey = SilverServerModel(logQueue: routingController.logQueue)?.publicKey
+            guard let serverPublicKey = SilverController(logger: appLog).fetchServerPublicKey()
             else
             {
                 throw Error.serverKeyNotFound
             }
     
             // Attempt to create the new client config at the given path
-            let configCreated = configTemplate.createConfig(atPath: saveDirectoryPath, serverPublicKey: serverPublicKey)
+            // TODO: Get IP and Port
+            let configCreated = configTemplatecreateConfig(atPath: saveDirectoryPath, serverIP: "ServerIP", port: 1111, serverPublicKey: serverPublicKey)
     
             guard configCreated
             else

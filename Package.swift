@@ -46,10 +46,10 @@ let package = Package(
         "Transmission"
             ]
         ),
-        .target(
+        .executableTarget(
             name: "ReplicantSwiftServer",
             dependencies: ["ReplicantSwiftServerCore"]),
-        .target(
+        .executableTarget(
             name: "PacketCapture",
             dependencies: ["Gardener", "SwiftQueue", .product(name: "ArgumentParser", package: "swift-argument-parser")]),
         .testTarget(
