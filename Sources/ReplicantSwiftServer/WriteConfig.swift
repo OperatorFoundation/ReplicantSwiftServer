@@ -87,8 +87,15 @@ extension Command
                 print("Unable to find a valid client config template at path: \(templatePath)")
                 throw Error.templateInvalid
             }
-    
-            guard let serverPublicKey = SilverController(logger: appLog).fetchServerPublicKey()
+
+            guard let silverController = SilverController(logger: appLog)
+            else
+            {
+                print("Unable to get the required server key, internal failure.")
+                throw Error.serverKeyNotFound
+            }
+
+            guard let serverPublicKey = silverController.fetchServerPublicKey()
             else
             {
                 throw Error.serverKeyNotFound
@@ -96,16 +103,16 @@ extension Command
     
             // Attempt to create the new client config at the given path
             // TODO: Get IP and Port
-            let configCreated = configTemplatecreateConfig(atPath: saveDirectoryPath, serverIP: "ServerIP", port: 1111, serverPublicKey: serverPublicKey)
+            let configCreated = configTemplate.createConfig(atPath: saveDirectoryPath, serverIP: "ServerIP", port: 1111, serverPublicKey: serverPublicKey)
     
             guard configCreated
             else
             {
-                print("\nUnable to save config to path:\(newConfigPath)\nUsing template at path:\(configTemplatePath)\n")
+                print("\nUnable to save config to path:\(saveDirectoryPath)\nUsing template at path:\(templatePath)\n")
                 throw Error.saveFailure
             }
     
-            print("Created a new Replicant client config at path:\(newConfigPath)")
+            print("Created a new Replicant client config at path:\(saveDirectoryPath)")
         }
     }
 }
