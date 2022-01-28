@@ -40,6 +40,9 @@ extension Command
             )
         }
         
+        @Argument(help: "the path for the replicant config")
+        var configPath: String
+        
         func run() throws
         {
             // Setup the logger
@@ -48,7 +51,7 @@ extension Command
             
             // FIXME: Currently everything is just hard-coded defaults
             // Configs should be provided by the user
-            guard let serverReplicantConfig = ReplicantServerConfig(polish: nil, toneBurst: nil)
+            guard let serverReplicantConfig = ReplicantServerConfig(withConfigAtPath: configPath)
             else
             {
                 throw Error.configError
