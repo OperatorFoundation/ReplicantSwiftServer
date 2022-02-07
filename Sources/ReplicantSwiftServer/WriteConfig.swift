@@ -89,22 +89,9 @@ extension Command
                 throw Error.templateInvalid
             }
 
-            guard let silverController = SilverController(logger: appLog)
-            else
-            {
-                print("Unable to get the required server key, internal failure.")
-                throw Error.serverKeyNotFound
-            }
-
-            guard let serverPublicKey = silverController.fetchServerPublicKey()
-            else
-            {
-                throw Error.serverKeyNotFound
-            }
-    
             // Attempt to create the new client config at the given path
             // TODO: Get IP and Port
-            let configCreated = configTemplate.createClientConfig(atPath: saveDirectoryPath, serverIP: "ServerIP", port: 1111, serverPublicKey: serverPublicKey)
+            let configCreated = configTemplate.createClientConfig(atPath: saveDirectoryPath, serverIP: "ServerIP", port: 1111)
     
             guard configCreated
             else
