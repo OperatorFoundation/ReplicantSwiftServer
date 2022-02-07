@@ -8,6 +8,7 @@
 import ArgumentParser
 import Foundation
 import Logging
+import Crypto
 
 import ReplicantSwift
 import ReplicantSwiftServerCore
@@ -103,7 +104,7 @@ extension Command
     
             // Attempt to create the new client config at the given path
             // TODO: Get IP and Port
-            let configCreated = configTemplate.createConfig(atPath: saveDirectoryPath, serverIP: "ServerIP", port: 1111, serverPublicKey: serverPublicKey)
+            let configCreated = configTemplate.createClientConfig(atPath: saveDirectoryPath, serverIP: "ServerIP", port: 1111, serverPublicKey: serverPublicKey)
     
             guard configCreated
             else
