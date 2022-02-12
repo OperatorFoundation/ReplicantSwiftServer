@@ -1,9 +1,16 @@
-import XCTest
-import ReplicantSwift
-import Net
-@testable import ReplicantSwiftServerCore
 import class Foundation.Bundle
+import Logging
+import XCTest
+
+import Net
+import ReplicantSwift
+import ReplicantSwiftClient
 import SwiftQueue
+import Transport
+
+@testable import ReplicantSwiftServerCore
+
+
 
 final class ReplicantSwiftServerTests: XCTestCase
 {
@@ -119,52 +126,48 @@ final class ReplicantSwiftServerTests: XCTestCase
 //        XCTAssert(configCreated)
 //    }
     
-    func testServerConfig()
-    {
-        guard let port = NWEndpoint.Port(rawValue: 51820)
-        else
-        {
-            print("\nUnable to initialize port.\n")
-            XCTFail()
-            return
-        }
-        
-        let serverConfig = ServerConfig(withPort: port, andHost: NWEndpoint.Host("0.0.0.0"))
-        
-        guard let jsonData = serverConfig.createJSON()
-        else
-        {
-            print("\nUnable to convert ServerConfig to JSON.\n")
-            XCTFail()
-            return
-        }
-        
-        guard let appDirectoryURL = getApplicationDirectory()
-            else
-        {
-            XCTFail()
-            return
-        }
-        
-        let fileManager = FileManager.default
-        let fileName = "Server.config"
-        let path = appDirectoryURL.appendingPathComponent(fileName).path
-        let configCreated = fileManager.createFile(atPath: path, contents: jsonData)
-        
-        XCTAssert(configCreated)
-    }
-    
-    func testEncryptDecrypt()
-    {
-        
-    }
+//    func testServerConfig()
+//    {
+//        guard let port = NWEndpoint.Port(rawValue: 51820)
+//        else
+//        {
+//            print("\nUnable to initialize port.\n")
+//            XCTFail()
+//            return
+//        }
+//
+//        let serverConfig = ServerConfig(withPort: port, andHost: NWEndpoint.Host("0.0.0.0"))
+//
+//        guard let jsonData = serverConfig.createJSON()
+//        else
+//        {
+//            print("\nUnable to convert ServerConfig to JSON.\n")
+//            XCTFail()
+//            return
+//        }
+//
+//        guard let appDirectoryURL = getApplicationDirectory()
+//            else
+//        {
+//            XCTFail()
+//            return
+//        }
+//
+//        let fileManager = FileManager.default
+//        let fileName = "Server.config"
+//        let path = appDirectoryURL.appendingPathComponent(fileName).path
+//        let configCreated = fileManager.createFile(atPath: path, contents: jsonData)
+//
+//        XCTAssert(configCreated)
+//    }
     
     func testConnection()
     {
+        let logger = Logger(label: "ReplicantServerTest")
         let chunkSize: UInt16 = 2000
        // let chunkTimeout: Int = 1000
         let unencryptedChunkSize = chunkSize - UInt16(2)
-        let testIPString = "192.168.1.72"
+        let testIPString = "testIP"
         let testPort: UInt16 = 1234
 //        guard let serverPublicKey = Data(base64Encoded: "BL7+Vd087+p/roRp6jSzIWzG3qXhk2S4aefLcYjwRtxGanWUoeoIWmMkAHfiF11vA9d6rhiSjPDL0WFGiSr/Et+wwG7gOrLf8yovmtgSJlooqa7lcMtipTxegPAYtd5yZg==")
 //        else
@@ -212,7 +215,7 @@ final class ReplicantSwiftServerTests: XCTestCase
         //let toneburst = ToneBurstClientConfig.whalesong(client: whalesong)
         
         // Make a Client Connection
-        guard let replicantClientConfig = ReplicantConfig(polish: nil, toneBurst: nil)
+        guard let replicantClientConfig = ReplicantConfig(serverIP: "127.0.0.1", port: 2277, polish: nil, toneBurst: nil)
             else
         {
             print("\nUnable to create ReplicantClient config.\n")
@@ -220,7 +223,7 @@ final class ReplicantSwiftServerTests: XCTestCase
             return
         }
         
-        let clientConnectionFactory = ReplicantConnectionFactory(host: host, port: port, config: replicantClientConfig)
+        let clientConnectionFactory = ReplicantConnectionFactory(config: replicantClientConfig, log: logger)
         guard var clientConnection = clientConnectionFactory.connect(using: .tcp)
         else
         {
