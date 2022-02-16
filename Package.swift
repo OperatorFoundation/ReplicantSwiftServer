@@ -18,7 +18,7 @@ let package = Package(
         .package(url: "https://github.com/OperatorFoundation/Flower.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Gardener.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", branch: "main"),
-        .package(url: "https://github.com/apple/swift-log.git", from: "1.4.0"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.4.2"),
         .package(url: "https://github.com/OperatorFoundation/Net.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwiftClient.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "main"),

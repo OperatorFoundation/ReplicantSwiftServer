@@ -9,7 +9,7 @@ import Foundation
 
 struct AddressPool
 {
-    let base: String = "10.0.0."
+    let base: String = "10.4.2."
     var used: [Bool] = [Bool](repeating: false, count: 256)
 
     init()
