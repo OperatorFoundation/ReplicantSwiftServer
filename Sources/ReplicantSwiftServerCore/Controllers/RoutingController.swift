@@ -22,7 +22,7 @@ import TransmissionTransport
 
 public class RoutingController
 {
-    let tunAddress = "10.4.2.1"
+    let tunAddress = "10.8.0.1"
     let logger: Logger
     let consoleIO = ConsoleIO()
     let listenerQueue = DispatchQueue(label: "Listener")
