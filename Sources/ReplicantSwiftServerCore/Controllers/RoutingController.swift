@@ -102,7 +102,6 @@ public class RoutingController
         tunTestData[19] = 164
 
         let testPacket = Packet(ipv4Bytes: tunTestData, timestamp: Date(), debugPrints: true)
-        print(testPacket.description)
 
         print("Sending test UDP packet to 206.189.173.164")
         let result = tunDevice.writeBytes(tunTestData)
