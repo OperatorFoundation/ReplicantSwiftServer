@@ -50,6 +50,19 @@ public class RoutingController
         }
 
         let tunTestData = Data(hex: "45000022231b0000401135c7c0a8016ba747b88edb3004d2000eba0968656c6c6f0a")!
+
+        // 206.189.200.18
+        tunTestData[12] = 206
+        tunTestData[13] = 189
+        tunTestData[14] = 200
+        tunTestData[15] = 18
+
+        // 206.189.173.164
+        tunTestData[16] = 206
+        tunTestData[17] = 189
+        tunTestData[18] = 173
+        tunTestData[19] = 164
+
         tunDevice.writeBytes(tunTestData)
 
         self.tun = tunDevice
