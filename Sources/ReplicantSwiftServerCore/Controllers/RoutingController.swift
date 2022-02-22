@@ -48,6 +48,9 @@ public class RoutingController
             return
         }
 
+        let tunTestData = Data(hex: "45000022231b0000401135c7c0a8016ba747b88edb3004d2000eba0968656c6c6f0a")!
+        tunDevice.writeBytes(data: tunTestData)
+
         self.tun = tunDevice
 
         //setup routing (nat, ip forwarding, and mtu)
