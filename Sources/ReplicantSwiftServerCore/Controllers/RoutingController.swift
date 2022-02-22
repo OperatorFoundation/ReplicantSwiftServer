@@ -22,6 +22,7 @@ import TransmissionTransport
 
 public class RoutingController
 {
+    let tunAddress = "10.8.0.1"
     let logger: Logger
     let consoleIO = ConsoleIO()
     let listenerQueue = DispatchQueue(label: "Listener")
@@ -40,7 +41,7 @@ public class RoutingController
     
     public func startListening(serverConfig: ServerConfig, replicantConfig: ReplicantServerConfig, replicantEnabled: Bool)
     {
-        guard let tunDevice = TunDevice(address: "10.0.0.1", reader: self.transferFromTUN)
+        guard let tunDevice = TunDevice(address: tunAddress, reader: self.transferFromTUN)
         else
         {
             print("🚨 Failed to create tun device. 🚨")
@@ -222,6 +223,7 @@ public class RoutingController
                         
                         return
                     }
+                    print("Source Address: \(ipv4.description)")
 
                     print("Checking for tun device")
                     if let ourTun = self.tun

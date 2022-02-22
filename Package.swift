@@ -16,17 +16,20 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/OperatorFoundation/Flower.git", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Gardener.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/InternetProtocols.git", branch: "main"),
+        .package(url: "https://github.com/apple/swift-log.git", from: "1.4.2"),
+        .package(url: "https://github.com/OperatorFoundation/Net.git", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwiftClient.git", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/Routing.git", branch: "main"),
+        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.0.2"),
+        .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", branch: "main"),
+        .package(url: "https://github.com/OperatorFoundation/SwiftQueue.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Transmission.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/TransmissionTransport.git", branch: "main"),
         .package(url: "https://github.com/OperatorFoundation/Tun.git", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/ReplicantSwift.git", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/Routing.git", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/SwiftHexTools.git", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/Gardener.git", branch: "main"),
-        .package(url: "https://github.com/apple/swift-argument-parser.git", from: "1.0.2"),
-        .package(url: "https://github.com/OperatorFoundation/SwiftQueue.git", branch: "main"),
-        .package(url: "https://github.com/OperatorFoundation/Net.git", branch: "main"),
+        
     ],
     targets: [
         // Targets are the basic building blocks of a package. A target can define a module or a test suite.
@@ -54,7 +57,12 @@ let package = Package(
             dependencies: ["Gardener", "SwiftQueue", .product(name: "ArgumentParser", package: "swift-argument-parser")]),
         .testTarget(
             name: "ReplicantSwiftServerTests",
-            dependencies: ["ReplicantSwiftServerCore"]),
+            dependencies: [
+                "ReplicantSwiftServerCore",
+                "ReplicantSwiftClient",
+                    .product(name: "Logging", package: "swift-log")
+            ]
+        ),
     ],
     swiftLanguageVersions: [.v5]
 )
