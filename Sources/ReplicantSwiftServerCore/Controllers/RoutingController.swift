@@ -101,9 +101,14 @@ public class RoutingController
         tunTestData[18] = 173
         tunTestData[19] = 164
 
+        let testPacket = Packet(ipv4Bytes: tunTestData, timestamp: Date(), debugPrints: true)
+        print(testPacket.description)
+
         print("Sending test UDP packet to 206.189.173.164")
         let result = tunDevice.writeBytes(tunTestData)
         print("Sent test UDP packet \(result)")
+
+        print(getNAT())
 
         let port = Int(serverConfig.port.rawValue)
         print("\n! Listening on port \(port)")
