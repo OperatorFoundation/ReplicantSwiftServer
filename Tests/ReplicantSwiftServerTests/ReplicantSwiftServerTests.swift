@@ -163,6 +163,8 @@ final class ReplicantSwiftServerTests: XCTestCase
     
     func testConnection()
     {
+        let packetHex = "450000258ad100004011ef41c0a801e79fcb9e5adf5104d200115d4268656c6c6f6f6f6f0a"
+        
         let logger = Logger(label: "ReplicantServerTest")
         let chunkSize: UInt16 = 2000
        // let chunkTimeout: Int = 1000
