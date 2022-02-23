@@ -1,3 +1,5 @@
+git pull origin main
+
 swift package update || exit 1
 swift build || exit 2
 
