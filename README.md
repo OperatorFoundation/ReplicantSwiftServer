@@ -2,33 +2,7 @@
 
 A command line program to run a Replicant Server.
 
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-What things you need to install the software and how to install them
-
-```
-Xcode
-```
-
-### Installing
-
-1. Clone the repository.
-
-2. Navigate to the project folder
-
-3. Update the dependencies using Swift Package Manager
-```
-swift package update
-```
-4. Generate the Xcode project
-```
-swift package generate-xcodeproj
-```
-
+### This repository is not currently being maintained. For the Swift version of our Replicant transport please go here: https://github.com/OperatorFoundation/ReplicantSwift
 
 ## Running
 
